@@ -333,6 +333,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     transition-duration: .5s;
     transition-timing-function: ease;
     z-index: 5; }
+
   .conf-step__selectors-box .conf-step__radio:checked + .conf-step__selector {
     background-color: #FFFFFF;
     box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.24), 0px 2px 2px rgba(0, 0, 0, 0.24), 0px 0px 2px rgba(0, 0, 0, 0.12);
@@ -340,7 +341,8 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     font-weight: 900;
     font-size: 1.4rem;
     z-index: 10; }
-  .conf-step__selectors-box .conf-step__radio:hover + .conf-step__selector {
+
+.conf-step__selectors-box .conf-step__radio:hover + .conf-step__selector {
     background-color: rgba(255, 255, 255, 0.9); }
 
 .conf-step__hall {

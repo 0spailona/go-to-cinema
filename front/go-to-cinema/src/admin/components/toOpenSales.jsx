@@ -1,5 +1,5 @@
-import ConfStepHeader from "./ConfStepHeader.jsx";
-import MyButton from "./myButton.jsx";
+import ConfStepHeader from "./common/ConfStepHeader.jsx";
+import MyButton from "./common/myButton.jsx";
 
 export default function ToOpenSales(){
     return (

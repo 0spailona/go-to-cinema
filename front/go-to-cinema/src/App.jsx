@@ -3,7 +3,7 @@
 import viteLogo from '/vite.svg'
 //import './App.css'
 import {Route, Routes} from 'react-router-dom';
-import AdminPage from "./admin/adminPage.jsx";
+import AdminPage from "./admin/components/adminPage.jsx";
 import ClientPage from "./client/clientPage.jsx";
 
 function App() {
