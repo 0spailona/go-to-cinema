@@ -8,10 +8,10 @@ import {useState} from "react";
 // eslint-disable-next-line react/prop-types
 export default function SeancesHall({hallId,movies}) {
 
-    console.log('render hall')
+    //console.log('render hall')
     const hall = initialData.halls[hallId];
     const [moviesList, setMoviesList] = useState(movies);
-    console.log('render', hall);
+    //console.log('render', hall);
 
     return (
         <div className="conf-step__seances-hall">

@@ -1,60 +1,19 @@
 //const basedUrl = import.meta.env.VITE_URL
 import {createSlice} from "@reduxjs/toolkit";
+import {placesType} from "../../admin/info.js";
+import {createHall} from "../../admin/modelUtils.js";
 
 const basedUrl = "import.meta.env.VITE_URL";
 
-const disabled = [{row: 1, place: 1}, {row: 1, place: 2}, {row: 1, place: 3},
-    {row: 1, place: 6}, {row: 1, place: 7}, {row: 1, place: 8},
-    {row: 2, place: 1}, {row: 2, place: 2}, {row: 2, place: 7}, {row: 2, place: 8},
-    {row: 3, place: 1}, {row: 3, place: 8},
-    {row: 4, place: 8}, {row: 5, place: 8}, {row: 6, place: 8}, {row: 7, place: 8}, {
-        row: 8,
-        place: 8
-    },];
-
-const vip = [{row: 4, place: 4}, {row: 4, place: 5},
-    {row: 5, place: 3}, {row: 5, place: 4}, {row: 5, place: 5}, {row: 5, place: 6},
-    {row: 6, place: 3}, {row: 6, place: 4}, {row: 6, place: 5}, {row: 6, place: 6},
-    {row: 7, place: 3}, {row: 7, place: 4}, {row: 7, place: 5}, {row: 7, place: 6},];
-
-const hallType = {
-    "standart": {
-        rows: 10,
-        placesInRow: 8,
-        disabled: disabled,
-        vip: vip,
-    }
-};
 
 
 const initialState = {
     loadingSeances: true,
     error: "",
     halls: {
-        "h-1": {
-            id: "h-1",
-            name: "Зал 1",
-            movies: [],
-            type: hallType.standart,
-            custom: {
-                rowCount: 0, placesInRow: 8, disabled: [],
-                vip: []
-            },
-
-        },
-        "h-2": {
-            id: "h-2",
-            name: "Зал 2",
-            movies: [],
-            type: hallType.standart,
-            custom: {
-                rowCount: 0, placesInRow: 8, disabled: [],
-                vip: []
-            },
-
-        }
+        "h-1": createHall("h-1", "Зал 1", "standart"),
+        "h-2": createHall("h-2", "Зал 2", "standart"),
     },
-    hallsId: ["h-1", "h-2"],
     chairsUpdateHall: "h-1",
     pricesUpdateHall: "h-1",
 };
@@ -83,18 +42,42 @@ const hallsSlice = createSlice({
             }
         },
         updateCustomRows: (state, action) => {
-            console.log("slice halls update");
-            state.halls[action.payload.hallId].custom = action.payload.rows;
+            console.log("slice halls update rows");
+            state.halls[action.payload.hallId].custom.rowCount = action.payload.rows;
         },
+        updateCustomPlaces: (state, action) => {
+            console.log("slice halls update places");
+            state.halls[action.payload.hallId].custom.placesInRow = action.payload.places;
+        },
+        updatePrice: (state, action) => {
+            if(action.payload.type === placesType.vip){
+                console.log("slice halls update vip Price");
+                state.halls[action.payload.hallId].custom.price.vip = action.payload.price;
+            }
+            else {
+                console.log("slice halls update standart Price");
+                state.halls[action.payload.hallId].custom.price.standart = action.payload.price;
+            }
+        },
+        onPlaceChange:(state, action) => {
+
+        }
     }
 });
 
 
-export const {addFilmToHall, changeSelectedHall, updateCustomRows} = hallsSlice.actions;
+export const {
+    addFilmToHall,
+    changeSelectedHall,
+    updateCustomRows,
+    updateCustomPlaces,
+    updatePrice
+} = hallsSlice.actions;
 export const {
     halls,
     hallsId,
-    loadingSeances, chairsUpdateHall
+    loadingSeances, chairsUpdateHall,
+    pricesUpdateHall
 } = hallsSlice.selectors;
 const hallsReducer = hallsSlice.reducer;
 export default hallsReducer;

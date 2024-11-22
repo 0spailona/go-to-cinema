@@ -4,28 +4,49 @@ import ConfStepHeader from "../common/ConfStepHeader.jsx";
 import MyInput from "../common/myInput.jsx";
 import Place from "../common/place.jsx";
 import MyButton from "../common/myButton.jsx";
-import {useAppDispatch, useAppSelector} from "../../../redux/hooks.js";
-import {useState} from "react";
-import {updateCustomRows} from "../../../redux/slices/halls.js";
+import {useEffect, useState} from "react";
+import {updateCustomPlaces, updateCustomRows} from "../../../redux/slices/halls.js";
+import {useDispatch, useSelector} from "react-redux";
+import {isValid} from "../../utils.js";
+import {placesType} from "../../info.js";
 
 export default function ToUpdateHall() {
 
-    const dispatch = useAppDispatch();
+    const dispatch = useDispatch();
 
     const {
         halls,
-        hallsId, chairsUpdateHall
-    } = useAppSelector(state => state.halls);
+        chairsUpdateHall
+    } = useSelector(state => state.halls);
 
-    const [inputValueRows, setInputValueRows] = useState("");
-    const [inputValuePlaces, setInputValuePlaces] = useState("");
+    const hall = halls[chairsUpdateHall];
 
+    const [inputValueRows, setInputValueRows] = useState(hall.rowCount);
+    const [inputValuePlaces, setInputValuePlaces] = useState(hall.placeInRowCount);
 
-    const onChangeRows = (event) => {
-        console.log("onChangeRows", event.target.value);
+    useEffect(() => {
+       setInputValuePlaces(hall.placeInRowCount);
+        setInputValueRows(hall.rowCount);
+    },[chairsUpdateHall])
+
+    const onBlurPlaces = (e) => {
+        const value = +e.target.value.trim();
+        if(isValid(value)) {
+            dispatch(updateCustomPlaces({
+                places: value,
+                hallId: chairsUpdateHall
+            }));
+        }
     };
 
-    const onBlurRows = (event) => {
+    const onBlurRows = (e) => {
+        const value = +e.target.value.trim();
+        if(isValid(value)) {
+            dispatch(updateCustomRows({
+                rows: value,
+                hallId: chairsUpdateHall
+            }));
+        }
     };
 
     return (
@@ -36,31 +57,25 @@ export default function ToUpdateHall() {
                 <p className="conf-step__paragraph">Укажите количество рядов и максимальное количество кресел в
                     ряду:</p>
                 <div className="conf-step__legend">
-                    <MyInput label="Рядов, шт" placeholder={`${halls[chairsUpdateHall].type.rows}`}
+                    <MyInput label="Рядов, шт" placeholder={`${halls[chairsUpdateHall].rowCount}`}
                              onChange={(e) => setInputValueRows(e.target.value)}
-                             onBlur={(e) => dispatch(updateCustomRows({
-                                     rows: e.target.value,
-                                     hallId: chairsUpdateHall
-                                 })
-                             )}
+                             onBlur={(e) => onBlurRows(e)}
                              value={inputValueRows}/>
                     <span className="multiplier">x</span>
-                    <MyInput label="Мест, шт" placeholder={`${halls[chairsUpdateHall].type.placesInRow}`}
+                    <MyInput label="Мест, шт" placeholder={`${halls[chairsUpdateHall].placeInRowCount}`}
                              onChange={(event) => setInputValuePlaces(event.target.value)}
-                             onBlur={(e) => setInputValueRows(e.target.value)}
+                             onBlur={(e) => onBlurPlaces(e)}
                              value={inputValuePlaces}/>
                 </div>
                 <p className="conf-step__paragraph">Теперь вы можете указать типы кресел на схеме зала:</p>
                 <div className="conf-step__legend">
-                    <Place status="standart"/> — обычные кресла
-                    <Place status="vip"/> — VIP кресла
-                    <Place status="disabled"/> — заблокированные (нет
+                    <Place status={`${placesType.standart}`}/> — обычные кресла
+                    <Place status={`${placesType.vip}`}/> — VIP кресла
+                    <Place status={`${placesType.disabled}`}/> — заблокированные (нет
                     кресла)
                     <p className="conf-step__hint">Чтобы изменить вид кресла, нажмите по нему левой кнопкой мыши</p>
                 </div>
-                <Hall rowCount={10} placesInRow={8}
-
-                      hallId={chairsUpdateHall}/>
+                <Hall hallId={chairsUpdateHall}/>
                 <div className="conf-step__buttons text-center">
                     <MyButton type="reset" text="Отмена"/>
                     <MyButton type="submit" text="Сохранить"/>

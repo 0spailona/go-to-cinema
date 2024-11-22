@@ -13,16 +13,16 @@ export default function ToSelectHall({name}) {
         hallsId
     } = useSelector(state => state.halls)
 
-    const [checkedHallId, setCheckedHallId] = useState(hallsId[0]);
+    const [checkedHallId, setCheckedHallId] = useState(Object.keys(halls)[0]);
 
 
-    console.log("render", halls);
+    //console.log("render", halls);
     return (
         <>
             <p className="conf-step__paragraph">Выберите зал для конфигурации:</p>
             <ul className="conf-step__selectors-box">
                 {
-                    hallsId.map((id) =>
+                    Object.keys(halls).map((id) =>
                         <li key={id}>
                             <input type="radio" className="conf-step__radio"
                                    name={name}
