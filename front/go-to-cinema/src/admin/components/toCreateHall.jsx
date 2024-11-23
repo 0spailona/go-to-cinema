@@ -11,6 +11,10 @@ export default function ToCreateHall() {
 
     console.log("ToCreateHall halls",halls)
 
+    const createHall = ()=>{
+        console.log("Create Hall");
+    }
+
     return (
         <section className="conf-step">
             <ConfStepHeader title="Управление залами"/>
@@ -20,7 +24,7 @@ export default function ToCreateHall() {
                     {Object.keys(halls).map((id) => <li key={id}>{halls[id].name} <button className="conf-step__button conf-step__button-trash"></button>
                     </li>)}
                 </ul>
-                <MyButton text="Создать зал" type="submit"/>
+                <MyButton text="Создать зал" type="submit" onclick={()=>createHall()}/>
             </div>
         </section>
     )

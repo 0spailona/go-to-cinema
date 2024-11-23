@@ -19,7 +19,6 @@ export default function ToUpdatePrice() {
     const hall = halls[pricesUpdateHall];
     const vipPrice = hall.prices.vip
     const standartPrice = hall.prices.standart
-    //console.log("vipPrice", vipPrice);
     const [inputValueStandartPrice, setInputValueStandartPrice] = useState(standartPrice);
     const [inputValueVipPrice, setInputValueVipPrice] = useState(vipPrice);
 

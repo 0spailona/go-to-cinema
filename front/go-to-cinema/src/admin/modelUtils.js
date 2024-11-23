@@ -29,6 +29,7 @@ const templates = {
     }
 };
 
+
 export function createHall(id, name, templateId) {
     const template = templates[templateId];
     if (!template) {

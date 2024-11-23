@@ -1,0 +1,7 @@
+.popup {
+    position: fixed;
+    width: 50vw;
+    height: 50vh;
+    top: 0;
+    left: 25vw;
+}

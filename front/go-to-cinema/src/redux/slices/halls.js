@@ -5,14 +5,16 @@ import {createHall} from "../../admin/modelUtils.js";
 
 const basedUrl = "import.meta.env.VITE_URL";
 
+const hall1 = createHall("h-1", "Зал 1", "standart")
+const hall2 = createHall("h-2", "Зал 2", "standart")
 
 
 const initialState = {
     loadingSeances: true,
     error: "",
     halls: {
-        "h-1": createHall("h-1", "Зал 1", "standart"),
-        "h-2": createHall("h-2", "Зал 2", "standart"),
+        "h-1": hall1,
+        "h-2": hall2,
     },
     chairsUpdateHall: "h-1",
     pricesUpdateHall: "h-1",
@@ -43,24 +45,29 @@ const hallsSlice = createSlice({
         },
         updateCustomRows: (state, action) => {
             console.log("slice halls update rows");
-            state.halls[action.payload.hallId].custom.rowCount = action.payload.rows;
+            state.halls[action.payload.hallId].rowCount = action.payload.rows;
+            //TODO узнать поведение отрисовки зала при изменении количества рядов и мест
         },
         updateCustomPlaces: (state, action) => {
             console.log("slice halls update places");
-            state.halls[action.payload.hallId].custom.placesInRow = action.payload.places;
+            state.halls[action.payload.hallId].placeInRowCount = action.payload.places;
+            //TODO узнать поведение отрисовки зала при изменении количества рядов и мест
         },
         updatePrice: (state, action) => {
             if(action.payload.type === placesType.vip){
                 console.log("slice halls update vip Price");
-                state.halls[action.payload.hallId].custom.price.vip = action.payload.price;
+                state.halls[action.payload.hallId].prices.vip = action.payload.price;
             }
             else {
                 console.log("slice halls update standart Price");
-                state.halls[action.payload.hallId].custom.price.standart = action.payload.price;
+                state.halls[action.payload.hallId].prices.standart = action.payload.price;
             }
         },
-        onPlaceChange:(state, action) => {
-
+        changePlaceStatus:(state, action) => {
+            console.log("slice halls change PlaceStatus");
+            const rowIndex = action.payload.rowIndex;
+            const placeIndex = action.payload.placeIndex
+            state.halls[action.payload.hallId].places[rowIndex][placeIndex] = action.payload.newStatus;
         }
     }
 });
@@ -71,7 +78,8 @@ export const {
     changeSelectedHall,
     updateCustomRows,
     updateCustomPlaces,
-    updatePrice
+    updatePrice,
+    changePlaceStatus
 } = hallsSlice.actions;
 export const {
     halls,
