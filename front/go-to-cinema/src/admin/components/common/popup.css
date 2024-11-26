@@ -1,7 +1,23 @@
 .popup {
     position: fixed;
-    width: 50vw;
-    height: 50vh;
     top: 0;
     left: 25vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 50vw;
+    height: 25vh;
+    padding: 40px;
+    //border: 2px solid red;
+    background-color: #85e2ff;
+    font-size: 20px;
+}
+
+.popup-invisible{
+    display: none;
+}
+
+.popup-buttons{
+    display: flex;
 }

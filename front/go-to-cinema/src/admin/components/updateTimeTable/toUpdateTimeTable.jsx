@@ -3,29 +3,31 @@ import MovieContent from "./movieContent.jsx";
 import SeancesHall from "./seancesHall.jsx";
 import MyButton from "../common/myButton.jsx";
 import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd";
-import initialData from "./initialData.js";
+//import initialData from "./initialData.js";
 import {useState} from "react";
-import {useAppDispatch, useAppSelector} from "../../../redux/hooks.js";
+import {useDispatch, useSelector} from "react-redux";
 
 ///https://codesandbox.io/p/sandbox/funny-buck-kkpnnkkzov?file=%2Fsrc%2Fcontainers%2FKanbanLists.js
 
 
 export default function ToUpdateTimeTable() {
 
-    const dispatch = useAppDispatch()
+    const dispatch = useDispatch()
 
 
 
     const {
         films,
         filmsId,
-    } = useAppSelector(state => state.films)
+    } = useSelector(state => state.films)
+
+    const {halls} = useSelector(state => state.halls)
 
     //const [moviesOrder, setMoviesOrder] = useState(initialData.moviesOrder);
-    const [halls, setHalls] = useState([
+    /*const [halls, setHalls] = useState([
         {"h-1": {name: "Зал 1", movies: []}},
-        {"h-2": {name: "Зал 2", movies: []}}]);
-    const hallsOrder = initialData.hallsOrder;
+        {"h-2": {name: "Зал 2", movies: []}}]);*/
+    //const hallsOrder = initialData.hallsOrder;
 
     const onDragEnd = (result) => {
 
@@ -44,7 +46,7 @@ export default function ToUpdateTimeTable() {
                 const [reorderedItem] = items.splice(result.source.index, 1);
                 items.splice(result.destination.index, 0, reorderedItem);
                 halls[i][hallId].movies = items;
-                setHalls(halls)
+                //setHalls(halls)
                 console.log("halls",halls)
             }
         }
@@ -92,14 +94,14 @@ export default function ToUpdateTimeTable() {
 
                                  ref={provided.innerRef}>
 
-                                    {films.map((film, index) => {
-                                    return <Draggable key={film.id} draggableId={film.id} index={index}>
+                                    {Object.keys(films).map((id,index) => {
+                                    return <Draggable key={id} draggableId={id} index={index}>
                                         {(provided) => (
                                             <div className="conf-step__movie"
                                                  ref={provided.innerRef}
                                                  {...provided.draggableProps}
                                                  {...provided.dragHandleProps} >
-                                                <MovieContent movie={film} index={film.id}/>
+                                                <MovieContent movie={films[id]} index={id}/>
                                             </div>
                                         )}
                                     </Draggable>;
@@ -109,7 +111,7 @@ export default function ToUpdateTimeTable() {
                         )}
                     </Droppable>
                     <div className="conf-step__seances">
-                        {hallsOrder.map((id) => {
+                        {Object.keys(halls).map((id) => {
                             return <SeancesHall key={id} hallId={id} movies={[]}/>;
                         })}
                     </div>

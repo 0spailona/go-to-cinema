@@ -6,6 +6,7 @@ import ToUpdateHall from "./updateHall/toUpdateHall.jsx";
 import ToUpdatePrice from "./toUpdatePrice.jsx";
 import ToUpdateTimeTable from "./updateTimeTable/toUpdateTimeTable.jsx";
 import ToOpenSales from "./toOpenSales.jsx";
+import MyPopup from "./common/myPopup.jsx";
 
 export default function AdminPage() {
     return (

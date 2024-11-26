@@ -4,7 +4,7 @@ import viteLogo from '/vite.svg'
 //import './App.css'
 import {Route, Routes} from 'react-router-dom';
 import AdminPage from "./admin/components/adminPage.jsx";
-import ClientPage from "./client/clientPage.jsx";
+import ClientPage from "./client/components/clientPage.jsx";
 
 function App() {
   //const [count, setCount] = useState(0)

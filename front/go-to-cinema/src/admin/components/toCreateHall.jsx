@@ -1,13 +1,13 @@
 import ConfStepHeader from "./common/ConfStepHeader.jsx";
 import MyButton from "./common/myButton.jsx";
-import {useAppSelector} from "../../redux/hooks.js";
+import {useSelector} from "react-redux";
 
 export default function ToCreateHall() {
 
     const {
         halls,
         hallsId
-    } = useAppSelector(state => state.halls)
+    } = useSelector(state => state.halls)
 
     console.log("ToCreateHall halls",halls)
 

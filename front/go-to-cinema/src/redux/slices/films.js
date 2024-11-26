@@ -7,16 +7,16 @@ const basedUrl = "import.meta.env.VITE_URL";
 const initialState = {
     loadingFilms: true,
     error: "",
-    films: [{
+    films: {"m-1":{
         id: "m-1",
         title: "Звёздные войны XXIII: Атака клонированных клонов",
         time: "130 минут",
         poster: "i/poster.png"
     },
-        {id: "m-2", title: "Миссия выполнима", time: "120 минут", poster: "i/poster.png"},
-        {id: "m-3", title: "Серая пантера", time: "90 минут", poster: "i/poster.png"},
-        {id: "m-4", title: "Движение вбок", time: "95 минут", poster: "i/poster.png"},
-        {id: "m-5", title: "Кот Да Винчи", time: "100 минут", poster: "i/poster.png"}],
+        "m-2": {id: "m-2", title: "Миссия выполнима", time: "120 минут", poster: "i/poster.png"},
+        "m-3": {id: "m-3", title: "Серая пантера", time: "90 минут", poster: "i/poster.png"},
+        "m-4": {id: "m-4", title: "Движение вбок", time: "95 минут", poster: "i/poster.png"},
+        "m-5": {id: "m-5", title: "Кот Да Винчи", time: "100 минут", poster: "i/poster.png"}},
     filmsId: ["m-1", "m-2", "m-3", "m-4", "m-5"]
 };
 

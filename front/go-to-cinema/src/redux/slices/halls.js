@@ -1,12 +1,12 @@
 //const basedUrl = import.meta.env.VITE_URL
 import {createSlice} from "@reduxjs/toolkit";
-import {placesType} from "../../admin/info.js";
-import {createHall} from "../../admin/modelUtils.js";
+import {placesType, selectedHallType} from "../../admin/info.js";
+import {createHall, fillPlacesByStandard} from "../../admin/modelUtils.js";
 
 const basedUrl = "import.meta.env.VITE_URL";
 
-const hall1 = createHall("h-1", "Зал 1", "standart")
-const hall2 = createHall("h-2", "Зал 2", "standart")
+const hall1 = createHall("h-1", "Зал 1", "standart");
+const hall2 = createHall("h-2", "Зал 2", "standart");
 
 
 const initialState = {
@@ -16,61 +16,92 @@ const initialState = {
         "h-1": hall1,
         "h-2": hall2,
     },
-    chairsUpdateHall: "h-1",
-    pricesUpdateHall: "h-1",
+    chairsUpdateHall: {id: "h-1", isUpdated: false},
+    pricesUpdateHall: {id: "h-1", isUpdated: false}
 };
 
 const hallsSlice = createSlice({
-    name: "halls",
-    initialState,
-    selectors: {
-        halls: (state => state.halls),
-        hallsId: (state => state.hallsId),
-        loadingSeances: (state => state.loadingSeances),
-        chairsUpdateHall: (state => state.chairsUpdateHall),
-        pricesUpdateHall: (state => state.pricesUpdateHall),
-    },
-    reducers: {
-        addFilmToHall: (state, action) => {
-            const newFilm = action.payload.movie;
-            state.halls[action.payload.hallId].movies.push(newFilm);
+        name: "halls",
+        initialState,
+        selectors: {
+            halls: (state => state.halls),
+            hallsId: (state => state.hallsId),
+            loadingSeances: (state => state.loadingSeances),
+            chairsUpdateHall: (state => state.chairsUpdateHall),
+            pricesUpdateHall: (state => state.pricesUpdateHall),
         },
-        changeSelectedHall: (state, action) => {
-            if (action.payload.name === "chairs-hall") {
-                state.chairsUpdateHall = action.payload.hallId;
+        reducers: {
+            addFilmToHall: (state, action) => {
+                const newFilm = action.payload.movie;
+                state.halls[action.payload.hallId].movies.push(newFilm);
+            },
+            changeSelectedHall: (state, action) => {
+                if (action.payload.name === selectedHallType.chairs) {
+                    state.chairsUpdateHall = {id: action.payload.hallId, isUpdated: false};
+                }
+                if (action.payload.name === selectedHallType.prices) {
+                    state.pricesUpdateHall = {id: action.payload.hallId, isUpdated: false};
+                }
+            },
+            updateCustomRows: (state, action) => {
+                console.log("slice halls update rows");
+                const newRowCount = action.payload.rows;
+                const hall = state.halls[action.payload.hallId];
+                const oldRowCount = hall.rowCount;
+                const difference = newRowCount - oldRowCount;
+
+                hall.places = difference < 0 ? hall.places.splice(0, newRowCount) :
+                    difference > 0 ? fillPlacesByStandard(hall.places, difference, hall.placeInRowCount) : hall.places;
+
+                state.chairsUpdateHall.isUpdated = true;
+                hall.rowCount = newRowCount;
+
+            },
+            updateCustomPlaces: (state, action) => {
+                console.log("slice halls update places");
+                const newPlacesInRow = action.payload.places;
+                const hall = state.halls[action.payload.hallId];
+                const oldPlaceInRowCount = hall.placeInRowCount;
+                const difference = newPlacesInRow - oldPlaceInRowCount;
+                if (difference !== 0) {
+                    if (difference < 0) {
+                        for (let row of hall.places) {
+                            row.splice(0, Math.abs(difference));
+                        }
+                    }
+                    else {
+                        for (let row of hall.places) {
+                            const newPlaces = Array(difference).fill(placesType.standart);
+                            row.push(...newPlaces);
+                        }
+                    }
+                    state.chairsUpdateHall.isUpdated = true;
+                    hall.placeInRowCount = newPlacesInRow;
+                }
+            },
+            updatePrice: (state, action) => {
+                const newPrice = action.payload.price;
+                const hall = state.halls[action.payload.hallId];
+                if (action.payload.type === placesType.vip && hall.prices.vip !== newPrice) {
+                    console.log("slice halls update vip Price");
+                    hall.prices.vip = newPrice;
+                    state.pricesUpdateHall.isUpdated = true;
+                }
+                else if (action.payload.type === placesType.standart && hall.prices.standart !== newPrice) {
+                        console.log("slice halls update standart Price");
+                        hall.prices.standart = newPrice;
+                        state.pricesUpdateHall.isUpdated = true;
+                    }
+            },
+            changePlaceStatus: (state, action) => {
+                console.log("slice halls change PlaceStatus");
+                const rowIndex = action.payload.rowIndex;
+                const placeIndex = action.payload.placeIndex;
+                state.halls[action.payload.hallId].places[rowIndex][placeIndex] = action.payload.newStatus;
             }
-            if (action.payload.name === "prices-hall") {
-                state.pricesUpdateHall = action.payload.hallId;
-            }
-        },
-        updateCustomRows: (state, action) => {
-            console.log("slice halls update rows");
-            state.halls[action.payload.hallId].rowCount = action.payload.rows;
-            //TODO узнать поведение отрисовки зала при изменении количества рядов и мест
-        },
-        updateCustomPlaces: (state, action) => {
-            console.log("slice halls update places");
-            state.halls[action.payload.hallId].placeInRowCount = action.payload.places;
-            //TODO узнать поведение отрисовки зала при изменении количества рядов и мест
-        },
-        updatePrice: (state, action) => {
-            if(action.payload.type === placesType.vip){
-                console.log("slice halls update vip Price");
-                state.halls[action.payload.hallId].prices.vip = action.payload.price;
-            }
-            else {
-                console.log("slice halls update standart Price");
-                state.halls[action.payload.hallId].prices.standart = action.payload.price;
-            }
-        },
-        changePlaceStatus:(state, action) => {
-            console.log("slice halls change PlaceStatus");
-            const rowIndex = action.payload.rowIndex;
-            const placeIndex = action.payload.placeIndex
-            state.halls[action.payload.hallId].places[rowIndex][placeIndex] = action.payload.newStatus;
         }
-    }
-});
+    })
+;
 
 
 export const {

@@ -3,7 +3,7 @@ import ConfStepHeader from "./common/ConfStepHeader.jsx";
 import ToSelectHall from "./toSelectHall.jsx";
 import MyInput from "./common/myInput.jsx";
 import Place from "./common/place.jsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {isValid} from "../utils.js";
 import {placesType} from "../info.js";
@@ -16,11 +16,16 @@ export default function ToUpdatePrice() {
         halls,pricesUpdateHall
     } = useSelector(state => state.halls);
 
-    const hall = halls[pricesUpdateHall];
-    const vipPrice = hall.prices.vip
-    const standartPrice = hall.prices.standart
-    const [inputValueStandartPrice, setInputValueStandartPrice] = useState(standartPrice);
-    const [inputValueVipPrice, setInputValueVipPrice] = useState(vipPrice);
+    const hall = halls[pricesUpdateHall.id];
+    const [inputValueStandartPrice, setInputValueStandartPrice] = useState(hall.prices.standart);
+    const [inputValueVipPrice, setInputValueVipPrice] = useState( hall.prices.vip);
+
+    useEffect(() => {
+        //console.log("ToUpdateHall useEffect hall.rowCount",hall.rowCount)
+        setInputValueStandartPrice(hall.prices.standart);
+        setInputValueVipPrice(hall.prices.vip);
+    },[pricesUpdateHall])
+
 
     const onBlurPrice = (e,type) => {
         const value = +e.target.value.trim();
@@ -28,7 +33,7 @@ export default function ToUpdatePrice() {
             dispatch(updatePrice({
                 type,
                 price: value,
-                hallId: pricesUpdateHall
+                hallId: pricesUpdateHall.id
             }));
         }
     };

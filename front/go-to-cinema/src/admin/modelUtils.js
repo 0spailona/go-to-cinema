@@ -30,23 +30,36 @@ const templates = {
 };
 
 
+export function fillPlacesByStandard(places,rowCount,placeInRowCount){
+    for (let i = 0; i < rowCount; i++){
+        const row = [];
+        for (let j = 0; j < placeInRowCount; j++) {
+            row.push(placesType.standart);
+        }
+        places.push(row);
+    }
+    return places;
+}
+
+
 export function createHall(id, name, templateId) {
     const template = templates[templateId];
     if (!template) {
         throw new Error("Unknown template " + templateId);
     }
 
-    const places = [];
+    //const places = [];
+    const places = fillPlacesByStandard([],template.rowCount,template.placeInRowCount);
 
-    for (let i = 0; i < template.rowCount; i++){
+   /* for (let i = 0; i < template.rowCount; i++){
         const row = [];
         for (let j = 0; j < template.placeInRowCount; j++) {
             row.push(placesType.standart);
         }
         places.push(row);
-    }
+    }*/
 
-    console.log("places", places);
+    //console.log("places", places);
 
     for (let p of template.vip) {
         places[p.row][p.place] = placesType.vip;
@@ -62,6 +75,6 @@ export function createHall(id, name, templateId) {
         rowCount: template.rowCount,
         placeInRowCount: template.placeInRowCount,
         places,
-        prices: {...template.prices},
+        prices: {...template.prices}
     };
 }
