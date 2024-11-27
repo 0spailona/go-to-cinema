@@ -5,10 +5,10 @@ import MyInput from "../common/myInput.jsx";
 import Place from "../common/place.jsx";
 import MyButton from "../common/myButton.jsx";
 import {useEffect, useState} from "react";
-import {updateCustomPlaces, updateCustomRows} from "../../../redux/slices/halls.js";
+import {updateCustomPlaces, updateCustomRows} from "../../redux/slices/halls.js";
 import {useDispatch, useSelector} from "react-redux";
-import {isValid} from "../../utils.js";
-import {placesType} from "../../info.js";
+import {isValid} from "../../js/utils.js";
+import {placesType} from "../../js/info.js";
 
 export default function ToUpdateHall() {
 

@@ -1,12 +1,12 @@
 //const basedUrl = import.meta.env.VITE_URL
 import {createSlice} from "@reduxjs/toolkit";
-import {placesType, selectedHallType} from "../../admin/info.js";
-import {createHall, fillPlacesByStandard} from "../../admin/modelUtils.js";
+import {placesType, selectedHallType} from "../../js/info.js";
+import {createHall, fillPlacesByStandard} from "../../js/modelUtils.js";
 
 const basedUrl = "import.meta.env.VITE_URL";
 
-const hall1 = createHall("h-1", "Зал 1", "standart");
-const hall2 = createHall("h-2", "Зал 2", "standart");
+const hall1 = createHall( "Зал 1", "standart");
+const hall2 = createHall( "Зал 2", "standart");
 
 
 const initialState = {
@@ -31,6 +31,10 @@ const hallsSlice = createSlice({
             pricesUpdateHall: (state => state.pricesUpdateHall),
         },
         reducers: {
+            createNewHall: (state, action) => {
+                const newHall = createHall(action.payload.name,"standart");
+                state.halls[newHall.id] = newHall;
+            },
             addFilmToHall: (state, action) => {
                 const newFilm = action.payload.movie;
                 state.halls[action.payload.hallId].movies.push(newFilm);
@@ -110,7 +114,8 @@ export const {
     updateCustomRows,
     updateCustomPlaces,
     updatePrice,
-    changePlaceStatus
+    changePlaceStatus,
+    createNewHall
 } = hallsSlice.actions;
 export const {
     halls,

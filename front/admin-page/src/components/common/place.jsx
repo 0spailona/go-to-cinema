@@ -1,4 +1,4 @@
-import {placesType} from "../../info.js";
+import {placesType} from "../../js/info.js";
 
 export default function Place({status, onChange}) {
     const onClick = () => {

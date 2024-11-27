@@ -1,6 +1,6 @@
 import Place from "../common/place.jsx";
 import {useDispatch, useSelector} from "react-redux";
-import {changePlaceStatus} from "../../../redux/slices/halls.js";
+import {changePlaceStatus} from "../../redux/slices/halls.js";
 
 export default function Hall({hallId}) {
 

@@ -1,9 +1,9 @@
 import {useState} from "react";
 //import {useAppDispatch, useAppSelector} from "../../redux/hooks.js";
-import {changeSelectedHall} from "../../redux/slices/halls.js";
+import {changeSelectedHall} from "../redux/slices/halls.js";
 import {useDispatch, useSelector} from "react-redux";
 import MyPopup from "./common/myPopup.jsx";
-import {selectedHallType} from "../info.js";
+import {selectedHallType} from "../js/info.js";
 
 export default function ToSelectHall({name}) {
 
@@ -16,7 +16,7 @@ export default function ToSelectHall({name}) {
     const checkedHall = name === selectedHallType.chairs ? chairsUpdateHall : pricesUpdateHall;
 
     const [checkedHallId, setCheckedHallId] = useState(checkedHall.id);
-    const [popupVisible, setPopupVisible] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
     const [nextCheckedHallId, setNextCheckedHallId] = useState(checkedHallId);
 
 
@@ -25,13 +25,14 @@ export default function ToSelectHall({name}) {
     const isSaveUpdates = (result) => {
         console.log("result popup", result);
         //todo send from redux to server or not
-        setPopupVisible(false);
+        setShowPopup(false);
         setCheckedHallId(nextCheckedHallId)
         dispatch(changeSelectedHall({name: name, hallId: nextCheckedHallId}));
     };
     return (
         <>
-            <MyPopup isVisible={popupVisible} name={name} event={(result) => isSaveUpdates(result)}/>
+            <MyPopup isVisible={showPopup} title={`Сохранить изменения в зале ${halls[checkedHall.id]}`}
+                     onClose={() => setShowPopup(false)}/>
             <p className="conf-step__paragraph">Выберите зал для конфигурации:</p>
             <ul className="conf-step__selectors-box">
                 {
@@ -44,7 +45,7 @@ export default function ToSelectHall({name}) {
                                    onChange={() => {
 
                                        if (checkedHall.isUpdated) {
-                                           setPopupVisible(true);
+                                           setShowPopup(true);
                                            setNextCheckedHallId(id);
                                        }
                                        else {

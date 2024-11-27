@@ -29,6 +29,7 @@ const templates = {
     }
 };
 
+let nextCountHall = 1;
 
 export function fillPlacesByStandard(places,rowCount,placeInRowCount){
     for (let i = 0; i < rowCount; i++){
@@ -42,7 +43,9 @@ export function fillPlacesByStandard(places,rowCount,placeInRowCount){
 }
 
 
-export function createHall(id, name, templateId) {
+export function createHall(name, templateId) {
+    nextCountHall++;
+    const id = `hall-${nextCountHall}`;
     const template = templates[templateId];
     if (!template) {
         throw new Error("Unknown template " + templateId);
@@ -50,16 +53,6 @@ export function createHall(id, name, templateId) {
 
     //const places = [];
     const places = fillPlacesByStandard([],template.rowCount,template.placeInRowCount);
-
-   /* for (let i = 0; i < template.rowCount; i++){
-        const row = [];
-        for (let j = 0; j < template.placeInRowCount; j++) {
-            row.push(placesType.standart);
-        }
-        places.push(row);
-    }*/
-
-    //console.log("places", places);
 
     for (let p of template.vip) {
         places[p.row][p.place] = placesType.vip;

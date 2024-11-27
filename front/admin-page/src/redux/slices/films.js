@@ -65,7 +65,7 @@ export const filmsSlice = createSlice({
         ),
         addNewFilm: create.asyncThunk(async (pattern, api) => {
                 try {
-                    const answer = await sendDataToServer({data:pattern, userType:"admin",dataType:"film"})
+                    const answer = await sendDataToServer({data:pattern, userType:"admin-page",dataType:"film"})
 
                     if (answer.status === 500) {
                         return api.rejectWithValue("Сервер недоступен")
