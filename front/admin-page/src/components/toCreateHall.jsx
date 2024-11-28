@@ -1,11 +1,14 @@
 import ConfStepHeader from "./common/ConfStepHeader.jsx";
 import MyButton from "./common/myButton.jsx";
-import {useSelector} from "react-redux";
-import Popup from "reactjs-popup";
+import {useDispatch, useSelector} from "react-redux";
 import {useState} from "react";
 import MyPopup from "./common/myPopup.jsx";
+import MyInput from "./common/myInput.jsx";
+import {createNewHall, removeHallFromState} from "../redux/slices/halls.js";
 
 export default function ToCreateHall() {
+
+    const dispatch = useDispatch();
 
     const {
         halls,
@@ -15,40 +18,58 @@ export default function ToCreateHall() {
     const [showPopupForRemove, setShowPopupForRemove] = useState(false);
     const [hallForRemove, setHallForRemove] = useState(null);
 
-    console.log("ToCreateHall halls", halls);
+    const [inputValueNameHall, setInputValueNameHall] = useState("");
+    //console.log("ToCreateHall halls", halls);
 
-    const createHall = () => {
-        console.log("Create Hall");
+    const createHall = (e) => {
+        e.preventDefault();
+        setShowPopupForAdd(false);
+        setInputValueNameHall("");
+        const formdata = new FormData(e.currentTarget);
+        const content = Object.fromEntries(formdata).name;
+        dispatch(createNewHall(content));
     };
 
-    const removeHall = () => {
-        console.log("Create Hall");
+    const removeHall = (e) => {
+        e.preventDefault();
+        console.log("remove Hall e", e);
+        setShowPopupForRemove(false);
+        dispatch(removeHallFromState(hallForRemove));
+        setHallForRemove(null);
+    };
+
+    const onResetForAdd = () => {
+        setShowPopupForAdd(false);
+        setInputValueNameHall("");
+    };
+
+    const onResetForRemove = () => {
+        setShowPopupForRemove(false);
+        setHallForRemove(null);
     };
 
     return (
         <>
-            <MyPopup isVisible={showPopupForAdd} title="Добавление зала" onClose={() => setShowPopupForAdd(false)}>
-                <form>
-                    <label className="conf-step__label conf-step__label-fullsize" htmlFor="name">
-                        Название зала
-                        <input className="conf-step__input" type="text"
-                               placeholder="Например, &laquo;Зал 1&raquo;" name="name" id="name" required/>
-                    </label>
-                    <div className="conf-step__buttons text-center">
-                        <MyButton text="Добавить зал" type="submit"/>
-                        <MyButton text="Отменить" type="reset"/>
-                    </div>
-                </form>
+            <MyPopup isVisible={showPopupForAdd} title="Добавление зала"
+                     onClose={() => onResetForAdd()}
+                     onSubmit={(e) => createHall(e)}
+                     onReset={() => onResetForAdd()}
+                     textForSubmitBtn="Добавить зал"
+                     textForResetBtn="Отменить">
+                <MyInput label="Название зала" placeholder="Например, &laquo;Зал 1&raquo;"
+                         value={inputValueNameHall} name="name" size="full"
+                         isRequired={true}
+                         onChange={e => setInputValueNameHall(e.target.value)}/>
             </MyPopup>
-            <MyPopup isVisible={showPopupForRemove} title="Удаление зала" onClose={() => setShowPopupForRemove(false)}>
-                <form>
-                    <p className="conf-step__paragraph">Вы действительно хотите удалить зал <span>"{hallForRemove ? halls[hallForRemove].name : ""}"</span>?
-                    </p>
-                    <div className="conf-step__buttons text-center">
-                        <MyButton text="Удалить" type="submit"/>
-                        <MyButton text="Отменить" type="reset"/>
-                    </div>
-                </form>
+            <MyPopup isVisible={showPopupForRemove} title="Удаление зала"
+                     onClose={() => onResetForRemove()}
+                     onSubmit={(e) => removeHall(e)}
+                     onReset={() => onResetForRemove()}
+                     textForSubmitBtn="Удалить"
+                     textForResetBtn="Отменить">
+                <p className="conf-step__paragraph">Вы действительно хотите удалить
+                    зал <span>"{hallForRemove ? halls[hallForRemove].name : ""}"</span>?
+                </p>
             </MyPopup>
             <section className="conf-step">
                 <ConfStepHeader title="Управление залами"/>
@@ -57,15 +78,14 @@ export default function ToCreateHall() {
                     <ul className="conf-step__list">
                         {Object.keys(halls).map((id) => <li key={id}>{halls[id].name}{"\u00A0"}
                             <button className="conf-step__button conf-step__button-trash"
-                                    onClick={()=> {
+                                    onClick={() => {
                                         setHallForRemove(id);
                                         setShowPopupForRemove(true);
                                     }}>
-
                             </button>
                         </li>)}
                     </ul>
-                    <MyButton text="Создать зал" type="submit" onclick={() =>  setShowPopupForAdd(true)}/>
+                    <MyButton text="Создать зал" type="submit" onclick={() => setShowPopupForAdd(true)}/>
                 </div>
             </section>
         </>

@@ -9,7 +9,7 @@ import {useState} from "react";
 export default function SeancesHall({hallId,movies}) {
 
     //console.log('render hall')
-    const hall = initialData.halls[hallId];
+    /*const hall = initialData.halls[hallId];
     const [moviesList, setMoviesList] = useState(movies);
     //console.log('render', hall);
 
@@ -38,6 +38,6 @@ export default function SeancesHall({hallId,movies}) {
                 )}
             </Droppable>
         </div>
-    );
+    );*/
 }
 //{movies.map((movie, index) => <Movie key={index} movie={movie} index={index}/>)}

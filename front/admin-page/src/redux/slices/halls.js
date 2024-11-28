@@ -32,8 +32,18 @@ const hallsSlice = createSlice({
         },
         reducers: {
             createNewHall: (state, action) => {
-                const newHall = createHall(action.payload.name,"standart");
+                for(let hall of Object.values(state.halls)) {
+                    if(hall.name === action.payload) {
+                        console.log("Error, such name is occupied!");
+                        return
+                    }
+                }
+                const newHall = createHall(action.payload,"standart");
+                console.log("newHall", newHall);
                 state.halls[newHall.id] = newHall;
+            },
+            removeHallFromState: (state, action) => {
+                delete state.halls[action.payload];
             },
             addFilmToHall: (state, action) => {
                 const newFilm = action.payload.movie;
@@ -115,7 +125,8 @@ export const {
     updateCustomPlaces,
     updatePrice,
     changePlaceStatus,
-    createNewHall
+    createNewHall,
+    removeHallFromState
 } = hallsSlice.actions;
 export const {
     halls,

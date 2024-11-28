@@ -1,5 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {sendDataToServer} from "../utils.js";
+import {createFilm, createHall} from "../../js/modelUtils.js";
 
 //const basedUrl = import.meta.env.VITE_URL
 const basedUrl = "import.meta.env.VITE_URL";
@@ -17,7 +18,6 @@ const initialState = {
         "m-3": {id: "m-3", title: "Серая пантера", time: "90 минут", poster: "i/poster.png"},
         "m-4": {id: "m-4", title: "Движение вбок", time: "95 минут", poster: "i/poster.png"},
         "m-5": {id: "m-5", title: "Кот Да Винчи", time: "100 минут", poster: "i/poster.png"}},
-    filmsId: ["m-1", "m-2", "m-3", "m-4", "m-5"]
 };
 
 
@@ -29,75 +29,13 @@ export const filmsSlice = createSlice({
         filmsId: (state => state.filmsId),
         loadingFilms: (state => state.loadingFilms)
     },
-    reducers: (create) => ({
-        /*fetchFilms: create.asyncThunk(
-            async (pattern, api) => {
-                try {
-                    const fullUrl = `${basedUrl}${pattern}`;
-                    //const response = await fetch(fullUrl, {method: "GET", mode: "no-cors"})
-                    const response = await fetch(fullUrl);
-                    if (Math.floor(response.status / 100) !== 2) {
-                        return api.rejectWithValue(`Loading error ${response.statusText}`);
-                    }
-                    return await response.json();
-                } catch (e) {
-                    return api.rejectWithValue(e);
-                }
-            },
-            {
-                pending: (state) => {
-                    state.loadingFilms = true;
-                    state.error = "";
-                    state.films = [];
-                },
-                fulfilled: (state, action) => {
-                    state.films = action.payload;
-                    state.error = "";
-                },
-                rejected: (state, action) => {
-                    state.error = "Loading films error";
-                    console.log("error fetchFilms");
-                },
-                settled: (state) => {
-                    state.loadingFilms = false;
-                }
-            }
-        ),
-        addNewFilm: create.asyncThunk(async (pattern, api) => {
-                try {
-                    const answer = await sendDataToServer({data:pattern, userType:"admin-page",dataType:"film"})
-
-                    if (answer.status === 500) {
-                        return api.rejectWithValue("Сервер недоступен")
-                    }
-
-                    if (Math.floor(answer.status / 100) !== 2) {
-                        return api.rejectWithValue(answer.statusText)
-                    }
-                    return true
-
-                } catch (e) {
-                    return api.rejectWithValue(e)
-                }
-            },
-                {
-                    pending: (state) => {
-                        state.error = ""
-                        state.success = false
-                    },
-                    fulfilled: (state) => {
-                        state.success = true
-                        state.errors = ""
-                    },
-                    rejected: (state, action) => {
-                        state.errors = action.payload
-                    },
-                    settled: (state) => {
-                        state.success = false
-                    }
-                }
-        ),*/
-    }),
+    reducers: {
+        addNewFilm: (state, action) => {
+            const {title,time,poster,country,description} = action.payload;
+            console.log("addNewFilm",title, time, poster, country, description);
+           const newFilm = createFilm(title,time,description,country, poster);
+        },
+        }
 });
 
 export const {fetchFilms, addNewFilm} = filmsSlice.actions

@@ -8,7 +8,8 @@ import {useEffect, useState} from "react";
 import {updateCustomPlaces, updateCustomRows} from "../../redux/slices/halls.js";
 import {useDispatch, useSelector} from "react-redux";
 import {isValid} from "../../js/utils.js";
-import {placesType} from "../../js/info.js";
+import {placesType, selectedHallType} from "../../js/info.js";
+import MyPopup from "../common/myPopup.jsx";
 
 export default function ToUpdateHall() {
 
@@ -22,18 +23,16 @@ export default function ToUpdateHall() {
     const hall = halls[chairsUpdateHall.id];
 
     const [inputValueRows, setInputValueRows] = useState(hall.rowCount);
-   // console.log("ToUpdateHall hall.rowCount",hall.rowCount)
     const [inputValuePlaces, setInputValuePlaces] = useState(hall.placeInRowCount);
 
     useEffect(() => {
-        //console.log("ToUpdateHall useEffect hall.rowCount",hall.rowCount)
-       setInputValuePlaces(hall.placeInRowCount);
+        setInputValuePlaces(hall.placeInRowCount);
         setInputValueRows(hall.rowCount);
-    },[chairsUpdateHall])
+    }, [chairsUpdateHall]);
 
     const onBlurPlaces = (e) => {
         const value = +e.target.value.trim();
-        if(isValid(value)) {
+        if (isValid(value)) {
             dispatch(updateCustomPlaces({
                 places: value,
                 hallId: chairsUpdateHall.id
@@ -43,7 +42,7 @@ export default function ToUpdateHall() {
 
     const onBlurRows = (e) => {
         const value = +e.target.value.trim();
-        if(isValid(value)) {
+        if (isValid(value)) {
             dispatch(updateCustomRows({
                 rows: value,
                 hallId: chairsUpdateHall.id
@@ -52,37 +51,39 @@ export default function ToUpdateHall() {
     };
 
     return (
-        <section className="conf-step">
-            <ConfStepHeader title="Конфигурация залов"/>
-            <div className="conf-step__wrapper">
-                <ToSelectHall name="chairs-hall"/>
-                <p className="conf-step__paragraph">Укажите количество рядов и максимальное количество кресел в
-                    ряду:</p>
-                <div className="conf-step__legend">
-                    <MyInput label="Рядов, шт" placeholder={`${hall.rowCount}`}
-                             onChange={(e) => setInputValueRows(e.target.value)}
-                             onBlur={(e) => onBlurRows(e)}
-                             value={inputValueRows}/>
-                    <span className="multiplier">x</span>
-                    <MyInput label="Мест, шт" placeholder={`${hall.placeInRowCount}`}
-                             onChange={(event) => setInputValuePlaces(event.target.value)}
-                             onBlur={(e) => onBlurPlaces(e)}
-                             value={inputValuePlaces}/>
+        <>
+            <section className="conf-step">
+                <ConfStepHeader title="Конфигурация залов"/>
+                <div className="conf-step__wrapper">
+                    <ToSelectHall target={selectedHallType.chairs}/>
+                    <p className="conf-step__paragraph">Укажите количество рядов и максимальное количество кресел в
+                        ряду:</p>
+                    <div className="conf-step__legend">
+                        <MyInput label="Рядов, шт" placeholder={`${hall.rowCount}`}
+                                 onChange={(e) => setInputValueRows(e.target.value)}
+                                 onBlur={(e) => onBlurRows(e)}
+                                 value={inputValueRows}/>
+                        <span className="multiplier">x</span>
+                        <MyInput label="Мест, шт" placeholder={`${hall.placeInRowCount}`}
+                                 onChange={(event) => setInputValuePlaces(event.target.value)}
+                                 onBlur={(e) => onBlurPlaces(e)}
+                                 value={inputValuePlaces}/>
+                    </div>
+                    <p className="conf-step__paragraph">Теперь вы можете указать типы кресел на схеме зала:</p>
+                    <div className="conf-step__legend">
+                        <Place status={`${placesType.standart}`}/> — обычные кресла
+                        <Place status={`${placesType.vip}`}/> — VIP кресла
+                        <Place status={`${placesType.disabled}`}/> — заблокированные (нет
+                        кресла)
+                        <p className="conf-step__hint">Чтобы изменить вид кресла, нажмите по нему левой кнопкой мыши</p>
+                    </div>
+                    <Hall hallId={chairsUpdateHall.id}/>
+                    <div className="conf-step__buttons text-center">
+                        <MyButton type="reset" text="Отмена"/>
+                        <MyButton type="submit" text="Сохранить"/>
+                    </div>
                 </div>
-                <p className="conf-step__paragraph">Теперь вы можете указать типы кресел на схеме зала:</p>
-                <div className="conf-step__legend">
-                    <Place status={`${placesType.standart}`}/> — обычные кресла
-                    <Place status={`${placesType.vip}`}/> — VIP кресла
-                    <Place status={`${placesType.disabled}`}/> — заблокированные (нет
-                    кресла)
-                    <p className="conf-step__hint">Чтобы изменить вид кресла, нажмите по нему левой кнопкой мыши</p>
-                </div>
-                <Hall hallId={chairsUpdateHall.id}/>
-                <div className="conf-step__buttons text-center">
-                    <MyButton type="reset" text="Отмена"/>
-                    <MyButton type="submit" text="Сохранить"/>
-                </div>
-            </div>
-        </section>
+            </section>
+        </>
     );
 }

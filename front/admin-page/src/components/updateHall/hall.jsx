@@ -11,7 +11,7 @@ export default function Hall({hallId}) {
     } = useSelector(state => state.halls);
 
     const hall = halls[hallId];
-    console.log("hall", hall);
+    //console.log("hall", hall);
 
     const onPlaceChange = (rowIndex, placeIndex, newStatus) => {
         console.log("onPlaceChange", rowIndex, placeIndex, newStatus);

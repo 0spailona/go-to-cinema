@@ -1,11 +1,10 @@
 import {useState} from "react";
-//import {useAppDispatch, useAppSelector} from "../../redux/hooks.js";
 import {changeSelectedHall} from "../redux/slices/halls.js";
 import {useDispatch, useSelector} from "react-redux";
 import MyPopup from "./common/myPopup.jsx";
 import {selectedHallType} from "../js/info.js";
 
-export default function ToSelectHall({name}) {
+export default function ToSelectHall({target}) {
 
     const dispatch = useDispatch();
 
@@ -13,33 +12,45 @@ export default function ToSelectHall({name}) {
         halls, chairsUpdateHall, pricesUpdateHall
     } = useSelector(state => state.halls);
 
-    const checkedHall = name === selectedHallType.chairs ? chairsUpdateHall : pricesUpdateHall;
+    const checkedHall = target === selectedHallType.chairs ? chairsUpdateHall : pricesUpdateHall;
 
     const [checkedHallId, setCheckedHallId] = useState(checkedHall.id);
     const [showPopup, setShowPopup] = useState(false);
     const [nextCheckedHallId, setNextCheckedHallId] = useState(checkedHallId);
 
-
-    //console.log("render", halls);
-    console.log("ToSelectHall name", name);
-    const isSaveUpdates = (result) => {
-        console.log("result popup", result);
-        //todo send from redux to server or not
+    const changeHall = () =>{
         setShowPopup(false);
-        setCheckedHallId(nextCheckedHallId)
-        dispatch(changeSelectedHall({name: name, hallId: nextCheckedHallId}));
+        setCheckedHallId(nextCheckedHallId);
+        dispatch(changeSelectedHall({name: target, hallId: nextCheckedHallId}));
+    }
+
+    const notSaveChanges = (e) => {
+        e.preventDefault();
+        console.log("notSaveChanges");
+        changeHall()
     };
+
+    const toSaveChanges = (e) => {
+        e.preventDefault();
+        console.log("toSaveChanges");
+        changeHall()
+    };
+
     return (
         <>
-            <MyPopup isVisible={showPopup} title={`Сохранить изменения в зале ${halls[checkedHall.id]}`}
-                     onClose={() => setShowPopup(false)}/>
+            <MyPopup isVisible={showPopup} title={`Сохранить изменения в зале "${halls[chairsUpdateHall.id].name}"`}
+                     onClose={() => setShowPopup(false)}
+                     onReset={e => notSaveChanges(e)}
+                     onSubmit={e => toSaveChanges(e)}
+                     textForSubmitBtn="Да"
+                     textForResetBtn="Нет"/>
             <p className="conf-step__paragraph">Выберите зал для конфигурации:</p>
             <ul className="conf-step__selectors-box">
                 {
                     Object.keys(halls).map((id) =>
                         <li key={id}>
                             <input type="radio" className="conf-step__radio"
-                                   name={name}
+                                   name={target}
                                    value={halls[id].name}
                                    checked={id === checkedHallId}
                                    onChange={() => {
@@ -50,7 +61,7 @@ export default function ToSelectHall({name}) {
                                        }
                                        else {
                                            setCheckedHallId(id);
-                                           dispatch(changeSelectedHall({name: name, hallId: id}));
+                                           dispatch(changeSelectedHall({name: target, hallId: id}));
                                        }
                                    }}
                             />

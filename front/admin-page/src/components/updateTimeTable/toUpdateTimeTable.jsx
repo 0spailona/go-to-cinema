@@ -6,123 +6,153 @@ import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd";
 //import initialData from "./initialData.js";
 import {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
+import MyPopup from "../common/myPopup.jsx";
+import MyInput from "../common/myInput.jsx";
 
 ///https://codesandbox.io/p/sandbox/funny-buck-kkpnnkkzov?file=%2Fsrc%2Fcontainers%2FKanbanLists.js
 
 
 export default function ToUpdateTimeTable() {
 
-    const dispatch = useDispatch()
-
+    const dispatch = useDispatch();
 
 
     const {
         films,
-        filmsId,
-    } = useSelector(state => state.films)
+    } = useSelector(state => state.films);
 
-    const {halls} = useSelector(state => state.halls)
+    const {halls} = useSelector(state => state.halls);
 
-    //const [moviesOrder, setMoviesOrder] = useState(initialData.moviesOrder);
-    /*const [halls, setHalls] = useState([
-        {"h-1": {name: "Зал 1", movies: []}},
-        {"h-2": {name: "Зал 2", movies: []}}]);*/
-    //const hallsOrder = initialData.hallsOrder;
+    const [inputTitle, setInputTitle] = useState("");
+    const [inputTime, setInputTime] = useState("");
+    const [inputDescription, setInputDescription] = useState("");
+    const [inputCountry, setInputCountry] = useState("");
 
-    const onDragEnd = (result) => {
+    const [showPopupForAdd, setShowPopupForAdd] = useState(false);
+    const [showPopupForRemove, setShowPopupForRemove] = useState(false);
+    const [filmForRemove, setFilmForRemove] = useState(null);
 
-        //console.log(result.destination)
-        const destination = result.destination.droppableId;
-        if (!result.destination || destination.indexOf("seancesHall") === -1) {
-            return;
-        }
-        const hallId = destination.substr(destination.indexOf("-") + 1);
-        console.log("hallId", hallId);
-        console.log(Object.keys(halls[0]))
-        //const movies = []
-        for(let i = 0; i < halls.length;i++){
-            if(Object.keys(halls[i]).includes(hallId)){
-                const items = Array.from(halls[i][hallId].movies);
-                const [reorderedItem] = items.splice(result.source.index, 1);
-                items.splice(result.destination.index, 0, reorderedItem);
-                halls[i][hallId].movies = items;
-                //setHalls(halls)
-                console.log("halls",halls)
-            }
-        }
-        //const updateHallMovies = halls[hallId].movies
-        //console.log("updateHall", updateHallMovies);
-        /*const items = Array.from(updateHallMovies);
 
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
-        halls[hallId].movies = items;
-        console.log(halls);
-        setHalls(halls);*/
+    const onResetAdd = (e) => {
+        e.preventDefault();
+        console.log("onResetAdd");
+        setShowPopupForAdd(false);
     };
 
-    //const onDragStart = () => {};
+    const onSubmitAdd = (e) => {
+        e.preventDefault();
+        console.log("onSubmitAdd");
+        setShowPopupForAdd(false);
+        const formdata = new FormData(e.currentTarget);
+        const title = Object.fromEntries(formdata).title;
+        const description = Object.fromEntries(formdata).description;
+        const country = Object.fromEntries(formdata).country;
+        const poster = Object.fromEntries(formdata).poster;
+        const time = Object.fromEntries(formdata).duration;
+        console.log("formdata", title, description, country, time);
 
-    //const onDragUpdate = () => {};
-
-    //const onBeforeDragStart = () => {};
-
-    const renderClone = () => {
     };
 
-    const getContainerForClone = () => {
+    const onResetRemove = (e) => {
+        e.preventDefault();
+        console.log("onResetRemove");
+        setShowPopupForRemove(false);
+    };
+
+    const onSubmitRemove = (e) => {
+        e.preventDefault();
+        console.log("onSubmitRemove");
+        setShowPopupForRemove(false);
     };
 
 
-    return (
-        <section className="conf-step">
-            <ConfStepHeader title="Сетка сеансов"/>
-            <div className="conf-step__wrapper">
-                <p className="conf-step__paragraph">
-                    <button className="conf-step__button conf-step__button-accent">Добавить фильм</button>
-                </p>
-                <DragDropContext //onDragStart={this.onDragStart}
-                    //onDragUpdate={this.onDragUpdate}
-                    onDragEnd={onDragEnd}
-                    //onBeforeDragEnd={this.onBeforeDragStart}
-                >
-                    <Droppable droppableId="movies"
-                               renderClone={renderClone()}
-                               getContainerForClone={getContainerForClone()}>
-                        {(provided) => (
-                            <div className="conf-step__movies" {...provided.droppableProps}
-
-                                 ref={provided.innerRef}>
-
-                                    {Object.keys(films).map((id,index) => {
-                                    return <Draggable key={id} draggableId={id} index={index}>
-                                        {(provided) => (
-                                            <div className="conf-step__movie"
-                                                 ref={provided.innerRef}
-                                                 {...provided.draggableProps}
-                                                 {...provided.dragHandleProps} >
-                                                <MovieContent movie={films[id]} index={id}/>
-                                            </div>
-                                        )}
-                                    </Draggable>;
-                                })}
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                    <div className="conf-step__seances">
-                        {Object.keys(halls).map((id) => {
-                            return <SeancesHall key={id} hallId={id} movies={[]}/>;
-                        })}
+    return (<>
+            <MyPopup isVisible={showPopupForAdd} title="Добавление фильма"
+                     onClose={() => setShowPopupForAdd(false)}
+                     textForSubmitBtn="Добавить фильм"
+                     textForResetBtn="Отменить"
+                     textForAddContent="Загрузить постер"
+                     onReset={e => onResetAdd(e)}
+                     onSubmit={e => onSubmitAdd(e)}>
+                <div className="popup__container">
+                    <div className="popup__poster"></div>
+                    <div className="popup__form">
+                        <MyInput label="Название фильма" name="title" size="full" isRequired={true}
+                                 placeholder="Например, &laquo;Гражданин Кейн&raquo;" value={inputTitle}
+                                 onChange={e => setInputTitle(e.target.value)}/>
+                        <MyInput label="Продолжительность фильма (мин.)" name="duration" size="full"
+                                 isRequired={true}
+                                 value={inputTime}
+                                 onChange={e => setInputTime(e.target.value)}/>
+                        <label className="conf-step__label conf-step__label-fullsize" htmlFor="name">
+                            Описание фильма
+                            <textarea className="conf-step__input" type="text" name="description" required
+                                      value={inputDescription} onChange={() => setInputDescription()}></textarea>
+                        </label>
+                        <MyInput label="Страна" name="country" size="full" isRequired={true}
+                                 value={inputCountry} onChange={e => setInputCountry(e.target.value)}/>
                     </div>
-                </DragDropContext>
-                <div className="conf-step__buttons text-center">
-                    <MyButton type="reset" text="Отмена"/>
-                    <MyButton type="submit" text="Сохранить"/>
                 </div>
-            </div>
-        </section>
+            </MyPopup>
+            <MyPopup isVisible={showPopupForRemove} title="Удаление фильма"
+                     onClose={() => setShowPopupForRemove(false)}
+                     textForSubmitBtn="Удалить"
+                     textForResetBtn="Отменить"
+                     onReset={e => onResetRemove(e)}
+                     onSubmit={e => onSubmitRemove(e)}>
+                <p className="conf-step__paragraph">Вы действительно хотите удалить фильм <span>"Название фильма"</span>?
+                </p>
+            </MyPopup>
 
+            <section className="conf-step">
+                <ConfStepHeader title="Сетка сеансов"/>
+                <div className="conf-step__wrapper">
+                    <p className="conf-step__paragraph">
+                        <MyButton type="button" text="Добавить фильм" onclick={() => setShowPopupForAdd(true)}/>
+                    </p>
+                    <DragDropContext //onDragStart={this.onDragStart}
+                        //onDragUpdate={this.onDragUpdate}
+                        //onDragEnd={onDragEnd}
+                        //onBeforeDragEnd={this.onBeforeDragStart}
+                    >
+                        <Droppable droppableId="movies"
+                                   //renderClone={renderClone()}
+                                   //getContainerForClone={getContainerForClone()}
+                            >
+                            {(provided) => (
+                                <div className="conf-step__movies" {...provided.droppableProps}
+
+                                     ref={provided.innerRef}>
+
+                                    {Object.keys(films).map((id, index) => {
+                                        return <Draggable key={id} draggableId={id} index={index}>
+                                            {(provided) => (
+                                                <div className="conf-step__movie"
+                                                     ref={provided.innerRef}
+                                                     {...provided.draggableProps}
+                                                     {...provided.dragHandleProps} >
+                                                    <MovieContent movie={films[id]} index={id}/>
+                                                </div>
+                                            )}
+                                        </Draggable>;
+                                    })}
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                        <div className="conf-step__seances">
+                            {Object.keys(halls).map((id) => {
+                                return <SeancesHall key={id} hallId={id} movies={[]}/>;
+                            })}
+                        </div>
+                    </DragDropContext>
+                    <div className="conf-step__buttons text-center">
+                        <MyButton type="reset" text="Отмена"/>
+                        <MyButton type="submit" text="Сохранить"/>
+                    </div>
+                </div>
+            </section>
+        </>
     );
 
 }

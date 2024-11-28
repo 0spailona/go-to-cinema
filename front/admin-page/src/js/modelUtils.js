@@ -29,7 +29,7 @@ const templates = {
     }
 };
 
-let nextCountHall = 1;
+let nextCountHall = 0;
 
 export function fillPlacesByStandard(places,rowCount,placeInRowCount){
     for (let i = 0; i < rowCount; i++){
@@ -51,7 +51,6 @@ export function createHall(name, templateId) {
         throw new Error("Unknown template " + templateId);
     }
 
-    //const places = [];
     const places = fillPlacesByStandard([],template.rowCount,template.placeInRowCount);
 
     for (let p of template.vip) {
@@ -70,4 +69,15 @@ export function createHall(name, templateId) {
         places,
         prices: {...template.prices}
     };
+}
+
+let nextCountFilms = 0;
+
+export function createFilm(title, time, description, country,poster ) {
+    nextCountFilms++;
+    const id = `film-${nextCountHall}`;
+
+    return {
+        id,title,time,description,country,poster
+    }
 }
