@@ -1,24 +1,25 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {sendDataToServer} from "../utils.js";
-import {createFilm, createHall} from "../../js/modelUtils.js";
+import {createFilm} from "../../js/modelUtils.js";
 
 //const basedUrl = import.meta.env.VITE_URL
 const basedUrl = "import.meta.env.VITE_URL";
 
+const startFilms = [createFilm("Звёздные войны XXIII: Атака клонированных клонов", 130, "description", "country", null),
+    createFilm("Миссия выполнима", 120, "description", "country", null),
+    createFilm("Серая пантера", 90, "description", "country", null),
+    createFilm("Движение вбок", 95, "description", "country", null),
+    createFilm("Кот Да Винчи", 100, "description", "country", null)];
+
+
 const initialState = {
     loadingFilms: true,
     error: "",
-    films: {"m-1":{
-        id: "m-1",
-        title: "Звёздные войны XXIII: Атака клонированных клонов",
-        time: "130 минут",
-        poster: "i/poster.png"
-    },
-        "m-2": {id: "m-2", title: "Миссия выполнима", time: "120 минут", poster: "i/poster.png"},
-        "m-3": {id: "m-3", title: "Серая пантера", time: "90 минут", poster: "i/poster.png"},
-        "m-4": {id: "m-4", title: "Движение вбок", time: "95 минут", poster: "i/poster.png"},
-        "m-5": {id: "m-5", title: "Кот Да Винчи", time: "100 минут", poster: "i/poster.png"}},
+    films: {}
 };
+
+for (let film of startFilms) {
+    initialState.films[film.id] = film;
+}
 
 
 export const filmsSlice = createSlice({
@@ -31,16 +32,29 @@ export const filmsSlice = createSlice({
     },
     reducers: {
         addNewFilm: (state, action) => {
-            const {title,time,poster,country,description} = action.payload;
-            console.log("addNewFilm",title, time, poster, country, description);
-           const newFilm = createFilm(title,time,description,country, poster);
+            const {title, time, poster, country, description} = action.payload;
+            console.log("addNewFilm", title, time, poster, country, description);
+            for (let film of Object.values(state.films)) {
+                if (film.title === title && film.country === country && film.description === description) {
+                    console.log("Error. Such film is in base");
+                    return;
+                }
+            }
+            const newFilm = createFilm(title, time, description, country, poster);
+            state.films[newFilm.id] = newFilm;
         },
-        }
+        addFilmToSeancesHall: (state, action) => {
+            console.log("addFilmToSeancesHall", action.payload.from, action.payload.to, action.payload.film);
+        },
+
+    }
 });
 
-export const {fetchFilms, addNewFilm} = filmsSlice.actions
-export const {films,
+export const {addNewFilm, addFilmToSeancesHall} = filmsSlice.actions;
+export const {
+    films,
     filmsId,
-    loadingFilms} = filmsSlice.selectors
-const filmsReducer = filmsSlice.reducer
-export default filmsReducer
+    loadingFilms
+} = filmsSlice.selectors;
+const filmsReducer = filmsSlice.reducer;
+export default filmsReducer;

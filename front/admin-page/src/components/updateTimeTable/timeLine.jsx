@@ -1,4 +1,4 @@
-import MovieContent from "./movieContent.jsx";
+import Movie from "./movie.jsx";
 
 // eslint-disable-next-line react/prop-types
 export default function TimeLine({movies}){

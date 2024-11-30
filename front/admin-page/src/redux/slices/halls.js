@@ -46,8 +46,10 @@ const hallsSlice = createSlice({
                 delete state.halls[action.payload];
             },
             addFilmToHall: (state, action) => {
-                const newFilm = action.payload.movie;
-                state.halls[action.payload.hallId].movies.push(newFilm);
+                console.log("addFilmToHall", action.payload.from, action.payload.to, action.payload.film);
+                state.halls[action.payload.to].movies.push(action.payload.film);
+                //const newFilm = action.payload.movie;
+                //state.halls[action.payload.hallId].movies.push(newFilm);
             },
             changeSelectedHall: (state, action) => {
                 if (action.payload.name === selectedHallType.chairs) {

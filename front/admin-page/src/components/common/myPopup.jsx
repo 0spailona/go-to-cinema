@@ -3,9 +3,13 @@ import MyButton from "./myButton.jsx";
 import UploadButton from "./UploadButton.jsx";
 
 
-export default function MyPopup({isVisible,children,title,onClose,onSubmit,onReset,textForSubmitBtn,textForResetBtn,textForAddContent}) {
+export default function MyPopup({isVisible,children,title,onClose,onSubmit,onReset,textForSubmitBtn,textForResetBtn,uploadBtnData}) {
 
-
+    const getFile = (el) =>{
+        let file = el.files[0]
+        console.log("getFile",file.name)
+        uploadBtnData.getData(file)
+    }
 
     return (
         <div className={`popup ${isVisible?"active":""}`}>
@@ -22,8 +26,10 @@ export default function MyPopup({isVisible,children,title,onClose,onSubmit,onRes
                             {children}
                             <div className="conf-step__buttons text-center">
                                 <MyButton text={textForSubmitBtn} type="submit"/>
-                                {textForAddContent &&
-                                    <UploadButton/>}
+                                {uploadBtnData &&
+                                    <UploadButton name={uploadBtnData.name}
+                                                  text={uploadBtnData.text}
+                                                  onChange={e => getFile(e.target)}/>}
                                 <MyButton text={textForResetBtn} type="reset" onclick={onReset}/>
                             </div>
                         </form>
