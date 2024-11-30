@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {weekday} from "../js/info.js";
+import {weekday} from "../../js/info.js";
 
 export default function NavDays() {
     const maxDays = 6;

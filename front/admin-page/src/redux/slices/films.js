@@ -27,7 +27,6 @@ export const filmsSlice = createSlice({
     initialState,
     selectors: {
         films: (state => state.films),
-        filmsId: (state => state.filmsId),
         loadingFilms: (state => state.loadingFilms)
     },
     reducers: {
@@ -53,7 +52,6 @@ export const filmsSlice = createSlice({
 export const {addNewFilm, addFilmToSeancesHall} = filmsSlice.actions;
 export const {
     films,
-    filmsId,
     loadingFilms
 } = filmsSlice.selectors;
 const filmsReducer = filmsSlice.reducer;
