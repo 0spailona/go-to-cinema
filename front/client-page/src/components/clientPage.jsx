@@ -15,11 +15,11 @@ export default function ClientPage() {
 
     const renderMovie = (movie) =>{
         if(movie.seances[day]){
-            console.log(movie.title)
+            //console.log(movie.title)
             return <Movie key={`movie-/${movie.id}`} film={movie}/>
         }
         else {
-            console.log("not movies")
+            //console.log("not movies")
         }
     }
 

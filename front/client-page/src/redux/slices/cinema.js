@@ -13,6 +13,8 @@ const initialState = {
     halls:{},
     chosenDate: new Date().toISOString(),
     chosenSeance:null,
+    chosenPlaces:[],
+    prices:{standard:250,vip:350}
 };
 
 for (let film of startFilms) {
@@ -32,6 +34,8 @@ export const cinemaSlice = createSlice({
         loadingFilms: (state => state.loadingFilms),
         chosenDate: state => state.chosenDate,
         chosenSeance: state => state.chosenSeance,
+        chosenPlaces: state => state.chosenPlaces,
+        prices: state => state.prices,
     },
     reducers: {
         getFilmsByDate: (state, action) => {
@@ -44,7 +48,7 @@ export const cinemaSlice = createSlice({
             state.chosenDate = action.payload;
         },
         changeChosenSeance: (state, action) => {
-            console.log("changeChosenSeance", action.payload)
+            //console.log("changeChosenSeance", action.payload)
             state.chosenSeance = {hallId:action.payload.hallId, filmId:action.payload.filmId,time:action.payload.time};
         },
         changePlaceStatus: (state, action) => {
@@ -52,16 +56,32 @@ export const cinemaSlice = createSlice({
             const rowIndex = action.payload.rowIndex;
             const placeIndex = action.payload.placeIndex;
             state.halls[action.payload.hallId].places[rowIndex][placeIndex] = action.payload.newStatus;
+        },
+        changeChosenPlaces:(state, action)=>{
+            const rowIndex = action.payload.rowIndex;
+            const placeIndex = action.payload.placeIndex;
+
+            if(action.payload.isSelected) {
+                state.chosenPlaces.push({rowIndex, placeIndex});
+            }
+            else {
+                state.chosenPlaces = state.chosenPlaces.filter(place => place.rowIndex !== rowIndex && place.placeIndex !== placeIndex)
+            }
         }
     }
 });
 
 export const {getFilmsByDate,
-    changePlaceStatus,changeChosenDate,changeChosenSeance} = cinemaSlice.actions;
+    changePlaceStatus,
+    changeChosenDate,
+    changeChosenSeance,
+    changeChosenPlaces} = cinemaSlice.actions;
 export const {
     films,
     loadingFilms,halls,
     chosenDate,chosenSeance,
+    chosenPlaces,
+    prices
 } = cinemaSlice.selectors;
 const cinemaReducer = cinemaSlice.reducer;
 export default cinemaReducer;

@@ -1,19 +1,34 @@
 import {placesType} from "../../js/info.js";
+import {useState} from "react";
 
 export default function Place({status, onChange}) {
+
+    const [selectedType, setSelectedType] = useState(null);
+
+    let style;
+
+    if(onChange && (status === placesType.standart
+    || status === placesType.selected
+    || status === placesType.vip)){
+        style = {cursor:"pointer"}
+    }
     const onClick = () => {
         if (!onChange) {
             return;
         }
-
-        switch (status) {
+        switch(status) {
             case placesType.standart:
-                onChange(placesType.selected);
+                setSelectedType(placesType.standart);
+                onChange(placesType.selected,true);
                 break;
             case placesType.vip:
-                onChange(placesType.selected);
+                setSelectedType(placesType.vip);
+                onChange(placesType.selected,true);
                 break;
+            case placesType.selected:
+                onChange(selectedType,false)
         }
     };
-    return <span className={`buying-scheme__chair buying-scheme__chair_${status}`} onClick={onClick}></span>;
+    return <span className={`buying-scheme__chair buying-scheme__chair_${status}`} style={style}
+                 onClick={onClick}></span>;
 }

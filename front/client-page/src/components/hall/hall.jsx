@@ -1,6 +1,8 @@
 import {useSelector} from "react-redux";
 import {useState} from "react";
 import HallScheme from "./hallScheme.jsx";
+import PriceLegend from "./priceLegend.jsx";
+import {placesType} from "../../js/info.js";
 
 export default function Hall() {
 
@@ -17,11 +19,11 @@ export default function Hall() {
     }
 
     const [isToDoBig, setToDoBig] = useState(false);
-    console.log("Hall chosenSeance", chosenSeance);
+   // console.log("Hall chosenSeance", chosenSeance);
 
 
     const toggleBig = (e) => {
-        console.log(e.target);
+        //console.log(e.target);
         if (e.target.classList.contains("toBig")) {
             setToDoBig(true);
         }
@@ -29,7 +31,7 @@ export default function Hall() {
             setToDoBig(false);
         }
 
-        console.log("to do Big");
+        //console.log("to do Big");
     };
 
     return (
@@ -50,18 +52,12 @@ export default function Hall() {
 
                     <div className="buying-scheme__legend">
                         <div className="col">
-                            <p className="buying-scheme__legend-price"><span
-                                className="buying-scheme__chair buying-scheme__chair_standart"></span> Свободно (<span
-                                className="buying-scheme__legend-value">250</span>руб)</p>
-                            <p className="buying-scheme__legend-price"><span
-                                className="buying-scheme__chair buying-scheme__chair_vip"></span> Свободно VIP (<span
-                                className="buying-scheme__legend-value">350</span>руб)</p>
+                            <PriceLegend status={placesType.standart}/>
+                            <PriceLegend status={placesType.vip}/>
                         </div>
                         <div className="col">
-                            <p className="buying-scheme__legend-price"><span
-                                className="buying-scheme__chair buying-scheme__chair_taken"></span> Занято</p>
-                            <p className="buying-scheme__legend-price"><span
-                                className="buying-scheme__chair buying-scheme__chair_selected"></span> Выбрано</p>
+                            <PriceLegend status={placesType.taken}/>
+                            <PriceLegend status={placesType.selected}/>
                         </div>
                     </div>
                 </div>
