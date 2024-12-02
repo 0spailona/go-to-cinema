@@ -73,10 +73,10 @@ export function createHall(name, templateId) {
 
 let nextCountFilms = 0;
 
-export function createFilm(title, time, description, country,poster ) {
+export function createFilm(title, time, description, country,poster,seances ) {
     nextCountFilms++;
     const id = `film-${nextCountFilms}`;
     return {
-        id,title,time,description,country,poster
+        id,title,time,description,country,poster,seances
     }
 }

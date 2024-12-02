@@ -1,8 +1,13 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {weekday} from "../../js/info.js";
+import {useDispatch, useSelector} from "react-redux";
+import {changeChosenDate} from "../../redux/slices/cinema.js";
+import {getDateStringFromDate} from "../../js/utils.js";
 
 export default function NavDays() {
     const maxDays = 6;
+
+    const dispatch = useDispatch();
 
     const getNextDate = (lastDate) => {
         const nextDay = new Date();
@@ -19,11 +24,12 @@ export default function NavDays() {
         count++;
     }
 
+    const {chosenDate} = useSelector(state => state.cinema);
+
     const [navDays, setNavDays] = useState(dates);
-    const [dayChosen, setDayChosen] = useState(0);
 
     const updateNavDays = () => {
-        console.log("update nav");
+        // console.log("update nav");
 
         const lastDay = navDays[navDays.length - 1];
         const nextDay = getNextDate(lastDay);
@@ -32,13 +38,23 @@ export default function NavDays() {
         setNavDays(newNavDays);
     };
 
-    console.log("navDays", navDays);
+    const changeChooseDay = (dayIndex, date) => {
+
+        const string = date.toISOString();
+        dispatch(changeChosenDate(string));
+
+    };
+
+    const isEqual = (a,b)=>{
+        return getDateStringFromDate(a) === getDateStringFromDate(b);
+    }
+
     return (
         <nav className="page-nav">
             {navDays.map((day, index) => <a key={index}
                                             className={`page-nav__day ${day === now ? "page-nav__day_today" : ""} 
-                                            ${index === dayChosen ? "page-nav__day_chosen" : ""}`}
-                                            href="#" onClick={() => setDayChosen(index)}>
+                                            ${isEqual(day,new Date(chosenDate)) ? "page-nav__day_chosen" : ""}`}
+                                            href="#" onClick={() => changeChooseDay(index, day)}>
                 <span className="page-nav__day-week">{weekday[day.getDay()]}</span><span
                 className="page-nav__day-number">{day.getDate()}</span>
             </a>)}
