@@ -14,7 +14,8 @@ const initialState = {
     chosenDate: new Date().toISOString(),
     chosenSeance:null,
     chosenPlaces:[],
-    prices:{standard:250,vip:350}
+    prices:{standard:250,vip:350},
+    qr:false
 };
 
 for (let film of startFilms) {
@@ -36,6 +37,7 @@ export const cinemaSlice = createSlice({
         chosenSeance: state => state.chosenSeance,
         chosenPlaces: state => state.chosenPlaces,
         prices: state => state.prices,
+        qr: state => state.qr,
     },
     reducers: {
         getFilmsByDate: (state, action) => {
@@ -48,14 +50,16 @@ export const cinemaSlice = createSlice({
             state.chosenDate = action.payload;
         },
         changeChosenSeance: (state, action) => {
-            //console.log("changeChosenSeance", action.payload)
-            state.chosenSeance = {hallId:action.payload.hallId, filmId:action.payload.filmId,time:action.payload.time};
+            console.log("changeChosenSeance", action.payload)
+            const hall = {...state.halls[action.payload.hallId]};
+            console.log("changeChosenSeance hall", hall)
+            state.chosenSeance = {hall:hall, filmId:action.payload.filmId,time:action.payload.time};
         },
         changePlaceStatus: (state, action) => {
             console.log("slice halls change PlaceStatus");
             const rowIndex = action.payload.rowIndex;
             const placeIndex = action.payload.placeIndex;
-            state.halls[action.payload.hallId].places[rowIndex][placeIndex] = action.payload.newStatus;
+            state.chosenSeance.hall.places[rowIndex][placeIndex] = action.payload.newStatus;
         },
         changeChosenPlaces:(state, action)=>{
             const rowIndex = action.payload.rowIndex;
@@ -67,6 +71,10 @@ export const cinemaSlice = createSlice({
             else {
                 state.chosenPlaces = state.chosenPlaces.filter(place => place.rowIndex !== rowIndex && place.placeIndex !== placeIndex)
             }
+        },
+        getQR:(state, action) => {
+            console.log("getQR state", action.payload);
+            state.qr = true
         }
     }
 });
@@ -75,13 +83,14 @@ export const {getFilmsByDate,
     changePlaceStatus,
     changeChosenDate,
     changeChosenSeance,
-    changeChosenPlaces} = cinemaSlice.actions;
+    changeChosenPlaces,
+    getQR} = cinemaSlice.actions;
 export const {
     films,
     loadingFilms,halls,
     chosenDate,chosenSeance,
     chosenPlaces,
-    prices
+    prices,qr
 } = cinemaSlice.selectors;
 const cinemaReducer = cinemaSlice.reducer;
 export default cinemaReducer;

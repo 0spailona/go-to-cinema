@@ -6,14 +6,14 @@ export default function Place({status, onChange}) {
             return;
         }
         switch (status) {
-            case placesType.standart:
+            case placesType.standard:
                 onChange(placesType.vip);
                 break;
             case placesType.vip:
                 onChange(placesType.disabled);
                 break;
             case placesType.disabled:
-                onChange(placesType.standart);
+                onChange(placesType.standard);
                 break;
         }
     };

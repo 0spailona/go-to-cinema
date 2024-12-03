@@ -1,12 +1,12 @@
 import {createFilm, createHall} from "../../../admin-page/src/js/modelUtils.js";
 
 
-export const startHalls = [createHall( "Зал 1", "standart"),
-    createHall( "Зал 2", "standart")]
+export const startHalls = [createHall( "Зал 1", "standard"),
+    createHall( "Зал 2", "standard")]
 
 
-const hall1 = createHall( "Зал 1", "standart");
-const hall2 = createHall( "Зал 2", "standart");
+const hall1 = createHall( "Зал 1", "standard");
+const hall2 = createHall( "Зал 2", "standard");
 
 
  export const startFilms = [createFilm("Звёздные войны XXIII: Атака клонированных клонов",

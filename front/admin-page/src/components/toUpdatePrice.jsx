@@ -17,12 +17,12 @@ export default function ToUpdatePrice() {
     } = useSelector(state => state.halls);
 
     const hall = halls[pricesUpdateHall.id];
-    const [inputValueStandartPrice, setInputValueStandartPrice] = useState(hall.prices.standart);
+    const [inputValuestandardPrice, setInputValuestandardPrice] = useState(hall.prices.standard);
     const [inputValueVipPrice, setInputValueVipPrice] = useState( hall.prices.vip);
 
     useEffect(() => {
         //console.log("ToUpdateHall useEffect hall.rowCount",hall.rowCount)
-        setInputValueStandartPrice(hall.prices.standart);
+        setInputValuestandardPrice(hall.prices.standard);
         setInputValueVipPrice(hall.prices.vip);
     },[pricesUpdateHall])
 
@@ -45,9 +45,9 @@ export default function ToUpdatePrice() {
                 <ToSelectHall name="prices-hall"/>
                 <p className="conf-step__paragraph">Установите цены для типов кресел:</p>
                 <div className="conf-step__legend">
-                    <MyInput label="Цена, рублей" placeholder="0" value={inputValueStandartPrice}
-                             onChange={(event) => setInputValueStandartPrice(event.target.value)}
-                             onBlur={(e) => onBlurPrice(e,placesType.standart)}/> за <Place status={`${placesType.standart}`}/> обычные кресла
+                    <MyInput label="Цена, рублей" placeholder="0" value={inputValuestandardPrice}
+                             onChange={(event) => setInputValuestandardPrice(event.target.value)}
+                             onBlur={(e) => onBlurPrice(e,placesType.standard)}/> за <Place status={`${placesType.standard}`}/> обычные кресла
                 </div>
                 <div className="conf-step__legend">
                     <MyInput label="Цена, рублей" placeholder="0" value={inputValueVipPrice}

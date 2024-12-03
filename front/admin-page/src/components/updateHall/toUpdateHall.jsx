@@ -71,7 +71,7 @@ export default function ToUpdateHall() {
                     </div>
                     <p className="conf-step__paragraph">Теперь вы можете указать типы кресел на схеме зала:</p>
                     <div className="conf-step__legend">
-                        <Place status={`${placesType.standart}`}/> — обычные кресла
+                        <Place status={`${placesType.standard}`}/> — обычные кресла
                         <Place status={`${placesType.vip}`}/> — VIP кресла
                         <Place status={`${placesType.disabled}`}/> — заблокированные (нет
                         кресла)

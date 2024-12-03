@@ -7,7 +7,7 @@ export default function Place({status, onChange}) {
 
     let style;
 
-    if(onChange && (status === placesType.standart
+    if(onChange && (status === placesType.standard
     || status === placesType.selected
     || status === placesType.vip)){
         style = {cursor:"pointer"}
@@ -17,8 +17,8 @@ export default function Place({status, onChange}) {
             return;
         }
         switch(status) {
-            case placesType.standart:
-                setSelectedType(placesType.standart);
+            case placesType.standard:
+                setSelectedType(placesType.standard);
                 onChange(placesType.selected,true);
                 break;
             case placesType.vip:

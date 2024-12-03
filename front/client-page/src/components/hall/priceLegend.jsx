@@ -7,12 +7,12 @@ export default function PriceLegend({status}) {
     const {prices} = useSelector(state => state.cinema);
 
     let price;
-    //const price = status === placesType.standart ? prices.standard : status === placesType.vip ? prices.vip : "";
+    //const price = status === placesType.standard ? prices.standard : status === placesType.vip ? prices.vip : "";
 
     let text;
 
     switch (status) {
-        case placesType.standart:
+        case placesType.standard:
             text = "Свободно";
             price = <>(<span className="buying-scheme__legend-value">{prices.standard}</span>руб)</>
             break;

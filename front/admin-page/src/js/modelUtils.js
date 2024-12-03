@@ -1,7 +1,7 @@
 import {placesType} from "./info.js";
 
 const templates = {
-    'standart': {
+    'standard': {
         rowCount: 10,
         placeInRowCount: 8,
         disabled: [
@@ -23,7 +23,7 @@ const templates = {
         ],
         prices: {
             vip: 350,
-            standart: 0,
+            standard: 0,
         },
 
     }
@@ -35,7 +35,7 @@ export function fillPlacesByStandard(places,rowCount,placeInRowCount){
     for (let i = 0; i < rowCount; i++){
         const row = [];
         for (let j = 0; j < placeInRowCount; j++) {
-            row.push(placesType.standart);
+            row.push(placesType.standard);
         }
         places.push(row);
     }

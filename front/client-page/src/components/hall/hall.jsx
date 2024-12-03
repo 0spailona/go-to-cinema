@@ -3,6 +3,8 @@ import {useState} from "react";
 import HallScheme from "./hallScheme.jsx";
 import PriceLegend from "./priceLegend.jsx";
 import {placesType} from "../../js/info.js";
+import MyButton from "../common/MyButton.jsx";
+import {Link} from "react-router-dom";
 
 export default function Hall() {
 
@@ -13,7 +15,8 @@ export default function Hall() {
         console.log("no seances selected");
     }
     else {
-        hall = halls[chosenSeance.hallId];
+        hall = chosenSeance.hall;
+        console.log("Hall hall",hall);
         time = chosenSeance.time;
         film = films[chosenSeance.filmId];
     }
@@ -23,16 +26,17 @@ export default function Hall() {
 
 
     const toggleBig = (e) => {
-        //console.log(e.target);
         if (e.target.classList.contains("toBig")) {
             setToDoBig(true);
         }
         else {
             setToDoBig(false);
         }
-
-        //console.log("to do Big");
     };
+
+    const toDo =()=>{
+        console.log("toDo")
+    }
 
     return (
         <main onClick={toggleBig}>
@@ -48,11 +52,11 @@ export default function Hall() {
                     </div>
                 </div>
                 <div className={`buying-scheme toBig ${isToDoBig ? "buying-scheme__chair_selected" : ""}`}>
-                    <HallScheme hallId={chosenSeance.hallId}/>
+                    <HallScheme/>
 
                     <div className="buying-scheme__legend">
                         <div className="col">
-                            <PriceLegend status={placesType.standart}/>
+                            <PriceLegend status={placesType.standard}/>
                             <PriceLegend status={placesType.vip}/>
                         </div>
                         <div className="col">
@@ -61,9 +65,8 @@ export default function Hall() {
                         </div>
                     </div>
                 </div>
-                <button className="acceptin-button" onClick="location.href='payment.html'">Забронировать</button>
+                <Link to={"/ticket"}><MyButton text="Забронировать" onClick={toDo}/></Link>
             </section> : ""}
-
         </main>
     );
 }

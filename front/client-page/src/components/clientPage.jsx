@@ -9,13 +9,10 @@ import {getWeekdayNumber} from "../js/utils.js";
 export default function ClientPage() {
 
     const {films,chosenDate} = useSelector(state => state.cinema);
-    //console.log("ClientPage films",films);
     const day = getWeekdayNumber(chosenDate)
-    //console.log("ClientPage films", films)
 
     const renderMovie = (movie) =>{
         if(movie.seances[day]){
-            //console.log(movie.title)
             return <Movie key={`movie-/${movie.id}`} film={movie}/>
         }
         else {

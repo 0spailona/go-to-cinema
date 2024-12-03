@@ -5,8 +5,8 @@ import {createHall, fillPlacesByStandard} from "../../js/modelUtils.js";
 
 const basedUrl = "import.meta.env.VITE_URL";
 
-const hall1 = createHall( "Зал 1", "standart");
-const hall2 = createHall( "Зал 2", "standart");
+const hall1 = createHall( "Зал 1", "standard");
+const hall2 = createHall( "Зал 2", "standard");
 
 
 const initialState = {
@@ -38,7 +38,7 @@ const hallsSlice = createSlice({
                         return
                     }
                 }
-                const newHall = createHall(action.payload,"standart");
+                const newHall = createHall(action.payload,"standard");
                 console.log("newHall", newHall);
                 state.halls[newHall.id] = newHall;
             },
@@ -87,7 +87,7 @@ const hallsSlice = createSlice({
                     }
                     else {
                         for (let row of hall.places) {
-                            const newPlaces = Array(difference).fill(placesType.standart);
+                            const newPlaces = Array(difference).fill(placesType.standard);
                             row.push(...newPlaces);
                         }
                     }
@@ -103,9 +103,9 @@ const hallsSlice = createSlice({
                     hall.prices.vip = newPrice;
                     state.pricesUpdateHall.isUpdated = true;
                 }
-                else if (action.payload.type === placesType.standart && hall.prices.standart !== newPrice) {
-                        console.log("slice halls update standart Price");
-                        hall.prices.standart = newPrice;
+                else if (action.payload.type === placesType.standard && hall.prices.standard !== newPrice) {
+                        console.log("slice halls update standard Price");
+                        hall.prices.standard = newPrice;
                         state.pricesUpdateHall.isUpdated = true;
                     }
             },
