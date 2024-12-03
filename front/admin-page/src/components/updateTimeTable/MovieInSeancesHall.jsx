@@ -11,15 +11,14 @@ export default function MovieInSeancesHall({movieId, index}) {
     console.log("width", width)
 
     return (
-        <Draggable draggableId={movieId} index={index}>
+        <Draggable draggableId={`MovieInSeancesHall-${movieId}`} index={index}>
             {(provided) => (
                 <div className="conf-step__seances-movie"
                      ref={provided.innerRef} id={movieId}
                      {...provided.draggableProps}
                      {...provided.dragHandleProps} >
                     <div className=""
-                         style={{width: width, borderWidth: 4}}
-                         >
+                         style={{width: width, borderWidth: 4}}>
                         <p className="conf-step__seances-movie-title">{film.title}</p>
                         <p className="conf-step__seances-movie-start">00:00</p>
                     </div>

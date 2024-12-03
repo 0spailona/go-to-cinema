@@ -27,7 +27,7 @@ export default function ToUpdateTimeTable() {
     const [showPopupForAdd, setShowPopupForAdd] = useState(false);
     const [showPopupForRemove, setShowPopupForRemove] = useState(false);
 
-    const onDragEnd = ({ source, destination, draggableId }) =>{
+    /*const onDragEnd = ({ source, destination, draggableId }) =>{
         if (!destination) {
             return
         }
@@ -37,7 +37,8 @@ export default function ToUpdateTimeTable() {
             const film = draggableId
             dispatch(addFilmToHall({from, to, film}))
         }
-    }
+    }*/
+    const onDragOn =()=>{}
 
     return (<>
             <PopupAddFilm showPopup={showPopupForAdd} closePopup={()=>setShowPopupForAdd(false)}/>
@@ -49,25 +50,13 @@ export default function ToUpdateTimeTable() {
                     <p className="conf-step__paragraph">
                         <MyButton type="button" text="Добавить фильм" onclick={() => setShowPopupForAdd(true)}/>
                     </p>
-                    <DragDropContext onDragEnd={onDragEnd}>
-                        <Droppable droppableId="movies">
+                    <DragDropContext //onDragEnd={onDragEnd}
+                         >
+                        <Droppable droppableId="movies" isCombineEnabled={true}>
                             {(provided) => (
                                 <div className="conf-step__movies" {...provided.droppableProps}
-
                                      ref={provided.innerRef}>
-
-                                    {Object.keys(films).map((id, index) => {
-                                        return <Draggable key={id} draggableId={id} index={index}>
-                                            {(provided) => (
-                                                <div className="conf-step__movie"
-                                                     ref={provided.innerRef}
-                                                     {...provided.draggableProps}
-                                                     {...provided.dragHandleProps} >
-                                                    <Movie movieId={id} index={id}/>
-                                                </div>
-                                            )}
-                                        </Draggable>;
-                                    })}
+                                    {Object.keys(films).map((id, index) => <Movie key={id} movieId={id} index={id}/>)}
                                     {provided.placeholder}
                                 </div>
                             )}

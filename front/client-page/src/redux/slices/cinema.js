@@ -1,6 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {startFilms, startHalls} from "../hardcode.js";
-import {createFilm} from "../../js/modelUtils.js";
 
 //const basedUrl = import.meta.env.VITE_URL
 const basedUrl = "import.meta.env.VITE_URL";
