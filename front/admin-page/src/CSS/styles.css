@@ -383,9 +383,9 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     border: 1px solid rgba(0, 0, 0, 0.3);
     box-sizing: border-box;
     cursor: pointer; }
-    .conf-step__movies .conf-step__movie:nth-of-type(3n + 2) {
+    .conf-step__movies .conf-step__movie-wrp:nth-of-type(3n + 2) {
       margin: 0 15px; }
-    .conf-step__movies .conf-step__movie:nth-of-type(n + 4) {
+    .conf-step__movies .conf-step__movie-wrp:nth-of-type(n + 4) {
       margin-top: 15px; }
     .conf-step__movies .conf-step__movie:nth-of-type(1) {
       background-color: #caff85; }
@@ -590,4 +590,28 @@ textarea.conf-step__input {
 
 .border {
   border: thin solid black;
+}
+
+/*drop container for removing*/
+
+.drop-for-remove{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #FFFFFF;
+  background-image: url("../assets/i/trash.png");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.invisible {
+  opacity: 0;
+  pointer-events: none;
 }

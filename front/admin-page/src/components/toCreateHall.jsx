@@ -77,12 +77,10 @@ export default function ToCreateHall() {
                     <p className="conf-step__paragraph">Доступные залы:</p>
                     <ul className="conf-step__list">
                         {Object.keys(halls).map((id) => <li key={id}>{halls[id].name}{"\u00A0"}
-                            <button className="conf-step__button conf-step__button-trash"
-                                    onClick={() => {
-                                        setHallForRemove(id);
-                                        setShowPopupForRemove(true);
-                                    }}>
-                            </button>
+                            <MyButton type={"trash"} onclick={() => {
+                                setHallForRemove(id);
+                                setShowPopupForRemove(true);
+                            }}/>
                         </li>)}
                     </ul>
                     <MyButton text="Создать зал" type="submit" onclick={() => setShowPopupForAdd(true)}/>

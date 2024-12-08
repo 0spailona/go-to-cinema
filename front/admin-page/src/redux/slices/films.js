@@ -45,6 +45,9 @@ export const filmsSlice = createSlice({
         addFilmToSeancesHall: (state, action) => {
             console.log("addFilmToSeancesHall", action.payload.from, action.payload.to, action.payload.film);
         },
+        removeFilm: (state, action) => {
+            console.log("removeFilm", action.payload);
+        },
 
     }
 });
