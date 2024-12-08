@@ -1,23 +1,27 @@
 import MyPopup from "../common/myPopup.jsx";
 import {useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {removeFilm} from "../../redux/slices/films.js";
 
-export default function PopupRemoveFilm({showPopup, closePopup}) {
+export default function PopupRemoveFilm({showPopup,movieId, closePopup}) {
 
-    const [filmForRemove, setFilmForRemove] = useState(null);
+    const dispatch = useDispatch();
+
+    const {films} = useSelector(state => state.films);
+    const film = films[movieId]
 
     const onResetRemove = (e) => {
         e.preventDefault();
         console.log("onResetRemove");
         closePopup();
-        //setShowPopupForRemove(false);
     };
 
     const onSubmitRemove = (e) => {
         e.preventDefault();
-        console.log("onSubmitRemove");
+        dispatch(removeFilm(movieId));
         closePopup();
-        //setShowPopupForRemove(false);
     };
+
     return (
         <MyPopup isVisible={showPopup} title="Удаление фильма"
                  onClose={closePopup}
@@ -25,7 +29,7 @@ export default function PopupRemoveFilm({showPopup, closePopup}) {
                  textForResetBtn="Отменить"
                  onReset={e => onResetRemove(e)}
                  onSubmit={e => onSubmitRemove(e)}>
-            <p className="conf-step__paragraph">Вы действительно хотите удалить фильм <span>"Название фильма"</span>?
+            <p className="conf-step__paragraph">Вы действительно хотите удалить фильм <span>"{film?.title}"</span>?
             </p>
         </MyPopup>
     );

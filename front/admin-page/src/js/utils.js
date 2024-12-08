@@ -7,12 +7,27 @@ export const isValid = (value) => {
     return true;
 };
 
-export const getWidth = (duration) => {
-    const seancesHall = document.getElementsByClassName("conf-step__seances-hall")[0];
-    const widthOfHall = seancesHall.offsetWidth;
-    //console.log("getWidth",widthOfHall);
-    const pxForMin = widthOfHall / (24 * 60);
-    //console.log("pxForFilm",pxForMin * duration);
-    return pxForMin * duration;
-};
+export const getPxPerMinute = () =>
+    document.getElementsByClassName("conf-step__seances-hall")[0]?.getBoundingClientRect().width / (24 * 60);
 
+export const pxToMinutes = (px) => Math.trunc(px / getPxPerMinute());
+export const minutesToPx = (min) => Math.trunc(min * getPxPerMinute());
+
+export const getViewTime = (start) =>{
+    let hours = Math.trunc(start / 60);
+    if (hours < 10)
+        hours = '0' + hours;
+    let minutes = start % 60;
+    if (minutes < 10)
+        minutes = '0' + minutes;
+    return `${start} ${hours}:${minutes}`;
+}
+
+export const getItemOnDragX = (itemId,parentId) =>{
+    const itemEl = document.getElementById(itemId);
+    const parentEl = document.getElementsByClassName("conf-step__seances-hall")[0]
+    if (!itemEl || !parentEl) {
+        return null;
+    }
+    return itemEl.getBoundingClientRect().x - parentEl.getBoundingClientRect().x;
+}

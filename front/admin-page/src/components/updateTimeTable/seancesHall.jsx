@@ -1,13 +1,16 @@
 import {Droppable} from "react-beautiful-dnd";
 import {useSelector} from "react-redux";
 import MovieInSeancesHall from "./MovieInSeancesHall.jsx";
+import Movie from "./movie.jsx";
 
 
 export default function SeancesHall({hallId, updateIsDropAnimating, itemOnDragX, updateIsDragoverLists}) {
 
     const {halls} = useSelector(state => state.halls);
+    const {seances} = useSelector(state => state.films);
     const hall = halls[hallId];
-    const films = hall.movies;
+    const filmsInHall = seances[hallId];
+    const id = `seances-hall-${hallId}`;
 
      const getListStyle = (isDraggingOver, id) => {
         if (isDraggingOver) {
@@ -20,25 +23,21 @@ export default function SeancesHall({hallId, updateIsDropAnimating, itemOnDragX,
         };
     }
 
-    //console.log("SeancesHall films", films);
+    //console.log("SeancesHall hall", hall);
+    //console.log("SeancesHall filmsInHall", filmsInHall);
 
     return (
         <div className="conf-step__seances-hall">
             <h3 className="conf-step__seances-title">{hall.name}</h3>
-            <Droppable droppableId={`seances-hall-${hallId}`} direction="horizontal" index={hallId}>
+            <Droppable droppableId={id} direction="horizontal" index={hallId}>
                 {(provided, snapshot) => (
-                    <div className="conf-step__seances-timeline" id={`seances-hall-${hallId}`}
+                    <div className="conf-step__seances-timeline" id={id}
                          ref={provided.innerRef}
-                         style={getListStyle(snapshot.isDraggingOver, `seances-hall-${hallId}`)}
+                         style={getListStyle(snapshot.isDraggingOver, id)}
                          {...provided.droppableProps}>
 
-                        {films ? films.map((id, index) => (
-                            <MovieInSeancesHall key={id}
-                                                movieId={id}
-                                                index={index} blockKey={id}
-                                                itemOnDragX={itemOnDragX}
-                                                updateIsDropAnimating={bool => updateIsDropAnimating(bool)}/>
-                        )) : ""}
+                        {filmsInHall ? filmsInHall.map((seance, index) => (
+                            " ")): ""}
 
                         {provided.placeholder}
                     </div>
@@ -49,20 +48,10 @@ export default function SeancesHall({hallId, updateIsDropAnimating, itemOnDragX,
     );
 }
 
-/*<div className="conf-step__seances-hall">
-    <h3 className="conf-step__seances-title">{hall.name}</h3>
-    <Droppable droppableId={`${hallId}`}>
-        {(provided) => (
-            <div className="conf-step__seances-timeline"
-                 {...provided.droppableProps}
-                 ref={provided.innerRef}>
-                {films ? films.map((id, index) => {
-                    return <MovieInSeancesHall key={id}
-                                               movieId={id} index={index}/>;
-                }) : ""}
-                {provided.placeholder}
-            </div>
-        )}
-    </Droppable>
-</div>*/
-//{movies.map((movie, index) => <Movie key={index} movie={movie} index={index}/>)}
+/*<MovieInSeancesHall key={index}
+                                                movieId={seance.filmId}
+                                                hallId={hallId}
+                                                index={index}
+                                                itemOnDragX={itemOnDragX}
+                                                updateIsDropAnimating={bool => updateIsDropAnimating(bool)}/>
+                        )) :*/

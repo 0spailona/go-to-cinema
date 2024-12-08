@@ -14,7 +14,11 @@ const startFilms = [createFilm("Звёздные войны XXIII: Атака к
 const initialState = {
     loadingFilms: true,
     error: "",
-    films: {}
+    films: {},
+    seances: {
+        "h-1": [],
+        "h-2": [],
+    }
 };
 
 for (let film of startFilms) {
@@ -27,7 +31,8 @@ export const filmsSlice = createSlice({
     initialState,
     selectors: {
         films: (state => state.films),
-        loadingFilms: (state => state.loadingFilms)
+        loadingFilms: (state => state.loadingFilms),
+        seances: (state => state.seances)
     },
     reducers: {
         addNewFilm: (state, action) => {
@@ -43,7 +48,21 @@ export const filmsSlice = createSlice({
             state.films[newFilm.id] = newFilm;
         },
         addFilmToSeancesHall: (state, action) => {
-            console.log("addFilmToSeancesHall", action.payload.from, action.payload.to, action.payload.film);
+            const hallId = action.payload.to;
+            const fromHallId = action.payload.from;
+            const filmId = action.payload.filmId;
+            const start = action.payload.start;
+            console.log("addFilmToSeancesHall", action.payload.from, action.payload.to, action.payload.filmId, action.payload.start);
+            state.seances[hallId].push({filmId:action.payload.filmId,start})
+            if(fromHallId){
+                //console.log("need to delete")
+                for (let seance of state.seances[fromHallId]) {
+                    if(seance.filmId === filmId /*&& seance.start === start*/){
+                        //console.log("need to delete 2")
+                        state.seances[fromHallId].splice(state.seances[fromHallId].indexOf(seance),1);
+                    }
+                }
+            }
         },
         removeFilm: (state, action) => {
             console.log("removeFilm", action.payload);
@@ -52,10 +71,10 @@ export const filmsSlice = createSlice({
     }
 });
 
-export const {addNewFilm, addFilmToSeancesHall} = filmsSlice.actions;
+export const {addNewFilm, addFilmToSeancesHall, removeFilm} = filmsSlice.actions;
 export const {
     films,
-    loadingFilms
+    loadingFilms,seances
 } = filmsSlice.selectors;
 const filmsReducer = filmsSlice.reducer;
 export default filmsReducer;

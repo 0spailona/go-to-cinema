@@ -1,16 +1,25 @@
 import {useSelector} from "react-redux";
 import {Draggable} from "react-beautiful-dnd";
+import {getItemOnDragX, getViewTime, minutesToPx, pxToMinutes} from "../../js/utils.js";
+import {backgroundColorForMovie} from "../../js/info.js";
+import {useState} from "react";
 
-export default function MovieInSeancesHall({movieId, index, itemOnDragX, updateIsDropAnimating}) {
+export default function MovieInSeancesHall({movieId, hallId, index, itemOnDragX, updateIsDropAnimating}) {
 
-    const {films} = useSelector(state => state.films);
-    const film = films[movieId];
-    const id = `${movieId}-movie-in-seance-hall-${index}`;
-    console.log("MovieInSeancesHall: movieId", movieId);
-    //const width = getWidth(film.time)
+    //const {films, seances} = useSelector(state => state.films);
+    //const filmStart = seances[hallId].find(x => x.filmId === movieId).start;
+    //const timeStart = getViewTime(filmStart);
+   // const offset = minutesToPx(filmStart);
+
+    //console.log(filmStart, offset);
+
+    //const backGroundColorIndex = Object.keys(films).indexOf(movieId);
+    //const film = films[movieId];
+    //const id = `movie-in-seance-hall${index}-${hallId}-${movieId}`;
+    //const width = minutesToPx(film.time);
     //console.log("width", width)
 
-    const getItemInListStyle = (snapshot, draggableStyle, block, id) => {
+    const getItemInListStyle = (snapshot, draggableStyle) => {
         draggableStyle = {...draggableStyle};
         updateIsDropAnimating(snapshot.isDropAnimating);
 
@@ -18,19 +27,20 @@ export default function MovieInSeancesHall({movieId, index, itemOnDragX, updateI
             draggableStyle.left = itemOnDragX;
             draggableStyle.transitionDuration = "0.00001s";
         }
-        //console.log("getItemInListStyle isDragging draggableStyle",draggableStyle,snapshot.isDragging)
 
-        //draggableStyle.background = block.color;
+        draggableStyle.width = `${width}px`;
+        //draggableStyle.background = backgroundColorForMovie[backGroundColorIndex];
 
-        const elem = document.getElementById(id);
+        const timeElem = document.getElementById(id)?.getElementsByClassName("conf-step__seances-movie-start")[0];
 
-        if (elem) {
-            elem.innerText = itemOnDragX;
+        if (timeElem && snapshot.isDragging && !snapshot.isDropAnimating) {
+            const newItemOnDragX = getItemOnDragX(id,`seances-hall-${hallId}`)
+            timeElem.innerText = getViewTime(pxToMinutes(newItemOnDragX));
         }
 
         if (!snapshot.isDragging) {
             draggableStyle.transform = null;
-            //draggableStyle.left = `${block.offset}px`;
+            draggableStyle.left = `${offset}px`;
         }
 
         return draggableStyle;
@@ -45,30 +55,12 @@ export default function MovieInSeancesHall({movieId, index, itemOnDragX, updateI
                      {...provided.draggableProps}
                      {...provided.dragHandleProps}
                      style={getItemInListStyle(snapshot,
-                         provided.draggableProps.style, film, id)}
+                         provided.draggableProps.style)}
                      ref={provided.innerRef}>
-                    <div className=""
-                         style={{width: width, borderWidth: 4}}>
-                        <p className="conf-step__seances-movie-title">{film.title}</p>
-                        <p className="conf-step__seances-movie-start">00:00</p>
-                    </div>
+                    <p className="conf-step__seances-movie-title">{film.title}</p>
+                    <p className="conf-step__seances-movie-start">{timeStart}</p>
                 </div>
             )}
         </Draggable>
     );
 }
-/*<Draggable draggableId={`MovieInSeancesHall-${movieId}`} index={index}>
-    {(provided) => (
-        <div className="conf-step__seances-movie"
-             ref={provided.innerRef} id={movieId}
-             {...provided.draggableProps}
-             {...provided.dragHandleProps} >
-            <div className=""
-                 style={{width: width, borderWidth: 4}}>
-                <p className="conf-step__seances-movie-title">{film.title}</p>
-                <p className="conf-step__seances-movie-start">00:00</p>
-            </div>
-        </div>
-    )}
-</Draggable>*/
-;

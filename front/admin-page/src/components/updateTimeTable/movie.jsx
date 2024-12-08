@@ -3,32 +3,65 @@ import {useSelector} from "react-redux";
 import {Draggable} from "react-beautiful-dnd";
 import {backgroundColorForMovie} from "../../js/info.js";
 import {useEffect, useState} from "react";
-import {getWidth} from "../../js/utils.js";
+import {getItemOnDragX, getViewTime, minutesToPx, pxToMinutes} from "../../js/utils.js";
 
 
-export default function Movie({movieId, index, itemOnDragX, isDragOverHall,isDragOverRemove, updateIsDropAnimating}) {
+export default function Movie({
+                                  movieId,
+                                  hallId,
+                                  index,
+                                  itemOnDragX,
+                                  isDragOverHall,
+                                  isRenderInHall,
+                                  isDragOverRemove,
+                                  updateIsDropAnimating
+                              }) {
 
-    const {films} = useSelector(state => state.films);
+    const {films, seances} = useSelector(state => state.films);
     const film = films[movieId];
+    const id = isRenderInHall ? `movie-in-seance-hall${index}-${hallId}-${movieId}` : `movie-in-list-${movieId}`;
+    const backGroundColorIndex = Object.keys(films).indexOf(movieId);
+    const width = minutesToPx(film.time);
+
+    let filmStart = null;
+    let timeStart = "";
+    let offset = 0;
+
+    if (isRenderInHall) {
+        filmStart = seances[hallId].find(x => x.filmId === movieId).start;
+        timeStart = getViewTime(filmStart);
+        offset = minutesToPx(filmStart);
+    }
+
+
     const [containerHeight, setContainerHeight] = useState(0);
     const [isDraggingElem, setIsDraggingElem] = useState(false);
 
     useEffect(() => {
-        let rect = document.getElementById(`movie-in-list-${index}`).getBoundingClientRect();
+        let rect = document.getElementById(id).getBoundingClientRect();
         //console.log(index, rect);
         setContainerHeight(rect.height);
     }, []);
 
-    const getItemStyle = (snapshot, draggableStyle, id, index) => {
+    const getItemStyle = (snapshot, draggableStyle) => {
         //console.log("Movie isDragOverHall", isDragOverHall);
-
+        // console.log("Movie getItemStyle isDropAnimating", snapshot.isDropAnimating);
         draggableStyle = {...draggableStyle};
-        draggableStyle.background = backgroundColorForMovie[index];
+        draggableStyle.background = backgroundColorForMovie[backGroundColorIndex];
 
         updateIsDropAnimating(snapshot.isDropAnimating);
 
+        if (snapshot.isDropAnimating) {
+            draggableStyle.left = itemOnDragX;
+            draggableStyle.transitionDuration = "0.00001s";
+        }
+
         const isDragging = snapshot.isDragging;
-        const elem = document.getElementById(id);
+
+
+        if ((isRenderInHall && !isDragging) || (isRenderInHall && isDragging && isDragOverHall) || (!isRenderInHall && isDragging && isDragOverHall)) {
+            draggableStyle.width = `${width}px`;
+        }
 
         if (isDragging) {
             setTimeout(() => setIsDraggingElem(true), 1);
@@ -37,23 +70,27 @@ export default function Movie({movieId, index, itemOnDragX, isDragOverHall,isDra
             setTimeout(() => setIsDraggingElem(false), 1);
         }
 
-        if (snapshot.isDropAnimating) {
-            draggableStyle.left = itemOnDragX;
-            draggableStyle.transitionDuration = "0.00001s";
+        const timeElem = document.getElementById(id)?.getElementsByClassName("conf-step__seances-movie-start")[0];
+
+        if (timeElem && snapshot.isDragging && !snapshot.isDropAnimating) {
+            console.log("timeElem", timeElem);
+            const newItemOnDragX = getItemOnDragX(id, `seances-hall-${hallId}`);
+            console.log("newItemOnDragX", newItemOnDragX);
+            timeElem.innerText = getViewTime(pxToMinutes(newItemOnDragX));
         }
 
+        if (!snapshot.isDragging) {
+            draggableStyle.transform = null;
+            if (isRenderInHall) {
+                draggableStyle.left = `${offset}px`;
+            }
+            else {
+                draggableStyle.width = "100%";
+            }
 
-        if (elem) {
-            // elem.innerText = itemOnDragX;
         }
 
-        if (isDragging && isDragOverHall) {
-            draggableStyle.width = getWidth(film.time);
-            draggableStyle.height = "40px";
-            draggableStyle.padding = "10px 2px 10px 10px";
-            draggableStyle.overflow = "hidden";
-        }
-        else if (isDragging && isDragOverRemove){
+        if (isDragging && isDragOverRemove) {
             draggableStyle.minHeight = "30px";
             draggableStyle.minWidth = "60px";
             draggableStyle.width = "200px";
@@ -62,29 +99,33 @@ export default function Movie({movieId, index, itemOnDragX, isDragOverHall,isDra
             draggableStyle.borderRadius = "5px";
         }
 
-        else if (!isDragging) {
+        /*else if (!isDragging) {
             draggableStyle.transform = null;
             draggableStyle.width = "100%";
-        }
+        }*/
         return draggableStyle;
     };
 
-//console.log("containerHeight",containerHeight)
-//console.log("isDragOverHall && isDraggingElem",isDragOverHall, isDraggingElem)
     return (
         <div className="conf-step__movie-wrp" key={index}
              style={{width: "calc((100% - 30px) / 3)", height: containerHeight}}>
-            <Draggable draggableId={`movie-in-list-${index}`}
+            <Draggable draggableId={id}
                        index={index}>
                 {(provided, snapshot) => (
-                    <div className="conf-step__movie" id={`movie-in-list-${index}`}
-                         {...provided.draggableProps}
-                         {...provided.dragHandleProps}
-                         style={getItemStyle(snapshot,
-                             provided.draggableProps.style, `movie-in-list-${index}`, index)}
-                         ref={provided.innerRef}>
-                        {(isDragOverHall && isDraggingElem) ?
-                            <p className="conf-step__seances-movie-title">${film.title}</p> :
+                    <div
+                        className={`${(isDragOverHall && isDraggingElem) || isRenderInHall ? "conf-step__seances-movie" : "conf-step__movie"}`}
+                        id={id}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        style={getItemStyle(snapshot,
+                            provided.draggableProps.style)}
+                        ref={provided.innerRef}>
+                        {((isDragOverHall && isDraggingElem) || isRenderInHall) ?
+                            <>
+                                <p className="conf-step__seances-movie-title">{film.title}</p>
+                                <p className="conf-step__seances-movie-start">{timeStart}</p>
+                            </>
+                            :
                             <>
                                 <img className="conf-step__movie-poster" alt="poster"
                                      src={film.poster ? film.poster : Poster}/>

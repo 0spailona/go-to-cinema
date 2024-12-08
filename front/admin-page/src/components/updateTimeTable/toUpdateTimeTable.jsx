@@ -7,6 +7,8 @@ import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import PopupAddFilm from "./popupAddFilm.jsx";
 import PopupRemoveFilm from "./popupRemoveFilm.jsx";
+import {addFilmToSeancesHall} from "../../redux/slices/films.js";
+import {getItemOnDragX, pxToMinutes} from "../../js/utils.js";
 
 ///https://codesandbox.io/p/sandbox/funny-buck-kkpnnkkzov?file=%2Fsrc%2Fcontainers%2FKanbanLists.js
 
@@ -36,7 +38,6 @@ export default function ToUpdateTimeTable() {
 
     const [showPopupForAdd, setShowPopupForAdd] = useState(false);
     const [showPopupForRemove, setShowPopupForRemove] = useState(false);
-    const [filmForRemove, setFilmForRemove] = useState(null);
 
     const [showRemoveFromAllMovies, setShowRemoveFromAllMovies] = useState(false);
     const [showDeleteItemFormOtherList, setShowDeleteItemFormOtherList] = useState(false);
@@ -64,16 +65,13 @@ export default function ToUpdateTimeTable() {
     }
 
     function onTimer() {
+        //console.log("onTimer isDropAnimating ",isDropAnimating);
         if (isDropAnimating) {
             return;
         }
-        const draggableElem = document.getElementById(curDraggableId);
-        const droppableElem = document.getElementById(curDroppableId);
-        if (!draggableElem || !droppableElem) {
-            return;
-        }
-        itemOnDragX = draggableElem.getBoundingClientRect().x - droppableElem.getBoundingClientRect().x;
-        //console.log(itemOnDragX);
+
+        itemOnDragX = getItemOnDragX(curDraggableId,curDroppableId);
+        //console.log("itemOnDragX",itemOnDragX);
     }
 
 
@@ -125,41 +123,35 @@ export default function ToUpdateTimeTable() {
         const toId = destination.droppableId;
         //const copyOtherLists = {...otherLists};
 
-        const offset = itemOnDragX;
+        const start = pxToMinutes(itemOnDragX);
+        console.log(itemOnDragX, start);
 
 
          switch (toId) {
              case "remove-movie-from-list":
                  setShowPopupForRemove(true)
-                // const newList1 = [...list1];
-                // newList1.splice(itemIndex, 1);
-                 //setList1(newList1);
                  break;
              case "deleteFromOtherLists":
-
-                 //copyOtherLists[fromId].splice(itemIndex, 1);
-                 //setOtherLists(copyOtherLists);
                  break;
              default:
-                 let item;
-                 if (fromId === "drop-1") {
-                     //item = {color: list1[itemIndex], offset};
+                 const hallId = toId.match(/^seances-hall-h-(\d+)$/)[1];
+                 const filmId = draggableId.match(/^movie-in-[\w-]+-(\d+)$/)[1];
+
+                 if (fromId === "allMovies") {
+                     dispatch(addFilmToSeancesHall({from: null, to:`h-${hallId}`,filmId:`film-${filmId}`,start}))
                  }
                  else {
-                     //item = otherLists[fromId][itemIndex];
-                     //item.offset = offset;
-                     //copyOtherLists[fromId].splice(itemIndex, 1);
+                     const fromHallId = fromId.match(/^seances-hall-h-(\d+)$/)[1]
+                     dispatch(addFilmToSeancesHall({from: `h-${fromHallId}`, to:`h-${hallId}`,filmId:`film-${filmId}`,start}))
                  }
-                 //copyOtherLists[toId].push(item);
-                 //setOtherLists(copyOtherLists);
          }
 
     };
 
-    console.log("showPopupForRemove",showPopupForRemove)
     return (<>
             <PopupAddFilm showPopup={showPopupForAdd} closePopup={() => setShowPopupForAdd(false)}/>
-            <PopupRemoveFilm showPopup={showPopupForRemove} closePopup={() => setShowPopupForRemove(false)}/>
+            <PopupRemoveFilm showPopup={showPopupForRemove} movieId={curDraggableId?.replace("movie-in-list-","")}
+                             closePopup={() => setShowPopupForRemove(false)}/>
 
             <section className="conf-step">
                 <ConfStepHeader title="Сетка сеансов"/>
@@ -195,6 +187,7 @@ export default function ToUpdateTimeTable() {
                                                                                   itemOnDragX={itemOnDragX}
                                                                                   isDragOverHall={isDragOverHall}
                                                                                   isDragOverRemove={isDragOverRemove}
+                                                                                  isRenderInHall={false}
                                                                                   updateIsDropAnimating={bool => isDropAnimating = bool}/>)}
                                     {provided.placeholder}
                                 </div>
