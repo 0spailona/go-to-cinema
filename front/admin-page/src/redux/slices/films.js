@@ -1,5 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {createFilm} from "../../js/modelUtils.js";
+import {createFilm, createSeance} from "../../js/modelUtils.js";
 
 //const basedUrl = import.meta.env.VITE_URL
 const basedUrl = "import.meta.env.VITE_URL";
@@ -52,16 +52,17 @@ export const filmsSlice = createSlice({
             const fromHallId = action.payload.from;
             const filmId = action.payload.filmId;
             const start = action.payload.start;
-            console.log("addFilmToSeancesHall", action.payload.from, action.payload.to, action.payload.filmId, action.payload.start);
-            state.seances[hallId].push({filmId:action.payload.filmId,start})
+            //console.log("addFilmToSeancesHall", action.payload.from, action.payload.to, action.payload.filmId,action.payload.filmIndex, action.payload.start);
+            const newSeance = createSeance(filmId,start)
+            state.seances[hallId].push(newSeance)
+
             if(fromHallId){
-                //console.log("need to delete")
-                for (let seance of state.seances[fromHallId]) {
-                    if(seance.filmId === filmId /*&& seance.start === start*/){
-                        //console.log("need to delete 2")
+                state.seances[fromHallId].splice(action.payload.filmIndex,1);
+                /*for (let seance of state.seances[fromHallId]) {
+                    if(seance.id === newSeance.id){
                         state.seances[fromHallId].splice(state.seances[fromHallId].indexOf(seance),1);
                     }
-                }
+                }*/
             }
         },
         removeFilm: (state, action) => {

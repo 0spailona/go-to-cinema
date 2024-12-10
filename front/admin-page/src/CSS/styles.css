@@ -370,13 +370,20 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     .conf-step__hall .conf-step__hall-wrapper .conf-step__chair + .conf-step__chair {
       margin-left: 10px; }
 
+    .conf-step__movie-wrp{
+      width: calc((100% - 30px) / 3);
+    }
+
+    .conf-step__seances-movie-wrp{
+      width: fit-content;
+    }
+
 .conf-step__movies {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start; }
   .conf-step__movies .conf-step__movie {
-    position: relative;
-    width: calc((100% - 30px) / 3);
+    //width: calc((100% - 30px) / 3);
     min-height: 52px;
     padding: 8px 8px 8px 48px;
     background: #FFEB85;
@@ -436,7 +443,6 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   width: calc(1440px * 0.5); }
 
 .conf-step__seances-movie {
-  position: absolute;
   height: 40px;
   border: 1px solid rgba(0, 0, 0, 0.3);
   box-sizing: border-box;

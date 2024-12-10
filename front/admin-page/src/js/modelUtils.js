@@ -80,3 +80,13 @@ export function createFilm(title, time, description, country,poster,seances ) {
         id,title,time,description,country,poster,seances
     }
 }
+
+let nextCountSeances = 0;
+
+export function createSeance(filmId,start){
+    nextCountSeances++;
+    const id = `seance-${nextCountSeances}`;
+    return{
+        id,filmId,start
+    }
+}

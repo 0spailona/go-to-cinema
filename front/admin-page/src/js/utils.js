@@ -1,3 +1,5 @@
+import {getSeanceHallWidth} from "./info.js";
+
 export const isValid = (value) => {
     if (isNaN(value)) {
         console.log("Error. Value is invalid");
@@ -8,7 +10,7 @@ export const isValid = (value) => {
 };
 
 export const getPxPerMinute = () =>
-    document.getElementsByClassName("conf-step__seances-hall")[0]?.getBoundingClientRect().width / (24 * 60);
+    getSeanceHallWidth() / (24 * 60);
 
 export const pxToMinutes = (px) => Math.trunc(px / getPxPerMinute());
 export const minutesToPx = (min) => Math.trunc(min * getPxPerMinute());
@@ -23,9 +25,9 @@ export const getViewTime = (start) =>{
     return `${start} ${hours}:${minutes}`;
 }
 
-export const getItemOnDragX = (itemId,parentId) =>{
+export const getItemOnDragX = (itemId) =>{
     const itemEl = document.getElementById(itemId);
-    const parentEl = document.getElementsByClassName("conf-step__seances-hall")[0]
+    const parentEl = document.getElementsByClassName("conf-step__seances-timeline")[0]
     if (!itemEl || !parentEl) {
         return null;
     }
