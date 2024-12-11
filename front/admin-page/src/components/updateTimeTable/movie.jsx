@@ -3,6 +3,7 @@ import {Draggable} from "react-beautiful-dnd";
 import {useEffect, useState} from "react";
 import {getItemOnDragX, getViewTime, minutesToPx, pxToMinutes} from "../../js/utils.js";
 import MovieContent from "./movieContent.jsx";
+import {draggableIdsBase, droppableIdsBase} from "./utilsFunctions.js";
 
 
 export default function Movie({
@@ -16,7 +17,7 @@ export default function Movie({
 
     const {films, seances} = useSelector(state => state.films);
     const film = films[movieId];
-    const id = hallId ? `movie-in-seance-hall-${seanceId}-${hallId}-${movieId}` : `movie-in-list-${movieId}`;
+    const id = hallId ? `${draggableIdsBase.movieInSeance}${seanceId}-${hallId}-${movieId}` : `${draggableIdsBase.movieInList}${movieId}`;
     const backGroundColorIndex = Object.keys(films).indexOf(movieId);
     const width = minutesToPx(film.time);
     const height = 40;
@@ -60,16 +61,20 @@ export default function Movie({
         const draggingOver = snapshot.draggingOver;
 
         draggableStyle.position = isDragging ? "fixed" : isRenderInHall ? "absolute" : "relative";
-
+       // console.log("draggingOver",draggingOver)
         if (!draggingOver) {
+
             setTimeout(() => setIsDragOverHall(false), 1);
         }
-        else if (draggingOver?.includes("seances-hall-")) {
+        else if (draggingOver?.includes(droppableIdsBase.seanceHall)) {
             setTimeout(() => setIsDragOverHall(true), 1);
         }
-        else if (draggingOver?.includes("allMovies")) {
+        else if (draggingOver?.includes(droppableIdsBase.allMovies)) {
+
             setTimeout(() => setIsDragOverHall(false), 1);
         }
+//console.log("IsDragOverHall",isDragOverHall)
+
 
         if ((isRenderInHall && !isDragging) || (isRenderInHall && isDragging && isDragOverHall) || (!isRenderInHall && isDragging && isDragOverHall)) {
             draggableStyle.width = `${width}px`;
@@ -101,7 +106,7 @@ export default function Movie({
 
         }
 
-        if (isDragging && draggingOver?.includes("remove-movie-from") && !isRenderInHall) {
+        if (isDragging && draggingOver?.includes(droppableIdsBase.removeFromAllMovies) && !isRenderInHall) {
             draggableStyle.minHeight = "30px";
             draggableStyle.minWidth = "60px";
             draggableStyle.width = "30px";

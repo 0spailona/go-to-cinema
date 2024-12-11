@@ -1,6 +1,6 @@
 export default function MyInput({label, placeholder, value, onChange, onBlur,size,name,isRequired,type}) {
 
-    const sizeClassName = size ? "conf-step__label-fullsize" : ""
+    const sizeClassName = size ?  `conf-step__label-${size}size` : ""
 
     return (
         <label className={`conf-step__label ${sizeClassName}`} htmlFor={name}>{label}

@@ -265,6 +265,12 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   .conf-step__label-fullsize .conf-step__input {
     width: 100%; }
 
+  .conf-step__label-mediumsize{
+    width: 200px;
+  }
+.conf-step__label-mediumsize .conf-step__input {
+  width: 200px; }
+
 .conf-step__input, .login__input {
   display: block;
   width: 100px;
@@ -425,6 +431,14 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     font-size: 1.4rem;
     color: rgba(0, 0, 0, 0.7); }
 
+  .conf-step__date{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 16px;
+    padding: 16px 0;
+  }
+
   .conf-step__seances-hall-wrp{
     position: relative;
     display: flex;
@@ -471,6 +485,9 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     bottom: -17px;
     left: 0;
     background-color: #848484; }
+  .conf-step__seances-movie,.small-movie::before {
+    content:none;
+  }
 
 .login {
   width: 480px;
@@ -606,11 +623,12 @@ textarea.conf-step__input {
 /*drop container for removing*/
 
 .drop-for-remove{
+  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 100px;
+  height: 100px;
   background-image: url("../assets/i/trash.png");
   background-position: center;
   background-repeat: no-repeat;

@@ -10,15 +10,22 @@ const startFilms = [createFilm("Звёздные войны XXIII: Атака к
     createFilm("Движение вбок", 95, "description", "country", null),
     createFilm("Кот Да Винчи", 100, "description", "country", null)];
 
+const createSeanceDay = ()=>{
+    const halls = ["h-1","h-2"]
+    const day = {}
+
+    for(let hall of halls){
+        day[hall] = []
+    }
+    return day;
+}
 
 const initialState = {
     loadingFilms: true,
     error: "",
     films: {},
-    seances: {
-        "h-1": [],
-        "h-2": [],
-    }
+    seances: {},
+    chosenDate:null,
 };
 
 for (let film of startFilms) {
@@ -32,7 +39,8 @@ export const filmsSlice = createSlice({
     selectors: {
         films: (state => state.films),
         loadingFilms: (state => state.loadingFilms),
-        seances: (state => state.seances)
+        seances: (state => state.seances),
+        chosenDate: state => state.chosenDate,
     },
     reducers: {
         addNewFilm: (state, action) => {
@@ -69,14 +77,27 @@ export const filmsSlice = createSlice({
             const filmIndex = action.payload.filmIndex;
             state.seances[fromHallId].splice(filmIndex,1);
         },
+        resetUpdatesSeances:(state, action) => {
+            console.log("resetUpdatesSeances");
+        },
+        fetchUpdatesSeances: (state, action) => {
+            console.log("fetchUpdatesSeances");
+        },
+        getFilmsByDate: (state, action) => {
+            console.log("getFilmsByDate");
+            state.chosenDate = action.payload;
+            state.seances[action.payload] = createSeanceDay();
+        }
 
     }
 });
 
-export const {addNewFilm, addFilmToSeancesHall, removeFilm,removeFilmFromSeanceHall} = filmsSlice.actions;
+export const {addNewFilm, fetchUpdatesSeances,
+    addFilmToSeancesHall, resetUpdatesSeances,
+    removeFilm,removeFilmFromSeanceHall,getFilmsByDate} = filmsSlice.actions;
 export const {
     films,
-    loadingFilms,seances
+    loadingFilms,seances,chosenDate
 } = filmsSlice.selectors;
 const filmsReducer = filmsSlice.reducer;
 export default filmsReducer;

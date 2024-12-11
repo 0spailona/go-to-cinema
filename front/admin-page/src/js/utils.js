@@ -22,7 +22,7 @@ export const getViewTime = (start) =>{
     let minutes = start % 60;
     if (minutes < 10)
         minutes = '0' + minutes;
-    return `${start} ${hours}:${minutes}`;
+    return `${hours}:${minutes}`;
 }
 
 export const getItemOnDragX = (itemId) =>{
