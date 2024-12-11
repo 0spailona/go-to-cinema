@@ -58,21 +58,22 @@ export const filmsSlice = createSlice({
 
             if(fromHallId){
                 state.seances[fromHallId].splice(action.payload.filmIndex,1);
-                /*for (let seance of state.seances[fromHallId]) {
-                    if(seance.id === newSeance.id){
-                        state.seances[fromHallId].splice(state.seances[fromHallId].indexOf(seance),1);
-                    }
-                }*/
             }
         },
         removeFilm: (state, action) => {
             console.log("removeFilm", action.payload);
         },
+        removeFilmFromSeanceHall: (state, action) => {
+            console.log("removeFilmFromSeanceHall", action.payload);
+            const fromHallId = action.payload.hallId;
+            const filmIndex = action.payload.filmIndex;
+            state.seances[fromHallId].splice(filmIndex,1);
+        },
 
     }
 });
 
-export const {addNewFilm, addFilmToSeancesHall, removeFilm} = filmsSlice.actions;
+export const {addNewFilm, addFilmToSeancesHall, removeFilm,removeFilmFromSeanceHall} = filmsSlice.actions;
 export const {
     films,
     loadingFilms,seances

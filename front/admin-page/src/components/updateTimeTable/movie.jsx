@@ -101,20 +101,18 @@ export default function Movie({
 
         }
 
-        if (isDragging && draggingOver?.includes("remove-movie-from")) {
+        if (isDragging && draggingOver?.includes("remove-movie-from") && !isRenderInHall) {
             draggableStyle.minHeight = "30px";
             draggableStyle.minWidth = "60px";
-            draggableStyle.width = "80px";
+            draggableStyle.width = "30px";
             draggableStyle.height = "30px";
             draggableStyle.overflow = "hidden";
             draggableStyle.borderRadius = "5px";
-            draggableStyle.border = "1px solid red";
         }
 
         return draggableStyle;
     };
     const onMouseDown = (e) => {
-        //console.log("onMouseDown",e);
         const x = e.clientX;
         const y = e.clientY;
         setClickCoords({x, y});

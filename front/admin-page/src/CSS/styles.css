@@ -425,6 +425,11 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     font-size: 1.4rem;
     color: rgba(0, 0, 0, 0.7); }
 
+  .conf-step__seances-hall-wrp{
+    position: relative;
+    display: flex;
+  }
+
 .conf-step__seances-hall {
   position: relative;
   margin: 35px; }
@@ -606,10 +611,14 @@ textarea.conf-step__input {
   justify-content: center;
   width: 40px;
   height: 40px;
-  border: 1px solid #FFFFFF;
   background-image: url("../assets/i/trash.png");
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.drop-for-remove:hover {
+background-color: rgba(234, 233, 235, 0.95);
+  border-radius: 50px;
 }
 
 .visible {

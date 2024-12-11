@@ -7,7 +7,7 @@ import {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import PopupAddFilm from "./popupAddFilm.jsx";
 import PopupRemoveFilm from "./popupRemoveFilm.jsx";
-import {addFilmToSeancesHall} from "../../redux/slices/films.js";
+import {addFilmToSeancesHall, removeFilmFromSeanceHall} from "../../redux/slices/films.js";
 import {getItemOnDragX, pxToMinutes} from "../../js/utils.js";
 import {getSeanceHallWidth} from "../../js/info.js";
 
@@ -25,15 +25,9 @@ export default function ToUpdateTimeTable() {
 
     const dispatch = useDispatch();
 
-    /*let allMoviesContainerHeight;
-
-    useEffect(() => {
-        allMoviesContainerHeight = document.getElementById("allMovies").getBoundingClientRect().height;
-    },[])*/
 
     const {
-        films,
-    } = useSelector(state => state.films);
+        films,seances} = useSelector(state => state.films);
 
     const {halls} = useSelector(state => state.halls);
 
@@ -41,19 +35,21 @@ export default function ToUpdateTimeTable() {
     const [showPopupForRemove, setShowPopupForRemove] = useState(false);
 
     const [showRemoveFromAllMovies, setShowRemoveFromAllMovies] = useState(false);
-    const [showDeleteItemFormOtherList, setShowDeleteItemFormOtherList] = useState(false);
 
-    const [isDragOverRemove, setIsDragOverRemove] = useState(false);
+
 
     const getListStyle = (isDraggingOver, id) => {
-        // console.log("curDroppableId",curDroppableId)
-        //console.log("isDraggingOver",isDraggingOver)
+
         const style = {};
-        if (isDraggingOver) {
-            setTimeout(() => setIsDragOverRemove(curDroppableId?.includes("remove-movie-from")), 1);
-            if (curDroppableId?.includes("remove-movie-from")) {
-                style.width = "200px";
-            }
+
+
+        if (id?.includes("remove-movie-from")) {
+            //console.log(curDroppableId);
+            style.width = "100px";
+            style.height = "100px";
+            style.top = "110px"
+            style.right = "100px"
+            style.position = "absolute";
         }
 
         return style;
@@ -91,16 +87,11 @@ export default function ToUpdateTimeTable() {
 
 
     const onDragUpdate = (result) => {
-        //console.log("onDragUpdate", result);
         curDroppableId = result.destination?.droppableId;
-        //console.log(curDroppableId);
 
         if (result.source.droppableId === "allMovies") {
             setTimeout(() => setShowRemoveFromAllMovies(true), 1)
             ;
-        }
-        else {
-            setShowDeleteItemFormOtherList(true);
         }
 
     };
@@ -109,7 +100,6 @@ export default function ToUpdateTimeTable() {
         //console.log("onDragStart", result);
         curDraggableId = result.draggableId;
         curDroppableId = result.source.droppableId;
-
         timerId = setInterval(onTimer, 50);
         //console.log(timerId);
 
@@ -120,11 +110,10 @@ export default function ToUpdateTimeTable() {
         //console.log("onDragEnd", timerId, result);
         clearInterval(timerId);
         setShowRemoveFromAllMovies(false);
-        setShowDeleteItemFormOtherList(false);
 
         const res = isCanDrop();
 
-        console.log(res);
+        //console.log(res);
         if (!res) {
             return;
         }
@@ -140,36 +129,39 @@ export default function ToUpdateTimeTable() {
         const start = pxToMinutes(itemOnDragX);
         //console.log(itemOnDragX, start);
 
+console.log("toId",toId)
+        if(toId === "remove-movie-from-list"){
+            setShowPopupForRemove(true);
+        }
+        else if(toId.includes("remove-movie-from-hall")){
+            console.log("remove from hall")
+            //const filmId = draggableId.match(/^movie-in-[\w-]+-(\d+)$/)[1];
+            const hallId = toId.match(/^remove-movie-from-hall-h-(\d+)$/)[1];
+            dispatch(removeFilmFromSeanceHall({filmIndex: itemIndex, hallId:`h-${hallId}`}));
+        }
+        else{
+            const hallId = toId.match(/^seances-hall-h-(\d+)$/)[1];
+            const filmId = draggableId.match(/^movie-in-[\w-]+-(\d+)$/)[1];
 
-        switch (toId) {
-            case "remove-movie-from-list":
-                setShowPopupForRemove(true);
-                break;
-            case "deleteFromOtherLists":
-                break;
-            default:
-                const hallId = toId.match(/^seances-hall-h-(\d+)$/)[1];
-                const filmId = draggableId.match(/^movie-in-[\w-]+-(\d+)$/)[1];
-
-                if (fromId === "allMovies") {
-                    dispatch(addFilmToSeancesHall({
-                        from: null,
-                        to: `h-${hallId}`,
-                        filmId: `film-${filmId}`,
-                        start,
-                        filmIndex: itemIndex
-                    }));
-                }
-                else {
-                    const fromHallId = fromId.match(/^seances-hall-h-(\d+)$/)[1];
-                    dispatch(addFilmToSeancesHall({
-                        from: `h-${fromHallId}`,
-                        to: `h-${hallId}`,
-                        filmId: `film-${filmId}`,
-                        start,
-                        filmIndex: itemIndex
-                    }));
-                }
+            if (fromId === "allMovies") {
+                dispatch(addFilmToSeancesHall({
+                    from: null,
+                    to: `h-${hallId}`,
+                    filmId: `film-${filmId}`,
+                    start,
+                    filmIndex: itemIndex
+                }));
+            }
+            else {
+                const fromHallId = fromId.match(/^seances-hall-h-(\d+)$/)[1];
+                dispatch(addFilmToSeancesHall({
+                    from: `h-${fromHallId}`,
+                    to: `h-${hallId}`,
+                    filmId: `film-${filmId}`,
+                    start,
+                    filmIndex: itemIndex
+                }));
+            }
         }
 
     };
@@ -193,9 +185,9 @@ export default function ToUpdateTimeTable() {
                                 <Droppable droppableId="remove-movie-from-list">
                                     {(provided, snapshot) => (
                                         <div className="drop-for-remove"
-                                             id="remove-movie-from-list"
+                                            id="remove-movie-from-list"
                                              ref={provided.innerRef}
-                                             style={getListStyle(snapshot.isDraggingOver)}
+                                             style={getListStyle(snapshot.isDraggingOver,"remove-movie-from-list")}
                                              {...provided.droppableProps} >
                                             {provided.placeholder}
                                         </div>
@@ -223,6 +215,7 @@ export default function ToUpdateTimeTable() {
                             {Object.keys(halls).map((id) => (
                                 <SeancesHall key={id} hallId={id} itemOnDragX={itemOnDragX}
                                              updateIsDropAnimating={bool => isDropAnimating = bool}
+                                             dragItemId={curDraggableId}
                                 />
                             ))}
                         </div>
