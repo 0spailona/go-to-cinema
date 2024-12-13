@@ -5,6 +5,12 @@ import Movie from "./movie.jsx";
 
 export default function SeancesHall({hallId,hallName,filmsInHall,dropId, updateIsDropAnimating, itemOnDragX, showRemoveBtn}) {
 
+
+   // const {seances,chosenDate} = useSelector(state => state.films);
+
+    //const filmsInHall = seances[chosenDate][hallId]
+   // console.log("seancesHall filmsInHall", filmsInHall);
+
     const removeId = `remove-movie-from-hall-${hallId}`
 
     const getListStyle = (isDraggingOver) => {

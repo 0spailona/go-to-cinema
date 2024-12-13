@@ -10,22 +10,23 @@ const startFilms = [createFilm("Звёздные войны XXIII: Атака к
     createFilm("Движение вбок", 95, "description", "country", null),
     createFilm("Кот Да Винчи", 100, "description", "country", null)];
 
-const createSeanceDay = ()=>{
-    const halls = ["h-1","h-2"]
-    const day = {}
+const createSeanceDay = () => {
+    const halls = ["h-1", "h-2"];
+    const day = {};
 
-    for(let hall of halls){
-        day[hall] = []
+    for (let hall of halls) {
+        day[hall] = [];
     }
     return day;
-}
+};
 
 const initialState = {
     loadingFilms: true,
     error: "",
     films: {},
     seances: {},
-    chosenDate:null,
+    chosenDate: null,
+    isUpdatedSeances: false,
 };
 
 for (let film of startFilms) {
@@ -41,6 +42,7 @@ export const filmsSlice = createSlice({
         loadingFilms: (state => state.loadingFilms),
         seances: (state => state.seances),
         chosenDate: state => state.chosenDate,
+        isUpdatedSeances: state => state.isUpdatedSeances,
     },
     reducers: {
         addNewFilm: (state, action) => {
@@ -56,48 +58,65 @@ export const filmsSlice = createSlice({
             state.films[newFilm.id] = newFilm;
         },
         addFilmToSeancesHall: (state, action) => {
+            state.isUpdatedSeances = true;
+            console.log("addNewFilmToSeancesHall", action.payload);
             const hallId = action.payload.to;
             const fromHallId = action.payload.from;
             const filmId = action.payload.filmId;
             const start = action.payload.start;
             //console.log("addFilmToSeancesHall", action.payload.from, action.payload.to, action.payload.filmId,action.payload.filmIndex, action.payload.start);
-            const newSeance = createSeance(filmId,start)
-            state.seances[hallId].push(newSeance)
+            const newSeance = createSeance(filmId, start);
+            state.seances[state.chosenDate][hallId].push(newSeance);
 
-            if(fromHallId){
-                state.seances[fromHallId].splice(action.payload.filmIndex,1);
+            if (fromHallId) {
+                state.seances[state.chosenDate][fromHallId].splice(action.payload.filmIndex, 1);
             }
         },
         removeFilm: (state, action) => {
             console.log("removeFilm", action.payload);
         },
         removeFilmFromSeanceHall: (state, action) => {
+            state.isUpdatedSeances = true;
             console.log("removeFilmFromSeanceHall", action.payload);
             const fromHallId = action.payload.hallId;
             const filmIndex = action.payload.filmIndex;
-            state.seances[fromHallId].splice(filmIndex,1);
+            state.seances[fromHallId].splice(filmIndex, 1);
         },
-        resetUpdatesSeances:(state, action) => {
+        resetUpdatesSeances: (state, action) => {
+            state.isUpdatedSeances = false;
             console.log("resetUpdatesSeances");
         },
         fetchUpdatesSeances: (state, action) => {
+            state.isUpdatedSeances = false;
             console.log("fetchUpdatesSeances");
         },
         getFilmsByDate: (state, action) => {
-            console.log("getFilmsByDate");
+            state.isUpdatedSeances = false;
             state.chosenDate = action.payload;
-            state.seances[action.payload] = createSeanceDay();
-        }
-
+            console.log("getFilmsByDate");
+            if (!state.seances[action.payload]) {
+                state.seances[action.payload] = createSeanceDay();
+            }
+        },
+        resetUpdateSeancesByDate: (state, action) => {
+            state.isUpdatedSeances = false;
+            delete state.seances[action.payload];
+            console.log("resetUpdateSeances");
+        },
     }
 });
 
-export const {addNewFilm, fetchUpdatesSeances,
+export const {
+    addNewFilm, fetchUpdatesSeances,
     addFilmToSeancesHall, resetUpdatesSeances,
-    removeFilm,removeFilmFromSeanceHall,getFilmsByDate} = filmsSlice.actions;
+    removeFilm, removeFilmFromSeanceHall, resetUpdateSeancesByDate, getFilmsByDate
+} = filmsSlice.actions;
 export const {
     films,
-    loadingFilms,seances,chosenDate
+    loadingFilms,
+    seances,
+    isUpdatedSeances,
+    chosenDate
 } = filmsSlice.selectors;
 const filmsReducer = filmsSlice.reducer;
 export default filmsReducer;

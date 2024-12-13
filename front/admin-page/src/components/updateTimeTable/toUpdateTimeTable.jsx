@@ -3,13 +3,14 @@ import Movie from "./movie.jsx";
 import SeancesHall from "./seancesHall.jsx";
 import MyButton from "../common/myButton.jsx";
 import {DragDropContext, Droppable} from "react-beautiful-dnd";
-import {useState} from "react";
+import {useCallback, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import PopupAddFilm from "./popupAddFilm.jsx";
 import PopupRemoveFilm from "./popupRemoveFilm.jsx";
 import {
     addFilmToSeancesHall,
-    fetchUpdatesSeances, getFilmsByDate,
+    fetchUpdatesSeances,
+    getFilmsByDate,
     removeFilmFromSeanceHall,
     resetUpdatesSeances
 } from "../../redux/slices/films.js";
@@ -17,6 +18,11 @@ import {getItemOnDragX, pxToMinutes} from "../../js/utils.js";
 import {getSeanceHallWidth} from "../../js/info.js";
 import {droppableIdsBase, getSeancesHallId} from "./utilsFunctions.js";
 import MyInput from "../common/myInput.jsx";
+import PopupUpdateDate from "./popupUpdateDate.jsx";
+import DatePicker, {registerLocale, setDefaultLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { ru } from 'date-fns/locale/ru';
+registerLocale('ru', ru)
 
 
 let curDraggableId = null;
@@ -31,19 +37,33 @@ export default function ToUpdateTimeTable() {
 
     const dispatch = useDispatch();
 
-    const {films, seances,chosenDate} = useSelector(state => state.films);
+    const {films, seances, chosenDate, isUpdatedSeances} = useSelector(state => state.films);
     const {halls} = useSelector(state => state.halls);
 
+    //console.log("ToUpdateTimeTable seances", seances);
 
     const [showPopupForAdd, setShowPopupForAdd] = useState(false);
     const [showPopupForRemove, setShowPopupForRemove] = useState(false);
+    const [showPopupUpdateDate, setShowPopupUpdateDate] = useState({isShown: false, with: null});
     const [showRemoveFromAllMovies, setShowRemoveFromAllMovies] = useState(false);
 
     const [sourceDroppableId, setSourceDroppableId] = useState(null);
-    const [dataInputValue, setDataInputValue] = useState(new Date());
+    //const [dataInputValue, setDataInputValue] = useState(chosenDate);
+    //const [newChosenDate, setNewChosenDate] = useState(null);
+
+    const [startDate, setStartDate] = useState(new Date(chosenDate));
 
     const getRemoveBtnStyle = () => {
         return {top: "110px", right: "100px"};
+    };
+
+    const getDateInFormat = (string) => {
+        if (!string) {
+            return "";
+        }
+        //console.log("getDateInFormat string",string)
+        const newDate = new Date(string);
+        return `${newDate.getFullYear()}-${newDate.getMonth() + 1}-${newDate.getDate()}`;
     };
 
     function isCanDrop() {
@@ -144,8 +164,26 @@ export default function ToUpdateTimeTable() {
         setSourceDroppableId(null);
     };
 
-console.log(dataInputValue)
+    const onDataInputChange = (newDate) => {
+        //const newDate = e.target.valueAsDate;
+        if (chosenDate && chosenDate !== newDate && isUpdatedSeances) {
+            setShowPopupUpdateDate({isShown: true, with: newDate});
+            //console.log("show popup")
+        }
+        else{
+            dispatch(getFilmsByDate(newDate.toISOString()));
+        }
+        setStartDate(newDate)
+        //setDataInputValue(e.target.value);
+        //console.log("newDate", typeof newDate);
+
+    };
+
+     console.log("chosenDate", chosenDate);
     return (<>
+            <PopupUpdateDate showPopup={showPopupUpdateDate.isShown}
+                             closePopup={() => setShowPopupUpdateDate({isShown: false, with: null})}
+                             lastChosenDate={chosenDate} newChosenDate={showPopupUpdateDate.with}/>
             <PopupAddFilm showPopup={showPopupForAdd} closePopup={() => setShowPopupForAdd(false)}/>
             <PopupRemoveFilm showPopup={showPopupForRemove} movieId={curDraggableId?.replace("movie-in-list-", "")}
                              closePopup={() => setShowPopupForRemove(false)}/>
@@ -188,20 +226,19 @@ console.log(dataInputValue)
                             )}
                         </Droppable>
                         <div className="conf-step__date">
-                            <MyInput name="date" type="date" label="Выберите дату:" placeholder=""
-                                     isRequired={true} size="medium" value={dataInputValue}
-                                     onChange={(e)=>{
-                                         setDataInputValue(e.target.value)
-                                         dispatch(getFilmsByDate(dataInputValue.toISOString()))
-                                     }}/>
+
+                            <label className={`conf-step__label conf-step__label-mediumsize`} htmlFor="date">Выберите дату:
+                            <DatePicker className="conf-step__input" selected={startDate}   locale="ru"
+                                        onChange={onDataInputChange}  showMonthYearDropdown/>
+                            </label>
 
                         </div>
                         <div className="conf-step__seances">
-                            {seances[chosenDate]?Object.keys(seances[chosenDate]).map((id) => (
+                            {seances[chosenDate] ? Object.keys(seances[chosenDate]).map((id) => (
                                 <SeancesHall key={id} hallId={id}
                                              hallName={halls[id].name}
                                              dropId={getSeancesHallId(id)}
-                                             filmsInHall={seances[id]} itemOnDragX={itemOnDragX}
+                                             filmsInHall={seances[chosenDate][id]} itemOnDragX={itemOnDragX}
                                              updateIsDropAnimating={bool => isDropAnimating = bool}
                                              showRemoveBtn={sourceDroppableId === getSeancesHallId(id)}
                                              sourceDroppableId={sourceDroppableId}

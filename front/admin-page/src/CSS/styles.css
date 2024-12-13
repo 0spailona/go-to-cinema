@@ -648,3 +648,28 @@ background-color: rgba(234, 233, 235, 0.95);
   opacity: 0;
   pointer-events: none;
 }
+
+.react-datepicker-popper{
+
+}
+
+.react-datepicker{
+  font-size: 1rem !important;
+  border-radius: 0 !important;
+  font-family: "Roboto", sans-serif !important;
+  width: 200px;
+  height: 200px;
+}
+
+.react-datepicker__current-month{
+  font-size: 1rem !important;
+}
+
+
+.react-datepicker__header {
+  width: 198px !important;
+}
+
+.react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name {
+  margin: 0.4rem !important;
+}

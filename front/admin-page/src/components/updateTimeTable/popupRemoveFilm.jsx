@@ -1,5 +1,4 @@
 import MyPopup from "../common/myPopup.jsx";
-import {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {removeFilm} from "../../redux/slices/films.js";
 

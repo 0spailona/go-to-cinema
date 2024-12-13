@@ -15,7 +15,7 @@ export default function Movie({
                                   updateIsDropAnimating
                               }) {
 
-    const {films, seances} = useSelector(state => state.films);
+    const {films, seances,chosenDate} = useSelector(state => state.films);
     const film = films[movieId];
     const id = hallId ? `${draggableIdsBase.movieInSeance}${seanceId}-${hallId}-${movieId}` : `${draggableIdsBase.movieInList}${movieId}`;
     const backGroundColorIndex = Object.keys(films).indexOf(movieId);
@@ -28,7 +28,7 @@ export default function Movie({
     let isRenderInHall = false;
 
     if (hallId) {
-        filmStart = seances[hallId].find(x => x.id === seanceId).start;
+        filmStart = seances[chosenDate][hallId].find(x => x.id === seanceId).start;
         timeStart = getViewTime(filmStart);
         offset = minutesToPx(filmStart);
         isRenderInHall = true;
