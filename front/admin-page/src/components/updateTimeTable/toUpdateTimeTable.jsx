@@ -3,7 +3,7 @@ import Movie from "./movie.jsx";
 import SeancesHall from "./seancesHall.jsx";
 import MyButton from "../common/myButton.jsx";
 import {DragDropContext, Droppable} from "react-beautiful-dnd";
-import {useCallback, useState} from "react";
+import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import PopupAddFilm from "./popupAddFilm.jsx";
 import PopupRemoveFilm from "./popupRemoveFilm.jsx";
@@ -17,12 +17,13 @@ import {
 import {getItemOnDragX, pxToMinutes} from "../../js/utils.js";
 import {getSeanceHallWidth} from "../../js/info.js";
 import {droppableIdsBase, getSeancesHallId} from "./utilsFunctions.js";
-import MyInput from "../common/myInput.jsx";
 import PopupUpdateDate from "./popupUpdateDate.jsx";
-import DatePicker, {registerLocale, setDefaultLocale } from "react-datepicker";
+import DatePicker, {registerLocale} from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ru } from 'date-fns/locale/ru';
-registerLocale('ru', ru)
+import {ru} from "date-fns/locale/ru";
+import Loader from "react-js-loader";
+
+registerLocale("ru", ru);
 
 
 let curDraggableId = null;
@@ -32,15 +33,32 @@ let timerId = null;
 
 let itemOnDragX = null;
 
+/*function Loader(props) {
+    return null;
+}
+
+Loader.propTypes = {
+    type: PropTypes.string,
+    bgColor: PropTypes.any,
+    color: PropTypes.any,
+    title: PropTypes.string,
+    size: PropTypes.number
+};*/
 export default function ToUpdateTimeTable() {
 
 
     const dispatch = useDispatch();
 
-    const {films, seances, chosenDate, isUpdatedSeances} = useSelector(state => state.films);
+    const {films, seances, chosenDate, isUpdatedSeances, loadingFilms} = useSelector(state => state.films);
     const {halls} = useSelector(state => state.halls);
 
     //console.log("ToUpdateTimeTable seances", seances);
+    console.log("loadingFilms", loadingFilms);
+    const [showAllMoviesLoader, setShowAllMoviesLoader] = useState(loadingFilms);
+
+    useEffect(() => {
+        setShowAllMoviesLoader(loadingFilms);
+    }, [loadingFilms]);
 
     const [showPopupForAdd, setShowPopupForAdd] = useState(false);
     const [showPopupForRemove, setShowPopupForRemove] = useState(false);
@@ -51,20 +69,12 @@ export default function ToUpdateTimeTable() {
     //const [dataInputValue, setDataInputValue] = useState(chosenDate);
     //const [newChosenDate, setNewChosenDate] = useState(null);
 
-    const [startDate, setStartDate] = useState(new Date(chosenDate));
+    const [startDate, setStartDate] = useState(chosenDate ? new Date(chosenDate) : null);
 
     const getRemoveBtnStyle = () => {
         return {top: "110px", right: "100px"};
     };
 
-    const getDateInFormat = (string) => {
-        if (!string) {
-            return "";
-        }
-        //console.log("getDateInFormat string",string)
-        const newDate = new Date(string);
-        return `${newDate.getFullYear()}-${newDate.getMonth() + 1}-${newDate.getDate()}`;
-    };
 
     function isCanDrop() {
         if (curDroppableId?.includes(droppableIdsBase.seanceHall)) {
@@ -170,16 +180,16 @@ export default function ToUpdateTimeTable() {
             setShowPopupUpdateDate({isShown: true, with: newDate});
             //console.log("show popup")
         }
-        else{
+        else {
             dispatch(getFilmsByDate(newDate.toISOString()));
         }
-        setStartDate(newDate)
+        setStartDate(newDate);
         //setDataInputValue(e.target.value);
         //console.log("newDate", typeof newDate);
 
     };
 
-     console.log("chosenDate", chosenDate);
+    console.log("showLoaderAllMovies", showAllMoviesLoader);
     return (<>
             <PopupUpdateDate showPopup={showPopupUpdateDate.isShown}
                              closePopup={() => setShowPopupUpdateDate({isShown: false, with: null})}
@@ -212,7 +222,10 @@ export default function ToUpdateTimeTable() {
                                 </Droppable>
                             </div>
                         </div>
-
+                        <div className={`loader ${showAllMoviesLoader ? "" : "d-none"}`}>
+                            <Loader type="bubble-scale" bgColor="#63536C" color="#FFFFFF"
+                                    size={50}/>
+                        </div>
                         <Droppable droppableId={droppableIdsBase.allMovies} direction="horizontal">
                             {provided => (
                                 <div className="conf-step__movies" id={droppableIdsBase.allMovies}
@@ -227,9 +240,10 @@ export default function ToUpdateTimeTable() {
                         </Droppable>
                         <div className="conf-step__date">
 
-                            <label className={`conf-step__label conf-step__label-mediumsize`} htmlFor="date">Выберите дату:
-                            <DatePicker className="conf-step__input" selected={startDate}   locale="ru"
-                                        onChange={onDataInputChange}  showMonthYearDropdown/>
+                            <label className={`conf-step__label conf-step__label-mediumsize`} htmlFor="date">Выберите
+                                дату:
+                                <DatePicker className="conf-step__input" selected={startDate} locale="ru"
+                                            onChange={onDataInputChange} dateFormat="dd MMMM yyyy"/>
                             </label>
 
                         </div>

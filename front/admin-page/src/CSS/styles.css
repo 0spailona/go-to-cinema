@@ -658,18 +658,44 @@ background-color: rgba(234, 233, 235, 0.95);
   border-radius: 0 !important;
   font-family: "Roboto", sans-serif !important;
   width: 200px;
-  height: 200px;
+  height: 210px;
 }
 
 .react-datepicker__current-month{
-  font-size: 1rem !important;
+  font-size: 1.4rem !important;
+  height: 20px;
+  vertical-align: center;
+  color:#FFFFFF !important;
 }
 
 
 .react-datepicker__header {
   width: 198px !important;
+  height: 55px;
+  background-color:#63536C !important;
+  border-top-left-radius:0!important;
+}
+.react-datepicker__header:not(.react-datepicker__header--has-time-select){
+  border-top-right-radius:0!important;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color:#FFFFFF !important;
+}
+
+.react-datepicker__day-name{
+  color:#FFFFFF !important;
 }
 
 .react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name {
   margin: 0.4rem !important;
+}
+
+.loader{
+  height: 70px;
+  margin: 50px auto;
+}
+
+.d-none{
+display: none;
 }

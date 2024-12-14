@@ -21,7 +21,7 @@ const createSeanceDay = () => {
 };
 
 const initialState = {
-    loadingFilms: true,
+    loadingFilms: false,
     error: "",
     films: {},
     seances: {},
@@ -80,7 +80,7 @@ export const filmsSlice = createSlice({
             console.log("removeFilmFromSeanceHall", action.payload);
             const fromHallId = action.payload.hallId;
             const filmIndex = action.payload.filmIndex;
-            state.seances[fromHallId].splice(filmIndex, 1);
+            state.seances[state.chosenDate][fromHallId].splice(filmIndex, 1);
         },
         resetUpdatesSeances: (state, action) => {
             state.isUpdatedSeances = false;
