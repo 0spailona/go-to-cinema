@@ -11,7 +11,6 @@ import {
     addFilmToSeancesHall,
     fetchUpdatesSeances,
     getFilmsByDate,
-    removeFilmFromSeanceHall,
     resetUpdatesSeances
 } from "../../redux/slices/films.js";
 import {getItemOnDragX, pxToMinutes} from "../../js/utils.js";
@@ -22,6 +21,7 @@ import DatePicker, {registerLocale} from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {ru} from "date-fns/locale/ru";
 import Loader from "react-js-loader";
+import PopupRemoveFilmFromSeances from "./popupRemoveFilmFromSeances.jsx";
 
 registerLocale("ru", ru);
 
@@ -53,7 +53,7 @@ export default function ToUpdateTimeTable() {
     const {halls} = useSelector(state => state.halls);
 
     //console.log("ToUpdateTimeTable seances", seances);
-    console.log("loadingFilms", loadingFilms);
+    //console.log("loadingFilms", loadingFilms);
     const [showAllMoviesLoader, setShowAllMoviesLoader] = useState(loadingFilms);
 
     useEffect(() => {
@@ -64,10 +64,15 @@ export default function ToUpdateTimeTable() {
     const [showPopupForRemove, setShowPopupForRemove] = useState(false);
     const [showPopupUpdateDate, setShowPopupUpdateDate] = useState({isShown: false, with: null});
     const [showRemoveFromAllMovies, setShowRemoveFromAllMovies] = useState(false);
+    const [showRemoveFromSeances, setShowRemoveFromFromSeances] = useState({
+        isShown: false,
+        hallId: null,
+        filmIndex: null,
+        filmName: null
+    });
 
     const [sourceDroppableId, setSourceDroppableId] = useState(null);
-    //const [dataInputValue, setDataInputValue] = useState(chosenDate);
-    //const [newChosenDate, setNewChosenDate] = useState(null);
+
 
     const [startDate, setStartDate] = useState(chosenDate ? new Date(chosenDate) : null);
 
@@ -145,7 +150,14 @@ export default function ToUpdateTimeTable() {
         }
         else if (toId.includes(droppableIdsBase.removeFromSeances)) {
             const hallId = toId.match(/^remove-movie-from-hall-h-(\d+)$/)[1];
-            dispatch(removeFilmFromSeanceHall({filmIndex: itemIndex, hallId: `h-${hallId}`}));
+            const filmId = draggableId.match(/^movie-in-[\w-]+-(\d+)$/)[1];
+            const filmName = films[`film-${filmId}`].title;
+            setShowRemoveFromFromSeances({
+                isShown: true,
+                hallId: `h-${hallId}`,
+                filmIndex: itemIndex,
+                filmName: filmName
+            });
         }
         else {
             const hallId = toId.match(/^seances-hall-h-(\d+)$/)[1];
@@ -175,22 +187,28 @@ export default function ToUpdateTimeTable() {
     };
 
     const onDataInputChange = (newDate) => {
-        //const newDate = e.target.valueAsDate;
+
+
         if (chosenDate && chosenDate !== newDate && isUpdatedSeances) {
             setShowPopupUpdateDate({isShown: true, with: newDate});
-            //console.log("show popup")
         }
         else {
             dispatch(getFilmsByDate(newDate.toISOString()));
         }
         setStartDate(newDate);
-        //setDataInputValue(e.target.value);
-        //console.log("newDate", typeof newDate);
-
     };
 
-    console.log("showLoaderAllMovies", showAllMoviesLoader);
+    // console.log("showLoaderAllMovies", showAllMoviesLoader);
     return (<>
+            <PopupRemoveFilmFromSeances showPopup={showRemoveFromSeances.isShown} hallId={showRemoveFromSeances.hallId}
+                                        filmIndex={showRemoveFromSeances.filmIndex}
+                                        filmName={showRemoveFromSeances.filmName}
+                                        closePopup={() => setShowRemoveFromFromSeances({
+                                            isShown: false,
+                                            hallId: null,
+                                            filmIndex: null,
+                                            filmName: null
+                                        })}/>
             <PopupUpdateDate showPopup={showPopupUpdateDate.isShown}
                              closePopup={() => setShowPopupUpdateDate({isShown: false, with: null})}
                              lastChosenDate={chosenDate} newChosenDate={showPopupUpdateDate.with}/>
@@ -243,7 +261,7 @@ export default function ToUpdateTimeTable() {
                             <label className={`conf-step__label conf-step__label-mediumsize`} htmlFor="date">Выберите
                                 дату:
                                 <DatePicker className="conf-step__input" selected={startDate} locale="ru"
-                                            onChange={onDataInputChange} dateFormat="dd MMMM yyyy"/>
+                                            onChange={onDataInputChange} dateFormat="dd MMMM yyyy" minDate={new Date()}/>
                             </label>
 
                         </div>
