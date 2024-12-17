@@ -9,9 +9,7 @@ function App() {
               <h1 className="page-header__title">Идём<span>в</span>кино</h1>
               <span className="page-header__subtitle">Администраторррская</span>
           </header>
-          <Routes>
-              <Route path="/" element={<AdminPage/>}/>
-          </Routes>
+              <AdminPage/>
       </>
   )
 }
