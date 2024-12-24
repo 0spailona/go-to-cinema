@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -54,6 +55,7 @@ Route::prefix('api')->group(function () {
     Route::get('{api_method}', function ($api_method) {
         return response()->json(["status" => "ok", "method"=> $api_method], 200);
     });
+
 });
 
 Route::prefix('admin')->group(function () {
@@ -72,6 +74,28 @@ Route::prefix('admin')->group(function () {
         return serveFile($file, "admin/assets");
     });
 
+    Route::prefix('api')->group(function () {
+        Route::get('', function () {
+            abort(404, 'API not found');
+        });
+
+        Route::get('csrf', function (Request $request) {
+           // $token =
+            return $request->session()->token();
+        });
+
+
+       /* Route::get('hallsList', function () {
+            return response
+            ()->json(["status" => "ok", "method"=> "hallsList", "admin" => true], 200);
+        });*/
+        Route::get('hallsList', [\App\Http\Controllers\HallController::class, 'getHallsList']);
+
+        Route::post('newHall', [\App\Http\Controllers\HallController::class, 'createHall']);
+        Route::post('removeHall', [\App\Http\Controllers\HallController::class, 'removeHall']);
+        Route::post('updatePlacesInHall', [\App\Http\Controllers\HallController::class, 'updatePlacesInHall']);
+
+    });
 });
 
 Route::get('/{file?}', function ($file = "index.html") {
@@ -81,3 +105,12 @@ Route::get('/assets/{file}', function ($file) {
     return serveFile($file, "client/assets");
 });
 
+/*
+ *
+    //Route::get('/hallsList', [\App\Http\Controllers\HallController::class, 'getHallsList']);
+    Route::get('hallsList', function () {
+        return "router halls list";
+        //return serveFile($file, "admin/assets");
+    });
+
+ */

@@ -1,4 +1,4 @@
-import {getSeanceHallWidth} from "./info.js";
+import {getSeanceHallWidth, placesType} from "./info.js";
 
 export const isValid = (value) => {
     if (isNaN(value)) {
@@ -33,3 +33,22 @@ export const getItemOnDragX = (itemId) =>{
     }
     return itemEl.getBoundingClientRect().x - parentEl.getBoundingClientRect().x;
 }
+
+/*export function getPlacesObj(arr){
+
+    //console.log("getPlacesObj arr",arr)
+
+    const places = {vip:[],disabled:[]}
+
+    for(let rowIndex = 0; rowIndex < arr.length; rowIndex++) {
+        for(let placeIndex = 0; placeIndex < arr[rowIndex].length; placeIndex++) {
+            if(arr[rowIndex][placeIndex]===placesType.vip){
+                places.vip.push({row: rowIndex, place: placeIndex})
+            } else if (arr[rowIndex][placeIndex]===placesType.disabled){
+                places.disabled.push({row: rowIndex, place: placeIndex})
+            }
+        }
+    }
+    //console.log("getPlacesObj places",places);
+return places;
+}*/

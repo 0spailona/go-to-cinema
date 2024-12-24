@@ -1,8 +1,9 @@
 import {useState} from "react";
-import {changeSelectedHall} from "../redux/slices/halls.js";
+import {changeSelectedHall, fetchHalls, updatePlacesInHall} from "../redux/slices/halls.js";
 import {useDispatch, useSelector} from "react-redux";
 import MyPopup from "./common/myPopup.jsx";
 import {selectedHallType} from "../js/info.js";
+
 
 export default function ToSelectHall({target}) {
 
@@ -14,31 +15,35 @@ export default function ToSelectHall({target}) {
 
     const checkedHall = target === selectedHallType.chairs ? chairsUpdateHall : pricesUpdateHall;
 
-    const [checkedHallId, setCheckedHallId] = useState(checkedHall.id);
+    const [checkedHallName, setCheckedHallName] = useState(checkedHall.name);
     const [showPopup, setShowPopup] = useState(false);
-    const [nextCheckedHallId, setNextCheckedHallId] = useState(checkedHallId);
+    const [nextCheckedHallName, setNextCheckedHallName] = useState(checkedHallName);
 
     const changeHall = () =>{
         setShowPopup(false);
-        setCheckedHallId(nextCheckedHallId);
-        dispatch(changeSelectedHall({name: target, hallId: nextCheckedHallId}));
+        setCheckedHallName(nextCheckedHallName);
+        dispatch(fetchHalls())
+        dispatch(changeSelectedHall({target, hallName: nextCheckedHallName}));
     }
 
     const notSaveChanges = (e) => {
         e.preventDefault();
-        console.log("notSaveChanges");
+        dispatch(fetchHalls())
+        //console.log("notSaveChanges");
         changeHall()
     };
 
     const toSaveChanges = (e) => {
         e.preventDefault();
+        //const places = getPlacesObj(halls[checkedHallName].places);
+        dispatch(updatePlacesInHall(halls[checkedHallName]))
         console.log("toSaveChanges");
         changeHall()
     };
 
     return (
         <>
-            <MyPopup isVisible={showPopup} title={`Сохранить изменения в зале "${halls[chairsUpdateHall.id].name}"`}
+            <MyPopup isVisible={showPopup} title={`Сохранить изменения в зале "${checkedHallName}"`}
                      onClose={() => setShowPopup(false)}
                      onReset={e => notSaveChanges(e)}
                      onSubmit={e => toSaveChanges(e)}
@@ -47,25 +52,25 @@ export default function ToSelectHall({target}) {
             <p className="conf-step__paragraph">Выберите зал для конфигурации:</p>
             <ul className="conf-step__selectors-box">
                 {
-                    Object.keys(halls).map((id) =>
-                        <li key={id}>
+                    Object.keys(halls).map((hallName) =>
+                        <li key={hallName}>
                             <input type="radio" className="conf-step__radio"
                                    name={target}
-                                   value={halls[id].name}
-                                   checked={id === checkedHallId}
+                                   value={halls[hallName].name}
+                                   checked={hallName === checkedHallName}
                                    onChange={() => {
 
                                        if (checkedHall.isUpdated) {
                                            setShowPopup(true);
-                                           setNextCheckedHallId(id);
+                                           setNextCheckedHallName(hallName);
                                        }
                                        else {
-                                           setCheckedHallId(id);
-                                           dispatch(changeSelectedHall({name: target, hallId: id}));
+                                           setCheckedHallName(hallName);
+                                           dispatch(changeSelectedHall({name: target, hallId: hallName}));
                                        }
                                    }}
                             />
-                            <span className="conf-step__selector">{halls[id].name}</span>
+                            <span className="conf-step__selector">{hallName}</span>
                         </li>)
                 }
             </ul>

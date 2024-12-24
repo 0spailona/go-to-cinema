@@ -1,21 +1,29 @@
 import Place from "../common/place.jsx";
 import {useDispatch, useSelector} from "react-redux";
-import {changePlaceStatus} from "../../redux/slices/halls.js";
+import {changePlaceStatus, fetchHalls} from "../../redux/slices/halls.js";
+import {useEffect, useState} from "react";
 
-export default function Hall({hallId}) {
+export default function Hall({hall}) {
 
     const dispatch = useDispatch();
 
     const {
-        halls,
+        halls,chairsUpdateHall
     } = useSelector(state => state.halls);
 
-    const hall = halls[hallId];
-    //console.log("hall", hall);
+    //const [hall, setHall] = useState(halls[chairsUpdateHall.name]);
+
+    useEffect(() => {
+        dispatch(fetchHalls());
+        //setHall(halls[chairsUpdateHall.name])
+    }, []);
+
+    //const hall = halls[chairsUpdateHall.name];
+    console.log("hall", hall);
 
     const onPlaceChange = (rowIndex, placeIndex, newStatus) => {
         console.log("onPlaceChange", rowIndex, placeIndex, newStatus);
-        dispatch(changePlaceStatus({hallId, rowIndex, placeIndex, newStatus}));
+        dispatch(changePlaceStatus({hallName:chairsUpdateHall.name, rowIndex, placeIndex, newStatus}));
     };
 
     return (

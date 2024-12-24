@@ -1,25 +1,25 @@
 import ConfStepHeader from "./common/ConfStepHeader.jsx";
 import MyButton from "./common/myButton.jsx";
 import {useDispatch, useSelector} from "react-redux";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import MyPopup from "./common/myPopup.jsx";
 import MyInput from "./common/myInput.jsx";
-import {createNewHall, removeHallFromState} from "../redux/slices/halls.js";
+import {fetchHalls, fetchNewHall, removeHallByName} from "../redux/slices/halls.js";
+import Loader from "react-js-loader";
 
 export default function ToCreateHall() {
 
     const dispatch = useDispatch();
 
-    const {
-        halls,
-    } = useSelector(state => state.halls);
+    const {halls,loadingHalls} = useSelector(state => state.halls);
+
+
 
     const [showPopupForAdd, setShowPopupForAdd] = useState(false);
     const [showPopupForRemove, setShowPopupForRemove] = useState(false);
     const [hallForRemove, setHallForRemove] = useState(null);
 
     const [inputValueNameHall, setInputValueNameHall] = useState("");
-    //console.log("ToCreateHall halls", halls);
 
     const createHall = (e) => {
         e.preventDefault();
@@ -27,14 +27,15 @@ export default function ToCreateHall() {
         setInputValueNameHall("");
         const formdata = new FormData(e.currentTarget);
         const content = Object.fromEntries(formdata).name;
-        dispatch(createNewHall(content));
+        dispatch(fetchNewHall(content))
+        dispatch(fetchHalls());
     };
 
     const removeHall = (e) => {
         e.preventDefault();
-        console.log("remove Hall e", e);
         setShowPopupForRemove(false);
-        dispatch(removeHallFromState(hallForRemove));
+        dispatch(removeHallByName(hallForRemove))
+        dispatch(fetchHalls());
         setHallForRemove(null);
     };
 
@@ -75,14 +76,20 @@ export default function ToCreateHall() {
                 <ConfStepHeader title="Управление залами"/>
                 <div className="conf-step__wrapper">
                     <p className="conf-step__paragraph">Доступные залы:</p>
-                    <ul className="conf-step__list">
-                        {Object.keys(halls).map((id) => <li key={id}>{halls[id].name}{"\u00A0"}
-                            <MyButton type={"trash"} onclick={() => {
-                                setHallForRemove(id);
-                                setShowPopupForRemove(true);
-                            }}/>
-                        </li>)}
-                    </ul>
+                    {loadingHalls?
+                        <div className="loader">
+                            <Loader type="bubble-scale" bgColor="#63536C" color="#FFFFFF"
+                                    size={50}/>
+                        </div> :
+                        halls ? <ul className="conf-step__list">
+                            {Object.keys(halls).map((hallName) => <li key={hallName}>{hallName}{"\u00A0"}
+                                <MyButton type={"trash"} onclick={() => {
+                                    setHallForRemove(hallName);
+                                    setShowPopupForRemove(true);
+                                }}/>
+                            </li>)}
+                        </ul> :
+                        <p className="conf-step__paragraph">Еще нет ни одного зала</p>}
                     <MyButton text="Создать зал" type="submit" onclick={() => setShowPopupForAdd(true)}/>
                 </div>
             </section>
