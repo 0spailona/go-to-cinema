@@ -90,7 +90,7 @@ Route::prefix('admin')->group(function () {
             ()->json(["status" => "ok", "method"=> "hallsList", "admin" => true], 200);
         });*/
         Route::get('hallsList', [\App\Http\Controllers\HallController::class, 'getHallsList']);
-
+        Route::get('hall/{name}', [\App\Http\Controllers\HallController::class, 'getHallByName']);
         Route::post('newHall', [\App\Http\Controllers\HallController::class, 'createHall']);
         Route::post('removeHall', [\App\Http\Controllers\HallController::class, 'removeHall']);
         Route::post('updatePlacesInHall', [\App\Http\Controllers\HallController::class, 'updatePlacesInHall']);

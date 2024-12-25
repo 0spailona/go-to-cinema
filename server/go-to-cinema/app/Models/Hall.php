@@ -34,7 +34,7 @@ class Hall extends Model
 
     static function updateHallPlaces($name,$places,$rowCount,$placesInRow)
     {
-
         DB::table('halls')->where('name', $name)->update(['places' => $places,'rowsCount' => $rowCount,'placesInRow' => $placesInRow]);
     }
+
 }

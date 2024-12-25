@@ -1,7 +1,7 @@
 //const basedUrl = import.meta.env.VITE_URL
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {placesType, selectedHallType} from "../../js/info.js";
-import {createHall, fillPlacesByStandard} from "../../js/modelUtils.js";
+import {placesType} from "../../js/info.js";
+import {fillPlacesByStandard} from "../../js/modelUtils.js";
 import {fetchToken, getHallsObj, getPlacesObj} from "../utils.js";
 //192.168.23.15:3002
 //const basedUrl = import.meta.env.VITE_URL; //http://127.0.0.1:8000/admin/
@@ -10,22 +10,31 @@ const basedUrl = "admin/";
 const token = await fetchToken();
 //console.log("fetchToken",await fetchToken());
 
-const hall1 = createHall("Зал 1", "standard");
-const hall2 = createHall("Зал 2", "standard");
-
 //const tokenHalls = token;
 
 export const fetchHalls = createAsyncThunk(
     "fetchHalls",
     async () => {
-        //console.log("fetch", `${basedUrl}api/hallsList`)
         const response = await fetch(`${basedUrl}api/hallsList`, {
             headers: {
                 Accept: "application/json",
             },
             credentials: "same-origin",
         });
-        //console.log("cookies", response.headers.getSetCookie());
+        return response.json();
+    }
+);
+
+export const fetchHallByName = createAsyncThunk(
+    "fetchHallByName",
+    async (name) => {
+        console.log("fetchHallByName", name);
+        const response = await fetch(`${basedUrl}api/hall/${name}`, {
+            headers: {
+                Accept: "application/json",
+            },
+            credentials: "same-origin",
+        });
         return response.json();
     }
 );
@@ -33,7 +42,6 @@ export const fetchHalls = createAsyncThunk(
 export const fetchNewHall = createAsyncThunk(
     "fetchNewHall",
     async (name) => {
-        //console.log("tokenHalls", tokenHalls);
         const response = await fetch(`${basedUrl}api/newHall`, {
             headers: {
                 Accept: "application/json",
@@ -68,8 +76,9 @@ export const removeHallByName = createAsyncThunk(
 export const updatePlacesInHall = createAsyncThunk(
     "updatePlacesInHall",
     async (hall) => {
+        console.log("updatePlacesInHall request hall",hall)
         const places = getPlacesObj(hall.places)
-        const body = JSON.stringify({hallName:hall.name,places,rowCount:hall.rowCount,placesInRow:hall.placeInRowCount});
+        const body = JSON.stringify({name:hall.name,places,rowCount:hall.rowCount,placesInRow:hall.placeInRowCount});
 
         const response = await fetch(`${basedUrl}api/updatePlacesInHall`, {
             headers: {
@@ -90,7 +99,7 @@ const initialState = {
     loadingHalls: true,
     error: "",
     halls: null,
-    chairsUpdateHall: null,
+    hallForUpdate:null,
     pricesUpdateHall: {id: "h-1", isUpdated: false}
 };
 
@@ -102,7 +111,6 @@ const hallsSlice = createSlice({
             hallsId: (state => state.hallsId),
             loadingSeances: (state => state.loadingSeances),
             loadingHalls: (state => state.loadingHalls),
-            chairsUpdateHall: (state => state.chairsUpdateHall),
             pricesUpdateHall: (state => state.pricesUpdateHall),
         },
         reducers: {
@@ -112,15 +120,17 @@ const hallsSlice = createSlice({
                 //const newFilm = action.payload.movie;
                 //state.halls[action.payload.hallId].movies.push(newFilm);
             },
-            changeSelectedHall: (state, action) => {
-                console.log("changeSelectedHall", action.payload);
-                if (action.payload.target === selectedHallType.chairs) {
-                    state.chairsUpdateHall = {name: action.payload.hallName, isUpdated: false};
-                }
-                if (action.payload.target === selectedHallType.prices) {
-                    state.pricesUpdateHall = {name: action.payload.hallName, isUpdated: false};
-                }
+            /*changeChairsUpdateHall: (state, action) => {
+                console.log("changeChairsUpdateHall", action.payload);
+                const hall = getHallsObj([action.payload])[0]
+                    state.chairsUpdateHall = {hall: hall, isUpdated: false};
+
+            },*/
+            changePricesUpdateHall: (state, action) => {
+                console.log("changePricesUpdateHall", action.payload);
+                    state.pricesUpdateHall = {hall: action.payload, isUpdated: false};
             },
+
             updateCustomRows: (state, action) => {
                 console.log("slice halls update rows");
                 const newRowCount = action.payload.rows;
@@ -172,11 +182,10 @@ const hallsSlice = createSlice({
                 }
             },
             changePlaceStatus: (state, action) => {
-                //console.log("slice halls change PlaceStatus");
+                console.log("slice halls change PlaceStatus");
                 const rowIndex = action.payload.rowIndex;
                 const placeIndex = action.payload.placeIndex;
                 state.halls[action.payload.hallName].places[rowIndex][placeIndex] = action.payload.newStatus;
-                state.chairsUpdateHall.isUpdated = true;
             }
         },
         extraReducers: builder => {
@@ -186,13 +195,29 @@ const hallsSlice = createSlice({
             });
             builder.addCase(fetchHalls.fulfilled, (state, action) => {
                 const hallsArr = action.payload.data;
-                state.halls = getHallsObj(hallsArr);
-                if(state.chairsUpdateHall === null){
-                    state.chairsUpdateHall = {name: hallsArr[0].name, isUpdated: false};
-                }
+                state.halls = getHallsObj(hallsArr)
                 state.loadingHalls = false;
             });
             builder.addCase(fetchHalls.rejected, (state, action) => {
+                state.loadingHalls = false;
+                state.error = "Проблема на стороне сервера";
+                console.log("fetchHalls rejected action", action.payload);
+            });
+
+           // get hall by name
+            builder.addCase(fetchHallByName.pending, (state, action) => {
+                state.loadingHalls = true;
+            });
+            builder.addCase(fetchHallByName.fulfilled, (state, action) => {
+               // console.log("fetchHallByName.fulfilled", action.payload);
+                const hallFullData = action.payload.data;
+                const hall = getHallsObj([hallFullData])[hallFullData.name];
+                state.halls[hallFullData.name] = hall;
+               // console.log("fetchHallByName hall", hall);
+
+                state.loadingHalls = false;
+            });
+            builder.addCase(fetchHallByName.rejected, (state, action) => {
                 state.loadingHalls = false;
                 state.error = "Проблема на стороне сервера";
                 console.log("fetchHalls rejected action", action.payload);
@@ -250,7 +275,7 @@ const hallsSlice = createSlice({
 
 export const {
     addFilmToHall,
-    changeSelectedHall,
+    changePricesUpdateHall,
     updateCustomRows,
     updateCustomPlaces,
     updatePrice,
@@ -258,7 +283,7 @@ export const {
 } = hallsSlice.actions;
 export const {
     halls,
-    loadingSeances, chairsUpdateHall,
+    loadingSeances,
     pricesUpdateHall, loadingHalls
 } = hallsSlice.selectors;
 const hallsReducer = hallsSlice.reducer;

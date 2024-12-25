@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {changePlaceStatus, fetchHalls} from "../../redux/slices/halls.js";
 import {useEffect, useState} from "react";
 
-export default function Hall({hall}) {
+export default function Hall({hallName,onUpdate}) {
 
     const dispatch = useDispatch();
 
@@ -11,19 +11,21 @@ export default function Hall({hall}) {
         halls,chairsUpdateHall
     } = useSelector(state => state.halls);
 
-    //const [hall, setHall] = useState(halls[chairsUpdateHall.name]);
-
+    //const [hall, setHall] = useState(halls[chairsUpdateHall.name])
     useEffect(() => {
         dispatch(fetchHalls());
         //setHall(halls[chairsUpdateHall.name])
     }, []);
 
-    //const hall = halls[chairsUpdateHall.name];
-    console.log("hall", hall);
+    const hall = halls[hallName];
+    //console.log("hall", hall);
+    //console.log("hall halls",halls)
+    //console.log("hallName", hallName);
 
     const onPlaceChange = (rowIndex, placeIndex, newStatus) => {
-        console.log("onPlaceChange", rowIndex, placeIndex, newStatus);
-        dispatch(changePlaceStatus({hallName:chairsUpdateHall.name, rowIndex, placeIndex, newStatus}));
+        //console.log("onPlaceChange", rowIndex, placeIndex, newStatus);
+        dispatch(changePlaceStatus({hallName, rowIndex, placeIndex, newStatus}));
+        onUpdate()
     };
 
     return (
