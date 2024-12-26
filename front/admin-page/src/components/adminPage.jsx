@@ -7,7 +7,7 @@ import ToUpdatePrice from "./toUpdatePrice.jsx";
 import ToUpdateTimeTable from "./updateTimeTable/toUpdateTimeTable.jsx";
 import ToOpenSales from "./toOpenSales.jsx";
 import {useEffect} from "react";
-import {fetchHalls} from "../redux/slices/halls.js";
+import {fetchHallConfig, fetchHalls} from "../redux/slices/halls.js";
 import {useDispatch} from "react-redux";
 
 export default function AdminPage() {
@@ -16,6 +16,7 @@ export default function AdminPage() {
 
 
     useEffect(() => {
+        dispatch(fetchHallConfig())
         dispatch(fetchHalls());
     }, []);
 
@@ -23,12 +24,13 @@ export default function AdminPage() {
         <main className="conf-steps">
             <ToCreateHall/>
             <ToUpdateHall/>
+            <ToUpdatePrice/>
         </main>
     );
 }
 
 /*
 
-            <ToUpdatePrice/>
+
             <ToUpdateTimeTable/>
             <ToOpenSales/>*/

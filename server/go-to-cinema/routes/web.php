@@ -89,11 +89,27 @@ Route::prefix('admin')->group(function () {
             return response
             ()->json(["status" => "ok", "method"=> "hallsList", "admin" => true], 200);
         });*/
+        Route::get('hallConfig',function () {
+            $data=new stdClass();
+            $data->hallNameLength = new stdClass();
+            $data->rowsCount = new stdClass();
+            $data->placesInRow = new stdClass();
+            $data->hallNameLength->min = intval(env('MIN_HALL_NAME_LENGTH'));
+            $data->hallNameLength->max = intval(env('MAX_HALL_NAME_LENGTH'));
+            $data->rowsCount->min = intval(env('MIN_ROWS_IN_HALL'));
+            $data->rowsCount->max = intval(env('MAX_ROWS_IN_HALL'));
+            $data->placesInRow->min = intval(env('MIN_PLACES_IN_ROW'));
+            $data->placesInRow->max = intval(env('MAX_PLACES_IN_ROW'));
+
+            return response
+            ()->json(["status" => "ok", "method"=> "hallConfig", "hallConfig" => $data], 200);
+        });
         Route::get('hallsList', [\App\Http\Controllers\HallController::class, 'getHallsList']);
         Route::get('hall/{name}', [\App\Http\Controllers\HallController::class, 'getHallByName']);
         Route::post('newHall', [\App\Http\Controllers\HallController::class, 'createHall']);
         Route::post('removeHall', [\App\Http\Controllers\HallController::class, 'removeHall']);
         Route::post('updatePlacesInHall', [\App\Http\Controllers\HallController::class, 'updatePlacesInHall']);
+        Route::post('updatePricesInHall', [\App\Http\Controllers\HallController::class, 'updatePricesInHall']);
 
     });
 });

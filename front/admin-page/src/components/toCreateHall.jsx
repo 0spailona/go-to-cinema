@@ -11,7 +11,7 @@ export default function ToCreateHall() {
 
     const dispatch = useDispatch();
 
-    const {halls,loadingHalls} = useSelector(state => state.halls);
+    const {halls,loadingHalls,hallConfig} = useSelector(state => state.halls);
 
 
 
@@ -57,9 +57,11 @@ export default function ToCreateHall() {
                      onReset={() => onResetForAdd()}
                      textForSubmitBtn="Добавить зал"
                      textForResetBtn="Отменить">
-                <MyInput label="Название зала" placeholder="Например, &laquo;Зал 1&raquo;"
+                <MyInput label={`Название зала. Не менее ${hallConfig.hallNameLength.min} и не более ${hallConfig.hallNameLength.max} символов`}
+                         placeholder="Например, &laquo;Зал 1&raquo;"
                          value={inputValueNameHall} name="name" size="full"
-                         isRequired={true}
+                         isRequired={true} max={`${hallConfig.hallNameLength.max}`}
+                         min={`${hallConfig.hallNameLength.min}`}
                          onChange={e => setInputValueNameHall(e.target.value)}/>
             </MyPopup>
             <MyPopup isVisible={showPopupForRemove} title="Удаление зала"

@@ -11,10 +11,13 @@ use App\Models\UpdatePlacesData;
 class HallController extends Controller
 {
 
-
     public function createHall(Request $request): \Illuminate\Http\JsonResponse
     {
         $name = $request->getContent();
+
+        if (!$this->checkString($name, 1, 20)) {
+            return response()->json(["status" => "error", "message" => "Неправильный формат названия зала"], 400);
+        }
 
         if (Hall::getHall($name) !== null) {
             return response()->json(["status" => "error", "message" => "Зал с таким названием уже существует"], 400);
@@ -23,6 +26,23 @@ class HallController extends Controller
             $newHall->save();
             return response()->json(["status" => "ok", "hall" => $newHall], 201);
         }
+    }
+
+    private function checkString($value, int $min, int $max): bool
+    {
+        $valueStr = trim($value);
+        if (!is_string($value) || strlen($valueStr) < $min || strlen($valueStr) > $max) {
+            return false;
+        }
+        return true;
+    }
+
+    private function checkInt($value, int $min, int $max): bool
+    {
+        if (!is_int($value) || $value < $min || $value >= $max) {
+            return false;
+        }
+        return true;
     }
 
     public function removeHall(Request $request): \Illuminate\Http\JsonResponse
@@ -37,23 +57,52 @@ class HallController extends Controller
         }
     }
 
-    private function checkInt($value, int $min, int $max): bool
+    public function updatePricesInHall(Request $request): \Illuminate\Http\JsonResponse
     {
-        if (!is_int($value) || $value < $min || $value >= $max) {
-            return false;
+        $wrong = ["status" => "error", "message" => "Неправильные данные" ,"data"=>json_decode($request->getContent())];
+
+       /* try {
+            $data = UpdatePlacesData::FromStdClass(json_decode($request->getContent(), false));
+        } catch (\Exception $e) {
+            return response()->json(["status" => "error", "message" => $e->getMessage()], 400);
         }
-        return true;
+
+        if (Hall::getHall($data->name) === null) {
+            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 404);
+        }
+
+        if (!$this->checkInt($data->rowCount, 5, 20) ||
+            !$this->checkInt($data->placesInRow, 5, 20)) {
+            return response()->json($wrong, 400);
+        }
+
+        $disabled = $data->places->disabled;
+        foreach ($disabled as $place) {
+            if (!$place ||
+                !$this->checkInt($place->row, 0, $data->rowCount) ||
+                !$this->checkInt($place->place, 0, $data->placesInRow)) {
+                return response()->json($wrong, 400);
+            }
+        }
+
+        Hall::updateHallPlaces($data->name, json_encode($data->places->ToStdClass()), $data->rowCount, $data->placesInRow);*/
+
+        return response()->json(["status" => "ok","data"=>json_decode($request->getContent())], 200);
     }
+
 
     public function updatePlacesInHall(Request $request): \Illuminate\Http\JsonResponse
     {
-        $wrong = ["status" => "error", "message" => "Неправильные данные"];
+        $wrong = ["status" => "error", "message" => "Неправильные данные" ,"data"=>json_decode($request->getContent())];
 
         try {
             $data = UpdatePlacesData::FromStdClass(json_decode($request->getContent(), false));
+        } catch (\Exception $e) {
+            return response()->json(["status" => "error", "message" => $e->getMessage()], 400);
         }
-        catch (\Exception $e) {
-           return response()->json(["status" => "error", "message" => $e->getMessage()], 400);
+
+        if (Hall::getHall($data->name) === null) {
+            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 404);
         }
 
         if (!$this->checkInt($data->rowCount, 5, 20) ||

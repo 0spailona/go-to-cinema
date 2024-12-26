@@ -22,7 +22,7 @@ export default function ToUpdateHall() {
     const dispatch = useDispatch();
 
     const {
-        halls,
+        halls,hallConfig,
     } = useSelector(state => state.halls);
 
     const [inputValueRows, setInputValueRows] = useState(0);
@@ -42,28 +42,41 @@ export default function ToUpdateHall() {
     }, [halls]);
 
 
-    const onBlurPlaces = (e) => {
+    const onBlurPlacesInput = (e) => {
+        const lastData = halls[hallToUpdate.hallName].placeInRowCount;
         const value = +e.target.value.trim();
-        if (isValid(value)) {
+        if (isValid(value,hallConfig.placesInRow.min,hallConfig.placesInRow.max)) {
             dispatch(updateCustomPlaces({
                 places: value,
                 hallId: hallToUpdate.hallName
             }));
         }
+        if(value !== lastData){
+            console.log("value !== lastData",value,lastData)
+            setHallToUpdate({hallName:hallToUpdate.hallName, isUpdated: true});
+        }
     };
 
-    const onBlurRows = (e) => {
+    const onBlurRowsInput = (e) => {
+        const lastData = halls[hallToUpdate.hallName].rowCount;
         const value = +e.target.value.trim();
-        if (isValid(value)) {
+        if (isValid(value,hallConfig.rowsCount.min,hallConfig.rowsCount.max)) {
             dispatch(updateCustomRows({
                 rows: value,
                 hallId: hallToUpdate.hallName
             }));
         }
+        if(value !== lastData){
+            console.log("value !== lastData",value,lastData)
+            setHallToUpdate({hallName:hallToUpdate.hallName, isUpdated: true});
+        }
     };
 
     const changeHall = (newHallToUpdate) => {
         dispatch(fetchHallByName(newHallToUpdate))
+        const hall = halls[newHallToUpdate];
+        setInputValueRows(hall.rowCount);
+        setInputValuePlaces(hall.placeInRowCount)
         setHallToUpdate({hallName:newHallToUpdate,isUpdated: false})
     };
 
@@ -116,12 +129,12 @@ export default function ToUpdateHall() {
                         <div className="conf-step__legend">
                             <MyInput label="Рядов, шт" placeholder={`${inputValueRows}`}
                                      onChange={(e) => setInputValueRows(e.target.value)}
-                                     onBlur={(e) => onBlurRows(e)}
+                                     onBlur={(e) => onBlurRowsInput(e)}
                                      value={inputValueRows}/>
                             <span className="multiplier">x</span>
                             <MyInput label="Мест, шт" placeholder={`${inputValuePlaces}`}
                                      onChange={(event) => setInputValuePlaces(event.target.value)}
-                                     onBlur={(e) => onBlurPlaces(e)}
+                                     onBlur={(e) => onBlurPlacesInput(e)}
                                      value={inputValuePlaces}/>
                         </div>
                         <p className="conf-step__paragraph">Теперь вы можете указать типы кресел на схеме зала:</p>
@@ -139,8 +152,12 @@ export default function ToUpdateHall() {
                               }
                         }/>
                         <div className="conf-step__buttons text-center">
-                            <MyButton type="reset" text="Отмена"/>
-                            <MyButton type="submit" text="Сохранить"/>
+                            <MyButton type="reset" text="Отмена" onclick={()=>dispatch(fetchHalls())}/>
+                            <MyButton type="submit" text="Сохранить" onclick={()=> {
+                                dispatch(updatePlacesInHall(halls[hallToUpdate.hallName]))
+                                setHallToUpdate({hallName:hallToUpdate.hallName, isUpdated: false});
+                            }
+                            }/>
                         </div>
                     </> :
                         <p className="conf-step__paragraph">Еще нет ни одного зала</p>}

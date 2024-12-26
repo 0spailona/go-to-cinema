@@ -25,6 +25,19 @@ export const fetchHalls = createAsyncThunk(
     }
 );
 
+export const fetchHallConfig = createAsyncThunk(
+    "fetchHallConfig",
+    async () => {
+        const response = await fetch(`${basedUrl}api/hallConfig`, {
+            headers: {
+                Accept: "application/json",
+            },
+            credentials: "same-origin",
+        });
+        return response.json();
+    }
+);
+
 export const fetchHallByName = createAsyncThunk(
     "fetchHallByName",
     async (name) => {
@@ -76,11 +89,40 @@ export const removeHallByName = createAsyncThunk(
 export const updatePlacesInHall = createAsyncThunk(
     "updatePlacesInHall",
     async (hall) => {
-        console.log("updatePlacesInHall request hall",hall)
-        const places = getPlacesObj(hall.places)
-        const body = JSON.stringify({name:hall.name,places,rowCount:hall.rowCount,placesInRow:hall.placeInRowCount});
+        console.log("updatePlacesInHall request hall", hall);
+        const places = getPlacesObj(hall.places);
+        const body = JSON.stringify({
+            name: hall.name,
+            places,
+            rowCount: hall.rowCount,
+            placesInRow: hall.placeInRowCount
+        });
 
         const response = await fetch(`${basedUrl}api/updatePlacesInHall`, {
+            headers: {
+                Accept: "application/json",
+                "X-CSRF-TOKEN": token,
+                "Content-Type": "text/plain",
+            },
+            method: "POST",
+            credentials: "same-origin",
+            body: body
+        });
+        return response.json();
+    }
+);
+
+export const updatePricesInHall = createAsyncThunk(
+    "updatePricesInHall",
+    async (hall) => {
+        console.log("updatePricesInHall request hall", hall);
+        const body = JSON.stringify({
+            name: hall.name,
+            vipPrice:hall.prices.vip,
+            standardPrice:hall.prices.standard
+        });
+
+        const response = await fetch(`${basedUrl}api/updatePricesInHall`, {
             headers: {
                 Accept: "application/json",
                 "X-CSRF-TOKEN": token,
@@ -99,8 +141,9 @@ const initialState = {
     loadingHalls: true,
     error: "",
     halls: null,
-    hallForUpdate:null,
-    pricesUpdateHall: {id: "h-1", isUpdated: false}
+    hallForUpdate: null,
+    pricesUpdateHall: {id: "h-1", isUpdated: false},
+    hallConfig: {hallNameLength: {min: 2, max: 15}, rowsCount: {min: 6, max: 20},placesInRow:{min: 6, max: 20}},
 };
 
 const hallsSlice = createSlice({
@@ -112,6 +155,7 @@ const hallsSlice = createSlice({
             loadingSeances: (state => state.loadingSeances),
             loadingHalls: (state => state.loadingHalls),
             pricesUpdateHall: (state => state.pricesUpdateHall),
+            hallConfig: (state) => state.hallConfig,
         },
         reducers: {
             addFilmToHall: (state, action) => {
@@ -119,16 +163,6 @@ const hallsSlice = createSlice({
                 state.halls[action.payload.to].movies.push(action.payload.film);
                 //const newFilm = action.payload.movie;
                 //state.halls[action.payload.hallId].movies.push(newFilm);
-            },
-            /*changeChairsUpdateHall: (state, action) => {
-                console.log("changeChairsUpdateHall", action.payload);
-                const hall = getHallsObj([action.payload])[0]
-                    state.chairsUpdateHall = {hall: hall, isUpdated: false};
-
-            },*/
-            changePricesUpdateHall: (state, action) => {
-                console.log("changePricesUpdateHall", action.payload);
-                    state.pricesUpdateHall = {hall: action.payload, isUpdated: false};
             },
 
             updateCustomRows: (state, action) => {
@@ -141,7 +175,6 @@ const hallsSlice = createSlice({
                 hall.places = difference < 0 ? hall.places.splice(0, newRowCount) :
                     difference > 0 ? fillPlacesByStandard(hall.places, difference, hall.placeInRowCount) : hall.places;
 
-                state.chairsUpdateHall.isUpdated = true;
                 hall.rowCount = newRowCount;
 
             },
@@ -163,7 +196,6 @@ const hallsSlice = createSlice({
                             row.push(...newPlaces);
                         }
                     }
-                    state.chairsUpdateHall.isUpdated = true;
                     hall.placeInRowCount = newPlacesInRow;
                 }
             },
@@ -173,12 +205,10 @@ const hallsSlice = createSlice({
                 if (action.payload.type === placesType.vip && hall.prices.vip !== newPrice) {
                     console.log("slice halls update vip Price");
                     hall.prices.vip = newPrice;
-                    state.pricesUpdateHall.isUpdated = true;
                 }
                 else if (action.payload.type === placesType.standard && hall.prices.standard !== newPrice) {
                     console.log("slice halls update standard Price");
                     hall.prices.standard = newPrice;
-                    state.pricesUpdateHall.isUpdated = true;
                 }
             },
             changePlaceStatus: (state, action) => {
@@ -189,13 +219,26 @@ const hallsSlice = createSlice({
             }
         },
         extraReducers: builder => {
+            // get hall config
+            builder.addCase(fetchHallConfig.pending, (state, action) => {
+            });
+            builder.addCase(fetchHallConfig.fulfilled, (state, action) => {
+                state.hallConfig =action.payload.hallConfig;
+
+            });
+            builder.addCase(fetchHallConfig.rejected, (state, action) => {
+                state.error = "Проблема на стороне сервера";
+                console.log("fetchHalls rejected action", action.payload);
+            });
+
+
             // get all halls
             builder.addCase(fetchHalls.pending, (state, action) => {
                 state.loadingHalls = true;
             });
             builder.addCase(fetchHalls.fulfilled, (state, action) => {
                 const hallsArr = action.payload.data;
-                state.halls = getHallsObj(hallsArr)
+                state.halls = getHallsObj(hallsArr);
                 state.loadingHalls = false;
             });
             builder.addCase(fetchHalls.rejected, (state, action) => {
@@ -204,16 +247,16 @@ const hallsSlice = createSlice({
                 console.log("fetchHalls rejected action", action.payload);
             });
 
-           // get hall by name
+            // get hall by name
             builder.addCase(fetchHallByName.pending, (state, action) => {
                 state.loadingHalls = true;
             });
             builder.addCase(fetchHallByName.fulfilled, (state, action) => {
-               // console.log("fetchHallByName.fulfilled", action.payload);
+                // console.log("fetchHallByName.fulfilled", action.payload);
                 const hallFullData = action.payload.data;
                 const hall = getHallsObj([hallFullData])[hallFullData.name];
                 state.halls[hallFullData.name] = hall;
-               // console.log("fetchHallByName hall", hall);
+                // console.log("fetchHallByName hall", hall);
 
                 state.loadingHalls = false;
             });
@@ -268,6 +311,20 @@ const hallsSlice = createSlice({
                 console.log("updatePlacesInHall rejected  action", action.payload);
                 state.loadingHalls = false;
             });
+
+            // update prices in hall
+            builder.addCase(updatePricesInHall.pending, (state, action) => {
+                state.loadingHalls = true;
+            });
+            builder.addCase(updatePricesInHall.fulfilled, (state, action) => {
+                console.log("updatePricesInHall fulfilled  action", action.payload);
+                state.loadingHalls = false;
+            });
+            builder.addCase(updatePricesInHall.rejected, (state, action) => {
+                state.error = "Проблема на стороне сервера";
+                console.log("updatePlacesInHall rejected  action", action.payload);
+                state.loadingHalls = false;
+            });
         },
     })
 ;
@@ -275,7 +332,6 @@ const hallsSlice = createSlice({
 
 export const {
     addFilmToHall,
-    changePricesUpdateHall,
     updateCustomRows,
     updateCustomPlaces,
     updatePrice,
@@ -284,7 +340,9 @@ export const {
 export const {
     halls,
     loadingSeances,
-    pricesUpdateHall, loadingHalls
+    pricesUpdateHall,
+    loadingHalls,
+    hallConfig
 } = hallsSlice.selectors;
 const hallsReducer = hallsSlice.reducer;
 export default hallsReducer;

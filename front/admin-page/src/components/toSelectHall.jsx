@@ -8,7 +8,6 @@ export default function ToSelectHall({selectedHall,onChange}) {
         halls
     } = useSelector(state => state.halls);
 
-    const [nextCheckedHallName, setNextCheckedHallName] = useState(null);
 
     return (
         <>
