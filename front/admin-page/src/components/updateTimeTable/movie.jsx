@@ -19,7 +19,7 @@ export default function Movie({
     const film = films[movieId];
     const id = hallId ? `${draggableIdsBase.movieInSeance}${seanceId}-${hallId}-${movieId}` : `${draggableIdsBase.movieInList}${movieId}`;
     const backGroundColorIndex = Object.keys(films).indexOf(movieId);
-    const width = minutesToPx(film.time);
+    const width = minutesToPx(film.duration);
     const height = 40;
 
     let filmStart = null;
@@ -141,8 +141,8 @@ export default function Movie({
                          onMouseDown={onMouseDown}>
                         <MovieContent isRenderInHall={isRenderInHall} isDragOverHall={isDragOverHall}
                                       isDraggingElem={isDraggingElem} title={film.title}
-                                      poster={film.poster} duration={film.time}
-                                      time={time}
+                                      poster={film.poster} duration={film.duration}
+                                      startTime={time}
                                       index={backGroundColorIndex}/>
                     </div>
                 )}

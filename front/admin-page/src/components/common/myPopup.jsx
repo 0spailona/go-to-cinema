@@ -24,14 +24,16 @@ export default function MyPopup({isVisible,children,title,onClose,onSubmit,onRes
                     <div className="popup__wrapper">
                         <form onSubmit={onSubmit} onReset={onReset}>
                             {children}
-                            <div className="conf-step__buttons text-center">
+                            {onReset && onSubmit?<div className="conf-step__buttons text-center">
                                 <MyButton text={textForSubmitBtn} type="submit"/>
                                 {uploadBtnData &&
                                     <UploadButton name={uploadBtnData.name}
                                                   text={uploadBtnData.text}
                                                   onChange={e => getFile(e.target)}/>}
                                 <MyButton text={textForResetBtn} type="reset" onclick={onReset}/>
-                            </div>
+                            </div> : ""
+                            }
+
                         </form>
                     </div>
                 </div>

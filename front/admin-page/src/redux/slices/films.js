@@ -1,8 +1,14 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {createFilm, createSeance} from "../../js/modelUtils.js";
+import {fetchToken} from "../utils.js";
 
 //const basedUrl = import.meta.env.VITE_URL
-const basedUrl = "import.meta.env.VITE_URL";
+//const basedUrl = "import.meta.env.VITE_URL";
+//192.168.23.15:3002
+//const basedUrl = import.meta.env.VITE_URL; //http://127.0.0.1:8000/admin/
+const basedUrl = "admin/";
+//console.log("basedUrl", basedUrl);
+const token = await fetchToken();
 
 const startFilms = [createFilm("Звёздные войны XXIII: Атака клонированных клонов", 130, "description", "country", null),
     createFilm("Миссия выполнима", 120, "description", "country", null),

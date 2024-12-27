@@ -1,7 +1,7 @@
 import DefaultPoster from "../../assets/i/poster.png";
 import {backgroundColorForMovie} from "../../js/info.js";
 
-export default function MovieContent({isDragOverHall, isDraggingElem, isRenderInHall, title, poster, duration, time,index}) {
+export default function MovieContent({isDragOverHall, isDraggingElem, isRenderInHall, title, poster, duration, startTime,index}) {
 
     return isRenderInHall && !isDragOverHall && isDraggingElem ?
         <div className="conf-step__seances-movie small-movie" style={{backgroundColor: backgroundColorForMovie[index]}}>
@@ -10,7 +10,7 @@ export default function MovieContent({isDragOverHall, isDraggingElem, isRenderIn
         : isDragOverHall || isRenderInHall ?
             <div className="conf-step__seances-movie" style={{backgroundColor: backgroundColorForMovie[index]}}>
                 <p className="conf-step__seances-movie-title">{title}</p>
-                <p className="conf-step__seances-movie-start">{time}</p>
+                <p className="conf-step__seances-movie-start">{startTime}</p>
             </div>
             :
             <div className="conf-step__movie" style={{backgroundColor: backgroundColorForMovie[index]}}>

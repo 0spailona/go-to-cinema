@@ -1,23 +1,16 @@
 import {getSeanceHallWidth} from "./info.js";
 
-export const isValid = (value, min, max) => {
+export const getValidationError = (value, min, max) => {
     if (isNaN(value)) {
-        console.log("Error. Value is invalid");
-        // TODO show error?
-        return false;
+        return "Введите, пожалуйста целое число";
     }
-    if(min && value < min){
-        console.log("Error. Value is invalid, value < min");
-        // TODO show error?
-        return false;
+    if(value < min){
+        return `Число должно быть больше ${min}`;
     }
-    if(max && value > max){
-        console.log("Error. Value is invalid, value > max");
-        console.log("max",max)
-        // TODO show error?
-        return false;
+    if(value > max){
+        return `Число должно быть меньше ${max}`;
     }
-    return true;
+    return null;
 };
 
 export const getPxPerMinute = () =>
@@ -47,21 +40,4 @@ export const getItemOnDragX = (itemId) => {
     return itemEl.getBoundingClientRect().x - parentEl.getBoundingClientRect().x;
 };
 
-/*export function getPlacesObj(arr){
 
-    //console.log("getPlacesObj arr",arr)
-
-    const places = {vip:[],disabled:[]}
-
-    for(let rowIndex = 0; rowIndex < arr.length; rowIndex++) {
-        for(let placeIndex = 0; placeIndex < arr[rowIndex].length; placeIndex++) {
-            if(arr[rowIndex][placeIndex]===placesType.vip){
-                places.vip.push({row: rowIndex, place: placeIndex})
-            } else if (arr[rowIndex][placeIndex]===placesType.disabled){
-                places.disabled.push({row: rowIndex, place: placeIndex})
-            }
-        }
-    }
-    //console.log("getPlacesObj places",places);
-return places;
-}*/

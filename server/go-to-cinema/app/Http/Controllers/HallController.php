@@ -60,32 +60,21 @@ class HallController extends Controller
     public function updatePricesInHall(Request $request): \Illuminate\Http\JsonResponse
     {
         $wrong = ["status" => "error", "message" => "Неправильные данные" ,"data"=>json_decode($request->getContent())];
-
-       /* try {
-            $data = UpdatePlacesData::FromStdClass(json_decode($request->getContent(), false));
-        } catch (\Exception $e) {
-            return response()->json(["status" => "error", "message" => $e->getMessage()], 400);
-        }
-
-        if (Hall::getHall($data->name) === null) {
+        $data = json_decode($request->getContent());
+        $name = $data->name;
+        if (Hall::getHall($name) === null) {
             return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 404);
         }
 
-        if (!$this->checkInt($data->rowCount, 5, 20) ||
-            !$this->checkInt($data->placesInRow, 5, 20)) {
+        $vipPrice = $data->vipPrice;
+        $standardPrice = $data->standardPrice;
+        if(!$this->checkInt($vipPrice, intval(env('MIN_VIP_PRICE')), intval(env('MAX_PRICE')))||
+        !$this->checkInt($standardPrice, intval(env('MIN_STANDARD_PRICE')), intval(env('MAX_PRICE')))
+        ||$vipPrice <= $standardPrice) {
             return response()->json($wrong, 400);
         }
 
-        $disabled = $data->places->disabled;
-        foreach ($disabled as $place) {
-            if (!$place ||
-                !$this->checkInt($place->row, 0, $data->rowCount) ||
-                !$this->checkInt($place->place, 0, $data->placesInRow)) {
-                return response()->json($wrong, 400);
-            }
-        }
-
-        Hall::updateHallPlaces($data->name, json_encode($data->places->ToStdClass()), $data->rowCount, $data->placesInRow);*/
+        Hall::updateHallPrices($name, $vipPrice, $standardPrice);
 
         return response()->json(["status" => "ok","data"=>json_decode($request->getContent())], 200);
     }
@@ -105,8 +94,8 @@ class HallController extends Controller
             return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 404);
         }
 
-        if (!$this->checkInt($data->rowCount, 5, 20) ||
-            !$this->checkInt($data->placesInRow, 5, 20)) {
+        if (!$this->checkInt($data->rowCount, intval(env('MIN_ROWS_IN_HALL')), intval(env('MAX_ROWS_IN_HALL'))) ||
+            !$this->checkInt($data->placesInRow, intval(env('MIN_PLACES_IN_ROW')), intval(env('MAX_PLACES_IN_ROW')))) {
             return response()->json($wrong, 400);
         }
 

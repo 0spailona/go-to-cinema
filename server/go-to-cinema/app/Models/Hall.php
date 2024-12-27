@@ -11,9 +11,9 @@ class Hall extends Model
     use HasFactory;
 
     protected $table = "halls";
-    protected $name = "name";
-    protected $vipPrice = "vipPrice";
-    protected $standardPrice = "standardPrice";
+    protected string $name = "name";
+    protected int $vipPrice = 350;
+    protected int $standardPrice = 0;
     protected $casts = ["places"=>"object"];
     protected $fillable = [
         'name',
@@ -35,6 +35,11 @@ class Hall extends Model
     static function updateHallPlaces($name,$places,$rowCount,$placesInRow)
     {
         DB::table('halls')->where('name', $name)->update(['places' => $places,'rowsCount' => $rowCount,'placesInRow' => $placesInRow]);
+    }
+
+    static function updateHallPrices($name,$vipPrice,$standardPrice)
+    {
+        DB::table('halls')->where('name', $name)->update(['vipPrice' => $vipPrice,'standardPrice' => $standardPrice]);
     }
 
 }

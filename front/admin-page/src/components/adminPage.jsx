@@ -25,6 +25,7 @@ export default function AdminPage() {
             <ToCreateHall/>
             <ToUpdateHall/>
             <ToUpdatePrice/>
+            <ToUpdateTimeTable/>
         </main>
     );
 }
@@ -32,5 +33,5 @@ export default function AdminPage() {
 /*
 
 
-            <ToUpdateTimeTable/>
+
             <ToOpenSales/>*/

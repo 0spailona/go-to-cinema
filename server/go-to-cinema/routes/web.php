@@ -100,6 +100,9 @@ Route::prefix('admin')->group(function () {
             $data->rowsCount->max = intval(env('MAX_ROWS_IN_HALL'));
             $data->placesInRow->min = intval(env('MIN_PLACES_IN_ROW'));
             $data->placesInRow->max = intval(env('MAX_PLACES_IN_ROW'));
+            $data->minVipPrice = intval(env('MIN_VIP_PRICE'));
+            $data->maxPrice = intval(env('MAX_PRICE'));
+            $data->minStandardPrice = intval(env('MIN_STANDARD_PRICE'));
 
             return response
             ()->json(["status" => "ok", "method"=> "hallConfig", "hallConfig" => $data], 200);
@@ -110,6 +113,9 @@ Route::prefix('admin')->group(function () {
         Route::post('removeHall', [\App\Http\Controllers\HallController::class, 'removeHall']);
         Route::post('updatePlacesInHall', [\App\Http\Controllers\HallController::class, 'updatePlacesInHall']);
         Route::post('updatePricesInHall', [\App\Http\Controllers\HallController::class, 'updatePricesInHall']);
+        Route::post('createMovie', [\App\Http\Controllers\MovieController::class, 'createMovie']);
+        Route::post('removeMovie', [\App\Http\Controllers\MovieController::class, 'removeMovie']);
+        Route::get('moviesList', [\App\Http\Controllers\MovieController::class, 'getMoviesList']);
 
     });
 });

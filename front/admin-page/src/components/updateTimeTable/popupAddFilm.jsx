@@ -1,7 +1,7 @@
 import MyInput from "../common/myInput.jsx";
 import MyPopup from "../common/myPopup.jsx";
 import {useState} from "react";
-import {isValid} from "../../js/utils.js";
+import {getValidationError} from "../../js/utils.js";
 import {useDispatch} from "react-redux";
 import {addNewFilm} from "../../redux/slices/films.js";
 
@@ -22,7 +22,7 @@ export default function PopupAddFilm({showPopup, closePopup}) {
         const description = Object.fromEntries(formdata).description.trim();
         const country = Object.fromEntries(formdata).country.trim();
         const time = +Object.fromEntries(formdata).duration.trim();
-        if (isValid(time)) {
+        if (getValidationError(time)) {
             dispatch(addNewFilm({title, description, country, time,poster}));
             closePopup();
             cleanForm();
