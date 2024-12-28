@@ -2,17 +2,16 @@ import MyInput from "../common/myInput.jsx";
 import MyPopup from "../common/myPopup.jsx";
 import {useState} from "react";
 import {getValidationError} from "../../js/utils.js";
-import {useDispatch} from "react-redux";
-import {addNewFilm} from "../../redux/slices/films.js";
 
-export default function PopupAddFilm({showPopup, closePopup}) {
 
-    const dispatch = useDispatch();
+export default function PopupAddFilm({showPopup, onReset,onSubmit,onError,closePopup}) {
+
 
     const [inputTitle, setInputTitle] = useState("");
     const [inputTime, setInputTime] = useState("");
     const [inputDescription, setInputDescription] = useState("");
     const [inputCountry, setInputCountry] = useState("");
+    const [inputRelease, setInputRelease] = useState("");
     const [poster, setPoster] = useState(null);
 
     const onSubmitAdd = (e) => {
@@ -21,19 +20,24 @@ export default function PopupAddFilm({showPopup, closePopup}) {
         const title = Object.fromEntries(formdata).title.trim();
         const description = Object.fromEntries(formdata).description.trim();
         const country = Object.fromEntries(formdata).country.trim();
-        const time = +Object.fromEntries(formdata).duration.trim();
-        if (getValidationError(time)) {
-            dispatch(addNewFilm({title, description, country, time,poster}));
-            closePopup();
-            cleanForm();
-
+        const duration = +Object.fromEntries(formdata).duration.trim();
+        const releaseYear = +Object.fromEntries(formdata).releaseYear.trim();
+        const error = getValidationError(duration)
+        if (error) {
+           onError(`Ошибка в поле "Продолжительность фильма". ${error}`);
         }
+        else{
+            //onSubmit({title, description, country, duration,poster})
+            onSubmit({title, description, country, duration,releaseYear})
+            cleanForm();
+        }
+
     };
 
     const onResetAdd = (e) => {
         e.preventDefault();
         cleanForm();
-        closePopup();
+        onReset()
     };
 
     const cleanForm = () => {
@@ -76,6 +80,8 @@ export default function PopupAddFilm({showPopup, closePopup}) {
                     </label>
                     <MyInput label="Страна" name="country" size="full" isRequired={true}
                              value={inputCountry} onChange={e => setInputCountry(e.target.value)}/>
+                    <MyInput label="Год релиза" name="releaseYear" size="full" isRequired={true}
+                             value={inputRelease} onChange={e => setInputRelease(e.target.value)}/>
                 </div>
             </div>
         </MyPopup>

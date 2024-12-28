@@ -9,6 +9,7 @@ import ToOpenSales from "./toOpenSales.jsx";
 import {useEffect} from "react";
 import {fetchHallConfig, fetchHalls} from "../redux/slices/halls.js";
 import {useDispatch} from "react-redux";
+import {fetchMovies} from "../redux/slices/films.js";
 
 export default function AdminPage() {
 
@@ -18,6 +19,7 @@ export default function AdminPage() {
     useEffect(() => {
         dispatch(fetchHallConfig())
         dispatch(fetchHalls());
+        dispatch(fetchMovies())
     }, []);
 
     return (

@@ -113,7 +113,7 @@ Route::prefix('admin')->group(function () {
         Route::post('removeHall', [\App\Http\Controllers\HallController::class, 'removeHall']);
         Route::post('updatePlacesInHall', [\App\Http\Controllers\HallController::class, 'updatePlacesInHall']);
         Route::post('updatePricesInHall', [\App\Http\Controllers\HallController::class, 'updatePricesInHall']);
-        Route::post('createMovie', [\App\Http\Controllers\MovieController::class, 'createMovie']);
+        Route::post('newMovie', [\App\Http\Controllers\MovieController::class, 'createMovie']);
         Route::post('removeMovie', [\App\Http\Controllers\MovieController::class, 'removeMovie']);
         Route::get('moviesList', [\App\Http\Controllers\MovieController::class, 'getMoviesList']);
 

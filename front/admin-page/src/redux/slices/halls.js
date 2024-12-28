@@ -220,7 +220,7 @@ const hallsSlice = createSlice({
                 });
                 builder.addCase(fetchHallConfig.rejected, (state, action) => {
                     state.error = "Проблема на стороне сервера";
-                    console.log("fetchHalls rejected action", action.payload);
+                    console.log("fetchHallConfig rejected action", action.payload);
                 });
 
 
@@ -229,6 +229,7 @@ const hallsSlice = createSlice({
                     state.loadingHalls = true;
                 });
                 builder.addCase(fetchHalls.fulfilled, (state, action) => {
+                    console.log("fetchHalls fulfilled action", action.payload);
                     const hallsArr = action.payload.data;
                     state.halls = getHallsObj(hallsArr);
                     state.loadingHalls = false;

@@ -45,7 +45,7 @@ export default function ToUpdatePrice() {
 
     useEffect(() => {
         //console.log("ToUpdateHall useEffect hall.rowCount",hall.rowCount)
-        if (halls && hallToUpdate.hallName === null) {
+        if (halls && Object.keys(halls).length !== 0 && hallToUpdate.hallName === null) {
             setInitialState(halls[Object.keys(halls)[0]])
         }
     },[halls])

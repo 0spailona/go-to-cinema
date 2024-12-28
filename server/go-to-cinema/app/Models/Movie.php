@@ -16,10 +16,24 @@ class Movie extends Model
     protected string $country = 'country';
     protected int $duration = 0;
     protected string $description = 'description';
+    protected int $release_year = 0;
     protected $poster = 'poster';
+    protected $fillable = [
+        'id',
+        'title',
+        'country',
+        'duration',
+        'description',
+        'release_year',
+    ];
 
-    static function getMovie($title){
-        return DB::table('movies')->where('title', $title)->first();
+    static function getMovie($title,$country,$duration,$release_year)
+    {
+        return DB::table('movies')->where('title', $title)
+            ->where('country',$country)
+            ->where('duration',$duration)
+            ->where('release_year',$release_year)
+            ->first();
     }
 
     static function deleteMovie($title)

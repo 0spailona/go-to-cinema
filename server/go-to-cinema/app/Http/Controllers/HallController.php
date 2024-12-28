@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hall;
+use App\Models\viewModals\HallData;
+use App\Models\viewModals\UpdatePlacesData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use stdClass;
-use App\Models\UpdatePlacesData;
 
 class HallController extends Controller
 {
@@ -117,9 +118,9 @@ class HallController extends Controller
     {
         $halls = Hall::all();
 
-        //$halls = array_map(function ($dbhall) { return MakeHallDataFromDb($dbhall); }, $dbhalls);
+        $hallsData = $halls->map(function ($hall) { return HallData::MakeHallDataFromDb($hall); });
 
-        return response()->json(["status" => "ok", "data" => $halls], 200);
+        return response()->json(["status" => "ok", "data" => $hallsData], 200);
     }
 
     public function getHallByName(string $name): \Illuminate\Http\JsonResponse
@@ -128,8 +129,8 @@ class HallController extends Controller
         if ($hall === null) {
             return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400);
         }
-        $places = json_decode($hall->places);
-        $hall->places = $places;
-        return response()->json(["status" => "ok", "data" => $hall], 200);
+        $hallData = HallData::MakeHallDataFromDb($hall);
+
+        return response()->json(["status" => "ok", "data" => $hallData], 200);
     }
 }

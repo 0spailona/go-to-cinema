@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\viewModals\PlacesData;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -14,12 +15,16 @@ class Hall extends Model
     protected string $name = "name";
     protected int $vipPrice = 350;
     protected int $standardPrice = 0;
-    protected $casts = ["places"=>"object"];
+    protected int $rowCount = 0;
+    protected int $placesInRow = 0;
+    protected PlacesData $places;
     protected $fillable = [
         'name',
         'places',
         'vipPrice',
         'standardPrice',
+        'rowCount',
+        'placesInRow',
     ];
 
 

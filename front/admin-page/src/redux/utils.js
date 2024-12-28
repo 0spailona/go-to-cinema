@@ -25,7 +25,7 @@ function fillPlacesByStandard(places, rowCount, placeInRowCount) {
 
 export function getHallsObj(arr) {
 
-    // console.log("getHallsObj",arr);
+     //console.log("getHallsObj",arr);
 
     const obj = {};
     for (let hall of arr) {
