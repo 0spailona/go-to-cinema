@@ -13,8 +13,9 @@ export const getValidationError = (value, min, max) => {
     return null;
 };
 
-export const getPxPerMinute = () =>
-    getSeanceHallWidth() / (24 * 60);
+export const getPxPerMinute = () =>getSeanceHallWidth() / (24 * 60);
+
+
 
 export const pxToMinutes = (px) => Math.trunc(px / getPxPerMinute());
 export const minutesToPx = (min) => Math.trunc(min * getPxPerMinute());

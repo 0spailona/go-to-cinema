@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
+use App\Models\viewModals\MovieData;
 use Illuminate\Http\Request;
 
 class MovieController
@@ -30,6 +31,7 @@ class MovieController
 
     public function removeMovie(Request $request): \Illuminate\Http\JsonResponse
     {
+
         return response()->json(["status" => "ok", "movie remove" => json_decode($request->getContent())], 201);
     }
 
@@ -37,6 +39,8 @@ class MovieController
     public function getMoviesList(): \Illuminate\Http\JsonResponse{
 
         $movies = Movie::all();
-        return response()->json(["status" => "ok", "movies list" => $movies]);
+
+        $moviesData = $movies->map(function ($movie) { return MovieData::MakeMovieDataFromDb($movie); });
+        return response()->json(["status" => "ok", "data" => $moviesData]);
     }
 }

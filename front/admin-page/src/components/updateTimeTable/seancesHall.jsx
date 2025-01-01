@@ -43,7 +43,7 @@ export default function SeancesHall({hallId,hallName,filmsInHall,dropId, updateI
                                 <Movie index={index} key={index} hallId={hallId}
                                        movieId={seance.filmId} itemOnDragX={itemOnDragX}
                                        updateIsDropAnimating={updateIsDropAnimating}
-                                       seanceId={seance.id}/>)) : ""}
+                                       seanceId={seance.id}/>)) : null}
                             {provided.placeholder}
                         </div>
                     )}

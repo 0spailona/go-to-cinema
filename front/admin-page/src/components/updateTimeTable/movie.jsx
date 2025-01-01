@@ -15,11 +15,15 @@ export default function Movie({
                                   updateIsDropAnimating
                               }) {
 
+    console.log("movie id", movieId)
+//console.log("movie itemOnDragX", itemOnDragX);
     const {films, seances,chosenDate} = useSelector(state => state.films);
     const film = films[movieId];
+    //console.log("movie film", film);
     const id = hallId ? `${draggableIdsBase.movieInSeance}${seanceId}-${hallId}-${movieId}` : `${draggableIdsBase.movieInList}${movieId}`;
     const backGroundColorIndex = Object.keys(films).indexOf(movieId);
     const width = minutesToPx(film.duration);
+    //console.log("movie width", minutesToPx(12));
     const height = 40;
 
     let filmStart = null;
@@ -52,6 +56,7 @@ export default function Movie({
         updateIsDropAnimating(snapshot.isDropAnimating);
 
         if (snapshot.isDropAnimating) {
+           // console.log("movie getItemStyle draggableStyle.left",draggableStyle.left)
             draggableStyle.left = itemOnDragX;
             draggableStyle.transitionDuration = "0.00001s";
         }
@@ -83,6 +88,8 @@ export default function Movie({
 
         if (isDragging) {
             setTimeout(() => setIsDraggingElem(true), 1);
+            //console.log('clickCoords',clickCoords)
+            //console.log('width',width)
             draggableStyle.left = clickCoords.x - (width / 2);
             draggableStyle.top = clickCoords.y - (height / 2);
         }
@@ -114,12 +121,14 @@ export default function Movie({
             draggableStyle.overflow = "hidden";
             draggableStyle.borderRadius = "5px";
         }
+        //console.log("movie getItemStyle draggableStyle",draggableStyle)
 
         return draggableStyle;
     };
     const onMouseDown = (e) => {
         const x = e.clientX;
         const y = e.clientY;
+        //console.log("x.y",x,y)
         setClickCoords({x, y});
 
     };

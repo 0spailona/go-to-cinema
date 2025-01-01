@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {createFilm, createSeance} from "../../js/modelUtils.js";
-import {fetchToken} from "../utils.js";
+import {fetchToken, getObjMovies} from "../utils.js";
 
 //const basedUrl = import.meta.env.VITE_URL
 //const basedUrl = "import.meta.env.VITE_URL";
@@ -57,6 +57,22 @@ export const fetchNewMovie = createAsyncThunk(
     }
 );
 
+export const removeMovieFromList = createAsyncThunk(
+    "removeMovieFromList",
+    async (id) => {
+        const response = await fetch(`${basedUrl}api/removeMovie`, {
+            headers: {
+                Accept: "application/json",
+                "X-CSRF-TOKEN": token,
+                "Content-Type": "text/plain",
+            },
+            method: "POST",
+            credentials: "same-origin",
+            body: id
+        });
+        return response.json();
+    }
+);
 
 const initialState = {
     loadingFilms: false,
@@ -83,18 +99,18 @@ export const filmsSlice = createSlice({
         isUpdatedSeances: state => state.isUpdatedSeances,
     },
     reducers: {
-       /* addNewFilm: (state, action) => {
-            const {title, time, poster, country, description} = action.payload;
-            console.log("addNewFilm", title, time, poster, country, description);
-            for (let film of Object.values(state.films)) {
-                if (film.title === title && film.country === country && film.description === description) {
-                    console.log("Error. Such film is in base");
-                    return;
-                }
-            }
-            const newFilm = createFilm(title, time, description, country, poster);
-            state.films[newFilm.id] = newFilm;
-        },*/
+        /* addNewFilm: (state, action) => {
+             const {title, time, poster, country, description} = action.payload;
+             console.log("addNewFilm", title, time, poster, country, description);
+             for (let film of Object.values(state.films)) {
+                 if (film.title === title && film.country === country && film.description === description) {
+                     console.log("Error. Such film is in base");
+                     return;
+                 }
+             }
+             const newFilm = createFilm(title, time, description, country, poster);
+             state.films[newFilm.id] = newFilm;
+         },*/
         addFilmToSeancesHall: (state, action) => {
             state.isUpdatedSeances = true;
             console.log("addNewFilmToSeancesHall", action.payload);
@@ -149,7 +165,8 @@ export const filmsSlice = createSlice({
                 state.loadingFilms = true;
             });
             builder.addCase(fetchMovies.fulfilled, (state, action) => {
-                console.log("fetchMovies fulfilled action", action.payload);
+                //console.log("fetchMovies fulfilled action", action.payload);
+                state.films = getObjMovies(action.payload.data);
                 state.loadingFilms = false;
             });
             builder.addCase(fetchMovies.rejected, (state, action) => {
@@ -171,11 +188,25 @@ export const filmsSlice = createSlice({
                 state.error = "Проблема на стороне сервера";
                 console.log("fetchNewMovie rejected action", action.payload);
             });
+
+            // remove movie from list
+            builder.addCase(removeMovieFromList.pending, (state, action) => {
+                state.loadingFilms = true;
+            });
+            builder.addCase(removeMovieFromList.fulfilled, (state, action) => {
+                console.log("removeMovieFromList fulfilled action", action.payload);
+                state.loadingFilms = false;
+            });
+            builder.addCase(removeMovieFromList.rejected, (state, action) => {
+                state.loadingFilms = false;
+                state.error = "Проблема на стороне сервера";
+                console.log("removeMovieFromList rejected action", action.payload);
+            });
         },
 });
 
 export const {
-     fetchUpdatesSeances,
+    fetchUpdatesSeances,
     addFilmToSeancesHall, resetUpdatesSeances,
     removeFilm, removeFilmFromSeanceHall, resetUpdateSeancesByDate, getFilmsByDate
 } = filmsSlice.actions;

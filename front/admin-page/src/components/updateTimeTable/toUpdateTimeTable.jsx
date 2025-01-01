@@ -8,7 +8,9 @@ import {useDispatch, useSelector} from "react-redux";
 import PopupAddFilm from "./popupAddFilm.jsx";
 import PopupRemoveFilmFromList from "./popupRemoveFilm.jsx";
 import {
-    addFilmToSeancesHall, fetchMovies, fetchNewMovie,
+    addFilmToSeancesHall,
+    fetchMovies,
+    fetchNewMovie,
     fetchUpdatesSeances,
     getFilmsByDate,
     removeFilm,
@@ -62,7 +64,7 @@ export default function ToUpdateTimeTable() {
 
     useEffect(() => {
         setShowAllMoviesLoader(loadingFilms);
-    }, [loadingFilms,films]);
+    }, [loadingFilms, films]);
 
 
     const [showPopupForAdd, setShowPopupForAdd] = useState(false);
@@ -115,7 +117,7 @@ export default function ToUpdateTimeTable() {
         if (isDropAnimating) {
             return;
         }
-
+        console.log("onTimer");
         itemOnDragX = getItemOnDragX(curDraggableId, curDroppableId);
     }
 
@@ -250,23 +252,23 @@ export default function ToUpdateTimeTable() {
     };
 
     const onResetAddToList = (e) => {
-        setShowErrorPopup(false)
-        setValidateError(null)
-        setShowPopupForAdd(false)
-    }
+        setShowErrorPopup(false);
+        setValidateError(null);
+        setShowPopupForAdd(false);
+    };
 
     const onSubmitAddToList = (data) => {
         dispatch(fetchNewMovie(data));
-        setShowErrorPopup(false)
-        setValidateError(null)
-        setShowPopupForAdd(false)
-        dispatch(fetchMovies())
-    }
+        setShowErrorPopup(false);
+        setValidateError(null);
+        setShowPopupForAdd(false);
+        dispatch(fetchMovies());
+    };
 
     const onValidateError = (msg) => {
-        setValidateError(msg)
-        setShowErrorPopup(true)
-    }
+        setValidateError(msg);
+        setShowErrorPopup(true);
+    };
     // console.log("showLoaderAllMovies", showAllMoviesLoader);
     return (<>
             <PopupRemoveFilmFromSeances showPopup={showRemoveFromSeance.isShown}
@@ -281,9 +283,9 @@ export default function ToUpdateTimeTable() {
                              onReset={onResetUpdateDate}/>
             <PopupAddFilm showPopup={showPopupForAdd}
                           closePopup={() => setShowPopupForAdd(false)}
-            onReset={onResetAddToList}
-            onSubmit={onSubmitAddToList}
-            onError={onValidateError}/>
+                          onReset={onResetAddToList}
+                          onSubmit={onSubmitAddToList}
+                          onError={onValidateError}/>
             <PopupRemoveFilmFromList showPopup={showPopupForRemove}
                                      onReset={onResetRemoveFromList}
                                      onSubmit={onSubmitRemoveFromList}
@@ -328,10 +330,11 @@ export default function ToUpdateTimeTable() {
                                         <div className="conf-step__movies" id={droppableIdsBase.allMovies}
                                              ref={provided.innerRef}
                                              {...provided.droppableProps}>
-                                            {Object.keys(films).map((id, index) => <Movie key={id} movieId={id}
-                                                                                          index={index}
-                                                                                          itemOnDragX={itemOnDragX}
-                                                                                          updateIsDropAnimating={bool => isDropAnimating = bool}/>)}
+                                            {Object.keys(films).map((id, index) =>
+                                                <Movie key={id} movieId={id}
+                                                       index={index}
+                                                       itemOnDragX={itemOnDragX}
+                                                       updateIsDropAnimating={bool => isDropAnimating = bool}/>)}
                                             {provided.placeholder}
                                         </div>
                                     )}
