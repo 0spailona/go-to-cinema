@@ -60,7 +60,7 @@ export function getObjMovies(arr) {
     for (let movie of arr) {
         //console.log("getHallsObj hall",hall)
         obj[movie.id] = {...movie, releaseYear: movie.release_year, release_year: undefined};
-        console.log("getObjMovies obj", obj[movie.id]);
+        //console.log("getObjMovies obj", obj[movie.id]);
     }
     //console.log("getHallsObj obj",obj);
     return obj;

@@ -11,6 +11,8 @@ export default function MyPopup({isVisible,children,title,onClose,onSubmit,onRes
         uploadBtnData.getData(file)
     }
 
+    //console.log("MyPopup isVisible",isVisible)
+
     return (
         <div className={`popup ${isVisible?"active":""}`}>
             <div className="popup__container">

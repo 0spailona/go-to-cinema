@@ -26,18 +26,19 @@ class Movie extends Model
         'description',
         'release_year',
     ];
+    public $incrementing = false;
 
-    static function getMovie($title,$country,$duration,$release_year)
+    // In Laravel 6.0+ make sure to also set $keyType
+    protected $keyType = 'string';
+
+    
+    static function getMovie($id)
     {
-        return DB::table('movies')->where('title', $title)
-            ->where('country',$country)
-            ->where('duration',$duration)
-            ->where('release_year',$release_year)
-            ->first();
+        return DB::table('movies')->where('id', $id)->first();
     }
 
-    static function deleteMovie($title)
+    static function deleteMovie($id)
     {
-        DB::table('halls')->where('title', $title)->delete();
+        DB::table('movies')->where('id', $id)->delete();
     }
 }

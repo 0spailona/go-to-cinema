@@ -60,15 +60,14 @@ export const fetchNewMovie = createAsyncThunk(
 export const removeMovieFromList = createAsyncThunk(
     "removeMovieFromList",
     async (id) => {
-        const response = await fetch(`${basedUrl}api/removeMovie`, {
+        console.log("removeMovieFromList",id);
+        const response = await fetch(`${basedUrl}api/removeMovie?id=${id}`, {
             headers: {
                 Accept: "application/json",
                 "X-CSRF-TOKEN": token,
-                "Content-Type": "text/plain",
             },
             method: "POST",
             credentials: "same-origin",
-            body: id
         });
         return response.json();
     }
@@ -165,7 +164,7 @@ export const filmsSlice = createSlice({
                 state.loadingFilms = true;
             });
             builder.addCase(fetchMovies.fulfilled, (state, action) => {
-                //console.log("fetchMovies fulfilled action", action.payload);
+                console.log("fetchMovies fulfilled action", action.payload);
                 state.films = getObjMovies(action.payload.data);
                 state.loadingFilms = false;
             });

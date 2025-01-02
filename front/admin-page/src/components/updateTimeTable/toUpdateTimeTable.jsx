@@ -14,7 +14,7 @@ import {
     fetchUpdatesSeances,
     getFilmsByDate,
     removeFilm,
-    removeFilmFromSeanceHall,
+    removeFilmFromSeanceHall, removeMovieFromList,
     resetUpdateSeancesByDate,
     resetUpdatesSeances
 } from "../../redux/slices/films.js";
@@ -39,17 +39,6 @@ let timerId = null;
 
 let itemOnDragX = null;
 
-/*function Loader(props) {
-    return null;
-}
-
-Loader.propTypes = {
-    type: PropTypes.string,
-    bgColor: PropTypes.any,
-    color: PropTypes.any,
-    title: PropTypes.string,
-    size: PropTypes.number
-};*/
 export default function ToUpdateTimeTable() {
 
 
@@ -68,9 +57,9 @@ export default function ToUpdateTimeTable() {
 
 
     const [showPopupForAdd, setShowPopupForAdd] = useState(false);
-    const [showPopupForRemove, setShowPopupForRemove] = useState(false);
+   // const [showPopupForRemove, setShowPopupForRemove] = useState(false);
     const [showPopupUpdateDate, setShowPopupUpdateDate] = useState({isShown: false, with: null});
-    const [showRemoveFromAllMovies, setShowRemoveFromAllMovies] = useState(false);
+
     const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [validateError, setValidateError] = useState(null);
 
@@ -81,6 +70,7 @@ export default function ToUpdateTimeTable() {
         filmTitle: null
     };
     const [showRemoveFromSeance, setShowRemoveFromFromSeance] = useState(initialShowRemoveFromSeance);
+    const [showRemoveFromAllMovies, setShowRemoveFromAllMovies] = useState({isShown: false, filmTitle: null});
 
     const [sourceDroppableId, setSourceDroppableId] = useState(null);
 
@@ -88,7 +78,10 @@ export default function ToUpdateTimeTable() {
     const [startDate, setStartDate] = useState(chosenDate ? new Date(chosenDate) : null);
 
     const getRemoveBtnStyle = () => {
-        return {top: "110px", right: "100px"};
+        if(curDraggableId){
+            return {opacity: "1",
+                pointerEvents: "auto"};
+        }
     };
 
 
@@ -117,7 +110,7 @@ export default function ToUpdateTimeTable() {
         if (isDropAnimating) {
             return;
         }
-        console.log("onTimer");
+        //console.log("onTimer");
         itemOnDragX = getItemOnDragX(curDraggableId, curDroppableId);
     }
 
@@ -125,22 +118,28 @@ export default function ToUpdateTimeTable() {
     const onDragUpdate = (result) => {
         curDroppableId = result.destination?.droppableId;
 
-        if (result.source.droppableId === droppableIdsBase.allMovies) {
-            setShowRemoveFromAllMovies(true);
-        }
+        /*if (result.source.droppableId === droppableIdsBase.allMovies) {
+          const filmTitle = films[curDraggableId?.replace("movie-in-list-", "").title]
+            setShowRemoveFromAllMovies({isShown: false,filmTitle});
+        }*/
 
     };
 
     const onDragStart = (result) => {
         curDraggableId = result.draggableId;
+        //console.log("onDragStart curDraggableId",curDraggableId);
         curDroppableId = result.source.droppableId;
         setSourceDroppableId(curDroppableId);
+       // const filmTitle = films[curDraggableId?.replace("movie-in-list-", "")].title
+
+        //console.log("onDragStart filmTitle",filmTitle);
+        //setShowRemoveFromAllMovies({isShown: false,filmTitle});
         timerId = setInterval(onTimer, 50);
     };
 
     const onDragEnd = (result) => {
         clearInterval(timerId);
-        setShowRemoveFromAllMovies(false);
+        //setShowRemoveFromAllMovies({isShown: false, filmTitle: null});
 
         if (!isCanDrop()) {
             return;
@@ -157,7 +156,8 @@ export default function ToUpdateTimeTable() {
         const start = pxToMinutes(itemOnDragX);
 
         if (toId === droppableIdsBase.removeFromAllMovies) {
-            setShowPopupForRemove(true);
+            const filmTitle = films[curDraggableId?.replace("movie-in-list-", "")].title
+            setShowRemoveFromAllMovies({isShown: true,filmTitle});
         }
         else if (toId.includes(droppableIdsBase.removeFromSeances)) {
             const hallId = toId.match(/^remove-movie-from-hall-h-(\d+)$/)[1];
@@ -213,13 +213,15 @@ export default function ToUpdateTimeTable() {
     const onResetRemoveFromList = (e) => {
         e.preventDefault();
         console.log("onResetRemove");
-        setShowPopupForRemove(false);
+        setShowRemoveFromAllMovies({isShown: false, filmTitle: null});
     };
 
     const onSubmitRemoveFromList = (e) => {
         e.preventDefault();
-        dispatch(removeFilm(curDraggableId?.replace("movie-in-list-")));
-        setShowPopupForRemove(false);
+        //dispatch(removeFilm(curDraggableId?.replace("movie-in-list-")));
+        dispatch(removeMovieFromList(curDraggableId?.replace("movie-in-list-","")))
+        dispatch(fetchMovies());
+        setShowRemoveFromAllMovies({isShown: false, filmTitle: null});
     };
 
     const onResetRemoveFromSeance = (e) => {
@@ -286,11 +288,11 @@ export default function ToUpdateTimeTable() {
                           onReset={onResetAddToList}
                           onSubmit={onSubmitAddToList}
                           onError={onValidateError}/>
-            <PopupRemoveFilmFromList showPopup={showPopupForRemove}
+            <PopupRemoveFilmFromList showPopup={showRemoveFromAllMovies.isShown}
                                      onReset={onResetRemoveFromList}
                                      onSubmit={onSubmitRemoveFromList}
-                                     title={films ? films[curDraggableId?.replace("movie-in-list-", "")] : ""}
-                                     closePopup={() => setShowPopupForRemove(false)}/>
+                                     title={showRemoveFromAllMovies.filmTitle}
+                                     closePopup={() => setShowRemoveFromAllMovies({isShown: false,filmTitle: null})}/>
 
             <section className="conf-step">
                 <ConfStepHeader title="Сетка сеансов"/>
@@ -308,7 +310,7 @@ export default function ToUpdateTimeTable() {
                             <MyButton type="button" text="Добавить фильм" onclick={() => setShowPopupForAdd(true)}/>
                             <div className={`${showRemoveFromAllMovies ? "visible" : "invisible"}`}>
                                 <Droppable droppableId={droppableIdsBase.removeFromAllMovies}>
-                                    {provided => (
+                                    {(provided) => (
                                         <div className="drop-for-remove"
                                              id={droppableIdsBase.removeFromAllMovies}
                                              ref={provided.innerRef}

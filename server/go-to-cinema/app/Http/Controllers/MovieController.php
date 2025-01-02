@@ -11,9 +11,9 @@ class MovieController
 
     public function createMovie(Request $request): \Illuminate\Http\JsonResponse
     {
-        $wrong = ["status" => "error", "message" => "Неправильные данные" ,"data"=>json_decode($request->getContent())];
+        $wrong = ["status" => "error", "message" => "Неправильные данные", "data" => json_decode($request->getContent())];
 
-        $data =json_decode($request->getContent());
+        $data = json_decode($request->getContent());
         $title = $data->title;
         $country = $data->country;
         $release_year = $data->releaseYear;
@@ -21,7 +21,7 @@ class MovieController
         $description = $data->description;
 
 
-        $movie = new Movie(['id'=>uniqid(),'title' => $title,'country'=>$country,'release_year'=>$release_year,'duration'=>$duration,'description'=>$description]);
+        $movie = new Movie(['id' => uniqid(), 'title' => $title, 'country' => $country, 'release_year' => $release_year, 'duration' => $duration, 'description' => $description]);
 
         $movie->save();
 
@@ -32,15 +32,23 @@ class MovieController
     public function removeMovie(Request $request): \Illuminate\Http\JsonResponse
     {
 
-        return response()->json(["status" => "ok", "movie remove" => json_decode($request->getContent())], 201);
+
+        $id = $request->query('id');
+        $movie = Movie::getMovie($id);
+        Movie::deleteMovie($id);
+
+        return response()->json(["status" => "ok", "movie remove" => $id, "query" => $request->getQueryString(),"movie"=>$movie], 201);
     }
 
 
-    public function getMoviesList(): \Illuminate\Http\JsonResponse{
+    public function getMoviesList(): \Illuminate\Http\JsonResponse
+    {
 
         $movies = Movie::all();
 
-        $moviesData = $movies->map(function ($movie) { return MovieData::MakeMovieDataFromDb($movie); });
+        $moviesData = $movies->map(function ($movie) {
+            return MovieData::MakeMovieDataFromDb($movie);
+        });
         return response()->json(["status" => "ok", "data" => $moviesData]);
     }
 }

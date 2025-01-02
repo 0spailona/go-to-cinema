@@ -15,7 +15,7 @@ export default function Movie({
                                   updateIsDropAnimating
                               }) {
 
-    console.log("movie id", movieId)
+    //console.log("movie id", movieId)
 //console.log("movie itemOnDragX", itemOnDragX);
     const {films, seances,chosenDate} = useSelector(state => state.films);
     const film = films[movieId];
