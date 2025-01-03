@@ -1,10 +1,10 @@
 import MyPopup from "../common/myPopup.jsx";
 import {useDispatch, useSelector} from "react-redux";
-import {removeFilm, removeMovieFromList} from "../../redux/slices/films.js";
+//import {removeFilm, removeMovieFromList} from "../../redux/slices/films.js";
 
 export default function PopupRemoveFilm({showPopup,title, closePopup,onReset,onSubmit}) {
 
-    console.log("removeMovieFromList title",title);
+    //console.log("removeMovieFromList title",title);
 
     return (
         <MyPopup isVisible={showPopup} title="Удаление фильма"

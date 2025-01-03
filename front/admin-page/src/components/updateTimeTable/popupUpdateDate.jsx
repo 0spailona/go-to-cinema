@@ -1,6 +1,6 @@
 import MyPopup from "../common/myPopup.jsx";
 import {useDispatch, useSelector} from "react-redux";
-import {getFilmsByDate, removeFilm, resetUpdateSeancesByDate} from "../../redux/slices/films.js";
+//import {getFilmsByDate, removeFilm, resetUpdateSeancesByDate} from "../../redux/slices/films.js";
 
 
 export default function PopupUpdateDate({showPopup,lastChosenDate,onReset,onSubmit, closePopup}){

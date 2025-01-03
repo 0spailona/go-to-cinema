@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {createFilm, createSeance} from "../../js/modelUtils.js";
+//import {createFilm, createSeance} from "../../js/modelUtils.js";
 import {fetchToken, getObjMovies} from "../utils.js";
 
 //const basedUrl = import.meta.env.VITE_URL
@@ -10,7 +10,7 @@ const basedUrl = "admin/";
 //console.log("basedUrl", basedUrl);
 const token = await fetchToken();
 
-const startFilms = [createFilm("Звёздные войны XXIII: Атака клонированных клонов", 130, "description", "country", null),
+/*const startFilms = [createFilm("Звёздные войны XXIII: Атака клонированных клонов", 130, "description", "country", null),
     createFilm("Миссия выполнима", 120, "description", "country", null),
     createFilm("Серая пантера", 90, "description", "country", null),
     createFilm("Движение вбок", 95, "description", "country", null),
@@ -24,7 +24,7 @@ const createSeanceDay = () => {
         day[hall] = [];
     }
     return day;
-};
+};*/
 
 
 export const fetchMovies = createAsyncThunk(
@@ -77,9 +77,9 @@ const initialState = {
     loadingFilms: false,
     error: "",
     films: null,
-    seances: {},
-    chosenDate: null,
-    isUpdatedSeances: false,
+    //seances: {},
+    //chosenDate: null,
+    //isUpdatedSeances: false,
 };
 
 /*for (let film of startFilms) {
@@ -93,24 +93,12 @@ export const filmsSlice = createSlice({
     selectors: {
         films: (state => state.films),
         loadingFilms: (state => state.loadingFilms),
-        seances: (state => state.seances),
-        chosenDate: state => state.chosenDate,
-        isUpdatedSeances: state => state.isUpdatedSeances,
+        //seances: (state => state.seances),
+        //chosenDate: state => state.chosenDate,
+        //isUpdatedSeances: state => state.isUpdatedSeances,
     },
     reducers: {
-        /* addNewFilm: (state, action) => {
-             const {title, time, poster, country, description} = action.payload;
-             console.log("addNewFilm", title, time, poster, country, description);
-             for (let film of Object.values(state.films)) {
-                 if (film.title === title && film.country === country && film.description === description) {
-                     console.log("Error. Such film is in base");
-                     return;
-                 }
-             }
-             const newFilm = createFilm(title, time, description, country, poster);
-             state.films[newFilm.id] = newFilm;
-         },*/
-        addFilmToSeancesHall: (state, action) => {
+        /*addFilmToSeancesHall: (state, action) => {
             state.isUpdatedSeances = true;
             console.log("addNewFilmToSeancesHall", action.payload);
             const hallId = action.payload.to;
@@ -124,9 +112,6 @@ export const filmsSlice = createSlice({
             if (fromHallId) {
                 state.seances[state.chosenDate][fromHallId].splice(action.payload.filmIndex, 1);
             }
-        },
-        removeFilm: (state, action) => {
-            console.log("removeFilm", action.payload);
         },
         removeFilmFromSeanceHall: (state, action) => {
             state.isUpdatedSeances = true;
@@ -155,7 +140,7 @@ export const filmsSlice = createSlice({
             state.isUpdatedSeances = false;
             delete state.seances[action.payload];
             console.log("resetUpdateSeances");
-        },
+        },*/
     },
     extraReducers:
         builder => {
@@ -205,16 +190,16 @@ export const filmsSlice = createSlice({
 });
 
 export const {
-    fetchUpdatesSeances,
-    addFilmToSeancesHall, resetUpdatesSeances,
-    removeFilm, removeFilmFromSeanceHall, resetUpdateSeancesByDate, getFilmsByDate
+    //fetchUpdatesSeances,
+    //addFilmToSeancesHall, resetUpdatesSeances,
+    //removeFilm, removeFilmFromSeanceHall, resetUpdateSeancesByDate, getFilmsByDate
 } = filmsSlice.actions;
 export const {
     films,
     loadingFilms,
-    seances,
-    isUpdatedSeances,
-    chosenDate
+    //seances,
+    //isUpdatedSeances,
+    //chosenDate
 } = filmsSlice.selectors;
 const filmsReducer = filmsSlice.reducer;
 export default filmsReducer;

@@ -116,6 +116,7 @@ Route::prefix('admin')->group(function () {
         Route::post('newMovie', [\App\Http\Controllers\MovieController::class, 'createMovie']);
         Route::post('removeMovie', [\App\Http\Controllers\MovieController::class, 'removeMovie']);
         Route::get('moviesList', [\App\Http\Controllers\MovieController::class, 'getMoviesList']);
+        Route::get('seancesListByDate', [\App\Http\Controllers\SeanceController::class, 'getSeancesByDate']);
 
     });
 });

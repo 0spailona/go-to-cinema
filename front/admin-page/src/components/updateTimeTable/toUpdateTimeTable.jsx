@@ -7,17 +7,7 @@ import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import PopupAddFilm from "./popupAddFilm.jsx";
 import PopupRemoveFilmFromList from "./popupRemoveFilm.jsx";
-import {
-    addFilmToSeancesHall,
-    fetchMovies,
-    fetchNewMovie,
-    fetchUpdatesSeances,
-    getFilmsByDate,
-    removeFilm,
-    removeFilmFromSeanceHall, removeMovieFromList,
-    resetUpdateSeancesByDate,
-    resetUpdatesSeances
-} from "../../redux/slices/films.js";
+import {fetchMovies, fetchNewMovie, removeMovieFromList,} from "../../redux/slices/films.js";
 import {getItemOnDragX, pxToMinutes} from "../../js/utils.js";
 import {getSeanceHallWidth} from "../../js/info.js";
 import {droppableIdsBase, getSeancesHallId} from "./utilsFunctions.js";
@@ -28,6 +18,14 @@ import {ru} from "date-fns/locale/ru";
 import Loader from "react-js-loader";
 import PopupRemoveFilmFromSeances from "./popupRemoveFilmFromSeances.jsx";
 import MyPopup from "../common/myPopup.jsx";
+import {
+    addFilmToSeancesHall,
+    fetchUpdatesSeances,
+   getSeancesByDate,
+    removeFilmFromSeanceHall,
+    resetUpdateSeancesByDate,
+    resetUpdatesSeances
+} from "../../redux/slices/seances.js";
 
 registerLocale("ru", ru);
 
@@ -44,7 +42,8 @@ export default function ToUpdateTimeTable() {
 
     const dispatch = useDispatch();
 
-    const {films, seances, chosenDate, isUpdatedSeances, loadingFilms} = useSelector(state => state.films);
+    const {films, loadingFilms} = useSelector(state => state.films);
+    const {seances, chosenDate, isUpdatedSeances, loadingSeances} = useSelector(state => state.seances);
     const {halls} = useSelector(state => state.halls);
 
     //console.log("ToUpdateTimeTable seances", seances);
@@ -57,7 +56,7 @@ export default function ToUpdateTimeTable() {
 
 
     const [showPopupForAdd, setShowPopupForAdd] = useState(false);
-   // const [showPopupForRemove, setShowPopupForRemove] = useState(false);
+    // const [showPopupForRemove, setShowPopupForRemove] = useState(false);
     const [showPopupUpdateDate, setShowPopupUpdateDate] = useState({isShown: false, with: null});
 
     const [showErrorPopup, setShowErrorPopup] = useState(false);
@@ -78,9 +77,11 @@ export default function ToUpdateTimeTable() {
     const [startDate, setStartDate] = useState(chosenDate ? new Date(chosenDate) : null);
 
     const getRemoveBtnStyle = () => {
-        if(curDraggableId){
-            return {opacity: "1",
-                pointerEvents: "auto"};
+        if (curDraggableId) {
+            return {
+                opacity: "1",
+                pointerEvents: "auto"
+            };
         }
     };
 
@@ -130,7 +131,7 @@ export default function ToUpdateTimeTable() {
         //console.log("onDragStart curDraggableId",curDraggableId);
         curDroppableId = result.source.droppableId;
         setSourceDroppableId(curDroppableId);
-       // const filmTitle = films[curDraggableId?.replace("movie-in-list-", "")].title
+        // const filmTitle = films[curDraggableId?.replace("movie-in-list-", "")].title
 
         //console.log("onDragStart filmTitle",filmTitle);
         //setShowRemoveFromAllMovies({isShown: false,filmTitle});
@@ -156,8 +157,8 @@ export default function ToUpdateTimeTable() {
         const start = pxToMinutes(itemOnDragX);
 
         if (toId === droppableIdsBase.removeFromAllMovies) {
-            const filmTitle = films[curDraggableId?.replace("movie-in-list-", "")].title
-            setShowRemoveFromAllMovies({isShown: true,filmTitle});
+            const filmTitle = films[curDraggableId?.replace("movie-in-list-", "")].title;
+            setShowRemoveFromAllMovies({isShown: true, filmTitle});
         }
         else if (toId.includes(droppableIdsBase.removeFromSeances)) {
             const hallId = toId.match(/^remove-movie-from-hall-h-(\d+)$/)[1];
@@ -204,7 +205,8 @@ export default function ToUpdateTimeTable() {
             setShowPopupUpdateDate({isShown: true, with: newDate});
         }
         else {
-            dispatch(getFilmsByDate(newDate.toISOString()));
+            dispatch(getSeancesByDate(newDate.toISOString()))
+           // dispatch(getFilmsByDate(newDate.toISOString()));
         }
         setStartDate(newDate);
     };
@@ -219,7 +221,7 @@ export default function ToUpdateTimeTable() {
     const onSubmitRemoveFromList = (e) => {
         e.preventDefault();
         //dispatch(removeFilm(curDraggableId?.replace("movie-in-list-")));
-        dispatch(removeMovieFromList(curDraggableId?.replace("movie-in-list-","")))
+        dispatch(removeMovieFromList(curDraggableId?.replace("movie-in-list-", "")));
         dispatch(fetchMovies());
         setShowRemoveFromAllMovies({isShown: false, filmTitle: null});
     };
@@ -292,7 +294,7 @@ export default function ToUpdateTimeTable() {
                                      onReset={onResetRemoveFromList}
                                      onSubmit={onSubmitRemoveFromList}
                                      title={showRemoveFromAllMovies.filmTitle}
-                                     closePopup={() => setShowRemoveFromAllMovies({isShown: false,filmTitle: null})}/>
+                                     closePopup={() => setShowRemoveFromAllMovies({isShown: false, filmTitle: null})}/>
 
             <section className="conf-step">
                 <ConfStepHeader title="Сетка сеансов"/>
@@ -301,6 +303,9 @@ export default function ToUpdateTimeTable() {
                              onClose={() => setShowErrorPopup(false)}>
                         <p className="conf-step__paragraph">{`${validateError}`}</p>
                     </MyPopup>
+                    {!films || Object.keys(films).length === 0 ?
+                        <p className="conf-step__paragraph">В базе пока нет ни одного фильма</p> : null
+                    }
                     <DragDropContext
                         onDragUpdate={onDragUpdate}
                         onDragStart={onDragStart}
@@ -326,8 +331,9 @@ export default function ToUpdateTimeTable() {
                             <div className={`loader ${showAllMoviesLoader ? "" : "d-none"}`}>
                                 <Loader type="bubble-scale" bgColor="#63536C" color="#FFFFFF"
                                         size={50}/>
-                            </div> : films ?
-                                <Droppable droppableId={droppableIdsBase.allMovies} direction="horizontal">
+                            </div> : films && Object.keys(films).length > 0 ?
+                                <>
+                                    <Droppable droppableId={droppableIdsBase.allMovies} direction="horizontal">
                                     {provided => (
                                         <div className="conf-step__movies" id={droppableIdsBase.allMovies}
                                              ref={provided.innerRef}
@@ -340,31 +346,21 @@ export default function ToUpdateTimeTable() {
                                             {provided.placeholder}
                                         </div>
                                     )}
-                                </Droppable> :
-                                <p className="conf-step__paragraph">В базе пока нет ни одного фильма</p>
+                                </Droppable>
+                                    <div className="conf-step__date">
+                                        <label className={`conf-step__label conf-step__label-mediumsize`}
+                                               htmlFor="date">Выберите
+                                            дату:
+                                            <DatePicker className="conf-step__input" selected={startDate} locale="ru"
+                                                        onChange={onDataInputChange} dateFormat="dd MMMM yyyy"
+                                                        minDate={new Date()}/>
+                                        </label>
+                                    </div>
+                                </>
+                                : null
                         }
-
-                        <div className="conf-step__date">
-
-                            <label className={`conf-step__label conf-step__label-mediumsize`} htmlFor="date">Выберите
-                                дату:
-                                <DatePicker className="conf-step__input" selected={startDate} locale="ru"
-                                            onChange={onDataInputChange} dateFormat="dd MMMM yyyy"
-                                            minDate={new Date()}/>
-                            </label>
-
-                        </div>
                         <div className="conf-step__seances">
-                            {films && seances[chosenDate] ? Object.keys(seances[chosenDate]).map((id) => (
-                                <SeancesHall key={id} hallId={id}
-                                             hallName={halls[id].name}
-                                             dropId={getSeancesHallId(id)}
-                                             filmsInHall={seances[chosenDate][id]} itemOnDragX={itemOnDragX}
-                                             updateIsDropAnimating={bool => isDropAnimating = bool}
-                                             showRemoveBtn={sourceDroppableId === getSeancesHallId(id)}
-                                             sourceDroppableId={sourceDroppableId}
-                                />
-                            )) : ""}
+
                         </div>
                     </DragDropContext>
                     <div className="conf-step__buttons text-center">
@@ -377,3 +373,15 @@ export default function ToUpdateTimeTable() {
     );
 
 }
+
+
+/*      {films && seances ? Object.keys(seances[chosenDate]).map((id) => (
+                                <SeancesHall key={id} hallId={id}
+                                             hallName={halls[id].name}
+                                             dropId={getSeancesHallId(id)}
+                                             filmsInHall={seances[chosenDate][id]} itemOnDragX={itemOnDragX}
+                                             updateIsDropAnimating={bool => isDropAnimating = bool}
+                                             showRemoveBtn={sourceDroppableId === getSeancesHallId(id)}
+                                             sourceDroppableId={sourceDroppableId}
+                                />
+                            )) : ""}*/

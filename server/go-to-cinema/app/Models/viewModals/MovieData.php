@@ -2,6 +2,8 @@
 
 namespace App\Models\viewModals;
 
+use stdClass;
+
 class MovieData
 {
     public string $id = 'id';
@@ -24,4 +26,5 @@ class MovieData
 
         return $movieData;
     }
+
 }

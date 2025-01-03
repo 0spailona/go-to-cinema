@@ -1,6 +1,6 @@
 import MyPopup from "../common/myPopup.jsx";
 import {useDispatch, useSelector} from "react-redux";
-import {removeFilm, removeFilmFromSeanceHall} from "../../redux/slices/films.js";
+//import {removeFilm, removeFilmFromSeanceHall} from "../../redux/slices/films.js";
 
 export default function PopupRemoveFilmFromSeances({showPopup, closePopup,onSubmit,onReset,title}) {
 

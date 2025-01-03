@@ -83,7 +83,7 @@ export default function ToCreateHall() {
                             <Loader type="bubble-scale" bgColor="#63536C" color="#FFFFFF"
                                     size={50}/>
                         </div> :
-                        halls ? <ul className="conf-step__list">
+                        halls && Object.keys(halls).length > 0 ? <ul className="conf-step__list">
                             {Object.keys(halls).map((hallName) => <li key={hallName}>{hallName}{"\u00A0"}
                                 <MyButton type={"trash"} onclick={() => {
                                     setHallForRemove(hallName);

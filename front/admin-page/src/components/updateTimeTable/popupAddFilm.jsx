@@ -22,9 +22,14 @@ export default function PopupAddFilm({showPopup, onReset,onSubmit,onError,closeP
         const country = Object.fromEntries(formdata).country.trim();
         const duration = +Object.fromEntries(formdata).duration.trim();
         const releaseYear = +Object.fromEntries(formdata).releaseYear.trim();
-        const error = getValidationError(duration)
-        if (error) {
-           onError(`Ошибка в поле "Продолжительность фильма". ${error}`);
+        const durationError = getValidationError(duration,10,250)
+        const yearNow = +new Date().getFullYear();
+        const releaseYearError = getValidationError(releaseYear,1895,yearNow)
+        if (durationError) {
+           onError(`Ошибка в поле "Продолжительность фильма". ${durationError}`);
+        }
+        else if(releaseYearError) {
+            onError(`Ошибка в поле "Год релиза". ${releaseYearError}`);
         }
         else{
             //onSubmit({title, description, country, duration,poster})
@@ -46,6 +51,7 @@ export default function PopupAddFilm({showPopup, onReset,onSubmit,onError,closeP
         setInputDescription("");
         setInputCountry("");
         setInputTime("");
+        setInputRelease("")
     };
 
     return (
