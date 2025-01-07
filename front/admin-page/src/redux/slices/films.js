@@ -149,7 +149,7 @@ export const filmsSlice = createSlice({
                 state.loadingFilms = true;
             });
             builder.addCase(fetchMovies.fulfilled, (state, action) => {
-                console.log("fetchMovies fulfilled action", action.payload);
+                //console.log("fetchMovies fulfilled action", action.payload);
                 state.films = getObjMovies(action.payload.data);
                 state.loadingFilms = false;
             });

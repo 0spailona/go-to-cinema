@@ -34,15 +34,21 @@ export default function ToUpdateHall() {
     const [showErrorPopup, setShowErrorPopup] = useState(false);
 
     const setInitialState = (hall) => {
-       // console.log(hall);
+        //console.log("set initial state hall",hall);
         setInputValueRows(hall.rowCount);
         setInputValuePlaces(hall.placeInRowCount);
         setHallToUpdate({hallName: hall.name, isUpdated: false});
     };
 
     useEffect(() => {
-       // console.log("halls",halls)
-        if (halls && Object.keys(halls).length !== 0 && hallToUpdate.hallName === null) {
+        console.log("useEffect by halls",halls)
+        if((!halls || Object.keys(halls).length === 0) && hallToUpdate.hallName !== null) {
+            setHallToUpdate({hallName: null, isUpdated: false});
+        }
+
+        else if ((halls && Object.keys(halls).length !== 0 && hallToUpdate.hallName === null)
+        ||(hallToUpdate.hallName !== null && !Object.keys(halls).includes(hallToUpdate.hallName))) {
+            //console.log("set initial state")
             setInitialState(halls[Object.keys(halls)[0]]);
         }
     }, [halls]);

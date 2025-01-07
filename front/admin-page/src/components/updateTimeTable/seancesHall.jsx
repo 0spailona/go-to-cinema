@@ -3,7 +3,7 @@ import {useSelector} from "react-redux";
 import Movie from "./movie.jsx";
 
 
-export default function SeancesHall({hallId,hallName,filmsInHall,dropId, updateIsDropAnimating, itemOnDragX, showRemoveBtn}) {
+export default function SeancesHall({hallName,filmsInHall,dropId, updateIsDropAnimating, itemOnDragX, showRemoveBtn}) {
 
 
    // const {seances,chosenDate} = useSelector(state => state.films);
@@ -11,7 +11,7 @@ export default function SeancesHall({hallId,hallName,filmsInHall,dropId, updateI
     //const filmsInHall = seances[chosenDate][hallId]
    // console.log("seancesHall filmsInHall", filmsInHall);
 
-    const removeId = `remove-movie-from-hall-${hallId}`
+    const removeId = `remove-movie-from-hall-${hallName}`
 
     const getListStyle = (isDraggingOver) => {
         return {
@@ -40,7 +40,7 @@ export default function SeancesHall({hallId,hallName,filmsInHall,dropId, updateI
                              {...provided.droppableProps}>
 
                             {filmsInHall ? filmsInHall.map((seance, index) => (
-                                <Movie index={index} key={index} hallId={hallId}
+                                <Movie index={index} key={index} hallName={hallName}
                                        movieId={seance.filmId} itemOnDragX={itemOnDragX}
                                        updateIsDropAnimating={updateIsDropAnimating}
                                        seanceId={seance.id}/>)) : null}

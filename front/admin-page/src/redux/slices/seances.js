@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {createFilm, createSeance} from "../../js/modelUtils.js";
-import {fetchToken, getObjMovies} from "../utils.js";
+import {fetchToken, getObjMovies, getSeancesObj} from "../utils.js";
 //import {createSeance} from "../../js/modelUtils.js";
 import {fetchMovies, fetchNewMovie, removeMovieFromList} from "./films.js";
 
@@ -42,7 +42,7 @@ const initialState = {
     loadingSeances: false,
     error: "",
     seances: {},
-    chosenDate: null,
+   // chosenDate: null,
     isUpdatedSeances: false,
 };
 
@@ -53,7 +53,7 @@ export const seancesSlice = createSlice({
         //films: (state => state.films),
         loadingSeances: (state => state.loadingSeances),
         seances: (state => state.seances),
-        chosenDate: state => state.chosenDate,
+        //chosenDate: state => state.chosenDate,
         isUpdatedSeances: state => state.isUpdatedSeances,
     },
     reducers: {
@@ -108,8 +108,12 @@ export const seancesSlice = createSlice({
                 state.loadingSeances = true;
             });
             builder.addCase(getSeancesByDate.fulfilled, (state, action) => {
-                console.log("getSeancesByDate fulfilled action", action.payload);
+                //console.log("getSeancesByDate fulfilled action", action.payload);
+                //const halls = action.payload.halls;
+                state.seances = getSeancesObj(action.payload.halls, action.payload.seances);
+                //state.chosenDate = (action.payload.date)
                 //state.films = getObjMovies(action.payload.data);
+                //state.seances = action.payload.seances;
                 state.loadingSeances = false;
             });
             builder.addCase(getSeancesByDate.rejected, (state, action) => {
@@ -130,7 +134,7 @@ export const {
     loadingFilms,
     seances,
     isUpdatedSeances,
-    chosenDate
+    //chosenDate
 } = seancesSlice.selectors;
 const seancesReducer = seancesSlice.reducer;
 export default seancesReducer;

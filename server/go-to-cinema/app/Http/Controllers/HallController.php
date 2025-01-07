@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Hall;
 use App\Models\viewModals\HallData;
 use App\Models\viewModals\UpdatePlacesData;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use PhpParser\Node\Expr\Array_;
 use stdClass;
 
 class HallController extends Controller
@@ -121,6 +124,12 @@ class HallController extends Controller
         $hallsData = $halls->map(function ($hall) { return HallData::MakeHallDataFromDb($hall); });
 
         return response()->json(["status" => "ok", "data" => $hallsData], 200);
+    }
+
+    public static function getHallNames()
+    {
+       $halls = Hall::all();
+        return $halls->map(function ($hall) {return $hall->name;});
     }
 
     public function getHallByName(string $name): \Illuminate\Http\JsonResponse

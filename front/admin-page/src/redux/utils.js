@@ -1,6 +1,7 @@
 //const basedUrl = import.meta.env.VITE_URL
 
 import {placesType} from "../js/info.js";
+import {halls} from "./slices/halls.js";
 
 const basedUrl = "admin/";
 
@@ -86,19 +87,10 @@ export function getPlacesObj(arr) {
     return places;
 }
 
-//export const token = await fetch(`${basedUrl}api/token`, {})
-
-/*export async function fetchHallByName(name) {
-    console.log("fetchHallByName", name);
-    const response = await fetch(`${basedUrl}api/hall/${name}`, {
-        headers: {
-            Accept: "application/json",
-        },
-        credentials: "same-origin",
-    });
-
-    if (Math.trunc(response.status / 100) >= 5) {
-        return {status: "error", message: "Ошибка на сервере"};
+export function getSeancesObj(hallNames, seances) {
+    const obj = {};
+    for (let name of hallNames) {
+        obj[name]=[]
     }
-    return response.json();
-}*/
+    return obj;
+}

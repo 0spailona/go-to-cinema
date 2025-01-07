@@ -8,7 +8,7 @@ import {draggableIdsBase, droppableIdsBase} from "./utilsFunctions.js";
 
 export default function Movie({
                                   movieId,
-                                  hallId,
+                                  hallName,
                                   seanceId,
                                   index,
                                   itemOnDragX,
@@ -17,10 +17,12 @@ export default function Movie({
 
     //console.log("movie id", movieId)
 //console.log("movie itemOnDragX", itemOnDragX);
-    const {films, seances,chosenDate} = useSelector(state => state.films);
+    const {films, seances//,chosenDate
+    } = useSelector(state => state.films);
     const film = films[movieId];
     //console.log("movie film", film);
-    const id = hallId ? `${draggableIdsBase.movieInSeance}${seanceId}-${hallId}-${movieId}` : `${draggableIdsBase.movieInList}${movieId}`;
+    const id = hallName ? `${draggableIdsBase.movieInSeance}${seanceId}-${hallName}-${movieId}`
+        : `${draggableIdsBase.movieInList}${movieId}`;
     const backGroundColorIndex = Object.keys(films).indexOf(movieId);
     const width = minutesToPx(film.duration);
     //console.log("movie width", minutesToPx(12));
@@ -31,8 +33,8 @@ export default function Movie({
     let offset = 0;
     let isRenderInHall = false;
 
-    if (hallId) {
-        filmStart = seances[chosenDate][hallId].find(x => x.id === seanceId).start;
+    if (hallName) {
+        filmStart = seances[hallName].find(x => x.id === seanceId).start;
         timeStart = getViewTime(filmStart);
         offset = minutesToPx(filmStart);
         isRenderInHall = true;
@@ -81,7 +83,8 @@ export default function Movie({
 //console.log("IsDragOverHall",isDragOverHall)
 
 
-        if ((isRenderInHall && !isDragging) || (isRenderInHall && isDragging && isDragOverHall) || (!isRenderInHall && isDragging && isDragOverHall)) {
+        if ((isRenderInHall && !isDragging) || (isRenderInHall && isDragging && isDragOverHall)
+            || (!isRenderInHall && isDragging && isDragOverHall)) {
             draggableStyle.width = `${width}px`;
             draggableStyle.height = `${height}px`;
         }
@@ -97,14 +100,14 @@ export default function Movie({
             setTimeout(() => setIsDraggingElem(false), 1);
         }
 
-        if ((hallId || isDragOverHall) && snapshot.isDragging && !snapshot.isDropAnimating) {
+        if ((hallName || isDragOverHall) && snapshot.isDragging && !snapshot.isDropAnimating) {
             const newItemOnDragX = getItemOnDragX(id);
             setTimeout(() => setTime(getViewTime(pxToMinutes(newItemOnDragX))), 1);
         }
 
         if (!snapshot.isDragging) {
             draggableStyle.transform = null;
-            if (hallId) {
+            if (hallName) {
                 draggableStyle.left = `${offset}px`;
             }
             else {

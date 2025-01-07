@@ -21,7 +21,7 @@ import MyPopup from "../common/myPopup.jsx";
 import {
     addFilmToSeancesHall,
     fetchUpdatesSeances,
-   getSeancesByDate,
+    getSeancesByDate,
     removeFilmFromSeanceHall,
     resetUpdateSeancesByDate,
     resetUpdatesSeances
@@ -43,7 +43,10 @@ export default function ToUpdateTimeTable() {
     const dispatch = useDispatch();
 
     const {films, loadingFilms} = useSelector(state => state.films);
-    const {seances, chosenDate, isUpdatedSeances, loadingSeances} = useSelector(state => state.seances);
+    const {
+        seances,// chosenDate,
+        isUpdatedSeances, loadingSeances
+    } = useSelector(state => state.seances);
     const {halls} = useSelector(state => state.halls);
 
     //console.log("ToUpdateTimeTable seances", seances);
@@ -51,6 +54,13 @@ export default function ToUpdateTimeTable() {
     const [showAllMoviesLoader, setShowAllMoviesLoader] = useState(loadingFilms);
 
     useEffect(() => {
+        //console.log("toUpdateTimeTable called new halls");
+        const date = chosenDate.toISOString().replace(/\.\d+/, "");
+        dispatch(getSeancesByDate(date));
+    }, [halls]);
+
+    useEffect(() => {
+
         setShowAllMoviesLoader(loadingFilms);
     }, [loadingFilms, films]);
 
@@ -74,7 +84,8 @@ export default function ToUpdateTimeTable() {
     const [sourceDroppableId, setSourceDroppableId] = useState(null);
 
 
-    const [startDate, setStartDate] = useState(chosenDate ? new Date(chosenDate) : null);
+    //const [startDate, setStartDate] = useState(new Date());
+    const [chosenDate, setChosenDate] = useState(new Date());
 
     const getRemoveBtnStyle = () => {
         if (curDraggableId) {
@@ -205,10 +216,12 @@ export default function ToUpdateTimeTable() {
             setShowPopupUpdateDate({isShown: true, with: newDate});
         }
         else {
-            dispatch(getSeancesByDate(newDate.toISOString()))
-           // dispatch(getFilmsByDate(newDate.toISOString()));
+            const date = newDate.toISOString().replace(/\.\d+/, "");
+            dispatch(getSeancesByDate(date));
+
         }
-        setStartDate(newDate);
+        setChosenDate(newDate);
+        //setStartDate(newDate);
     };
 
 
@@ -334,24 +347,24 @@ export default function ToUpdateTimeTable() {
                             </div> : films && Object.keys(films).length > 0 ?
                                 <>
                                     <Droppable droppableId={droppableIdsBase.allMovies} direction="horizontal">
-                                    {provided => (
-                                        <div className="conf-step__movies" id={droppableIdsBase.allMovies}
-                                             ref={provided.innerRef}
-                                             {...provided.droppableProps}>
-                                            {Object.keys(films).map((id, index) =>
-                                                <Movie key={id} movieId={id}
-                                                       index={index}
-                                                       itemOnDragX={itemOnDragX}
-                                                       updateIsDropAnimating={bool => isDropAnimating = bool}/>)}
-                                            {provided.placeholder}
-                                        </div>
-                                    )}
-                                </Droppable>
+                                        {provided => (
+                                            <div className="conf-step__movies" id={droppableIdsBase.allMovies}
+                                                 ref={provided.innerRef}
+                                                 {...provided.droppableProps}>
+                                                {Object.keys(films).map((id, index) =>
+                                                    <Movie key={id} movieId={id}
+                                                           index={index}
+                                                           itemOnDragX={itemOnDragX}
+                                                           updateIsDropAnimating={bool => isDropAnimating = bool}/>)}
+                                                {provided.placeholder}
+                                            </div>
+                                        )}
+                                    </Droppable>
                                     <div className="conf-step__date">
                                         <label className={`conf-step__label conf-step__label-mediumsize`}
                                                htmlFor="date">Выберите
                                             дату:
-                                            <DatePicker className="conf-step__input" selected={startDate} locale="ru"
+                                            <DatePicker className="conf-step__input" selected={chosenDate} locale="ru"
                                                         onChange={onDataInputChange} dateFormat="dd MMMM yyyy"
                                                         minDate={new Date()}/>
                                         </label>
@@ -360,7 +373,16 @@ export default function ToUpdateTimeTable() {
                                 : null
                         }
                         <div className="conf-step__seances">
-
+                            {films && seances ? Object.keys(seances).map((hallName) => (
+                                <SeancesHall key={hallName}
+                                             hallName={hallName}
+                                             dropId={getSeancesHallId(hallName)}
+                                             filmsInHall={seances[hallName]} itemOnDragX={itemOnDragX}
+                                             updateIsDropAnimating={bool => isDropAnimating = bool}
+                                             showRemoveBtn={sourceDroppableId === getSeancesHallId(hallName)}
+                                             sourceDroppableId={sourceDroppableId}
+                                />
+                            )) : ""}
                         </div>
                     </DragDropContext>
                     <div className="conf-step__buttons text-center">

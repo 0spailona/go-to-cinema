@@ -229,7 +229,7 @@ const hallsSlice = createSlice({
                     state.loadingHalls = true;
                 });
                 builder.addCase(fetchHalls.fulfilled, (state, action) => {
-                    console.log("fetchHalls fulfilled action", action.payload);
+                    //console.log("fetchHalls fulfilled action", action.payload);
                     const hallsArr = action.payload.data;
                     state.halls = getHallsObj(hallsArr);
                     state.loadingHalls = false;

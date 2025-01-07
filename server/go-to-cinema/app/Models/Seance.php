@@ -22,9 +22,10 @@ class Seance extends Model
         'hallName',
     ];
 
-    static function getSeancesByDate($date): \Illuminate\Support\Collection
+    static function getSeancesByDate($dateStart,$dateEnd): \Illuminate\Support\Collection
     {
-        return DB::table('seances')->whereBetween('startTime', [$date,$date+1])->get();
+        return DB::table('seances')->where('startTime', '>=', $dateStart)->where('startTime', '<=', $dateEnd)->get();
+        //return DB::table('seances')->whereBetween('startTime', [$date,$date+1])->get();
     }
 
 }
