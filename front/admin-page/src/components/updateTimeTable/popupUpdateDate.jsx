@@ -1,5 +1,6 @@
 import MyPopup from "../common/myPopup.jsx";
 import {useDispatch, useSelector} from "react-redux";
+import {months} from "./utilsFunctions.js";
 //import {getFilmsByDate, removeFilm, resetUpdateSeancesByDate} from "../../redux/slices/films.js";
 
 
@@ -10,7 +11,8 @@ export default function PopupUpdateDate({showPopup,lastChosenDate,onReset,onSubm
             return "";
         }
         const newDate = new Date(string);
-        return `${newDate.getDate()}. ${newDate.getMonth() + 1}. ${newDate.getFullYear()}`;
+        const month = months[newDate.getMonth()];
+        return `${newDate.getDate()} ${month} ${newDate.getFullYear()}`;
     };
 
 
@@ -25,4 +27,8 @@ export default function PopupUpdateDate({showPopup,lastChosenDate,onReset,onSubm
             </p>
         </MyPopup>
     )
+}
+
+export function updateDate(date){
+
 }

@@ -4,17 +4,16 @@ export const getValidationError = (value, min, max) => {
     if (isNaN(value)) {
         return "Введите, пожалуйста целое число";
     }
-    if(value < min){
+    if (value < min) {
         return `Число должно быть больше ${min}`;
     }
-    if(value > max){
+    if (value > max) {
         return `Число должно быть меньше ${max}`;
     }
     return null;
 };
 
-export const getPxPerMinute = () =>getSeanceHallWidth() / (24 * 60);
-
+export const getPxPerMinute = () => getSeanceHallWidth() / (24 * 60);
 
 
 export const pxToMinutes = (px) => Math.trunc(px / getPxPerMinute());
@@ -41,4 +40,29 @@ export const getItemOnDragX = (itemId) => {
     return itemEl.getBoundingClientRect().x - parentEl.getBoundingClientRect().x;
 };
 
+export function toISOStringNoMs(date) {
+    return date.toISOString().replace(/\.\d+/, "");
+}
 
+export function checkDropInHall(itemOnDragX, width, hallWidth, film, seances, films) {
+
+    console.log("checkDropInHall itemOnDragX", itemOnDragX, "width",width,"hallWidth",hallWidth);
+
+    if (itemOnDragX < -10 || itemOnDragX + width > hallWidth + 10) {
+        return false;
+    }
+    const startTime = pxToMinutes(itemOnDragX);
+    const endTime = startTime + film.duration;
+
+    for (let seance of seances) {
+            const endSeance = seance.start + films[seance.filmId].duration;
+
+            if((startTime > seance.start && startTime < endSeance) ||
+                (endTime > seance.start && endTime < endSeance)) {
+                //console.log("checkDropInHall ", false);
+                return false;
+            }
+    }
+
+    return true;
+}

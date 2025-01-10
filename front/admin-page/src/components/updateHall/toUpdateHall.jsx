@@ -41,7 +41,7 @@ export default function ToUpdateHall() {
     };
 
     useEffect(() => {
-        console.log("useEffect by halls",halls)
+        //console.log("useEffect by halls",halls)
         if((!halls || Object.keys(halls).length === 0) && hallToUpdate.hallName !== null) {
             setHallToUpdate({hallName: null, isUpdated: false});
         }

@@ -593,7 +593,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
 
 .conf-step__seances-hall {
     position: relative;
-    margin: 35px;
+    margin: 35px 0 35px 35px;
 }
 
 .conf-step__seances-title {
@@ -815,26 +815,31 @@ textarea.conf-step__input {
 
 /*drop container for removing*/
 
+.drop-for-remove-wrp{
+  position: relative;
+    top: 50px;
+    width: 65px;
+    height: 65px;
+}
+
 .drop-for-remove {
     position: absolute;
-    top: 180px;
-    right: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 194px;
-    height: 40px;
     background-image: url("../assets/i/trash.png");
     background-position: center;
     background-repeat: no-repeat;
     background-color: rgba(234, 233, 235, 0.95);
     border-radius: 3px;
-    opacity: 0;
-    pointer-events: none;
 }
 
 .drop-for-remove:hover {
     background-color: rgba(99, 83, 108, 0.3);
+}
+
+.d-flex{
+    display: flex;
 }
 
 .visible {
