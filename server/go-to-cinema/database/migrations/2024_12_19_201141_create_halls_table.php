@@ -14,7 +14,8 @@ class CreateHallsTable extends Migration
     public function up()
     {
         Schema::create('halls', function (Blueprint $table) {
-            $table->string('name')->primary();
+            $table->string('id')->primary();
+            $table->string('name')->unique();
             $table->json('places')->default('{"disabled": [],"vip": []}');
             $table->integer('vipPrice')->default(350);
             $table->integer('standardPrice')->default(0);

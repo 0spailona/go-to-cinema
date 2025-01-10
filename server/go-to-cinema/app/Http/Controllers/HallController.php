@@ -23,10 +23,10 @@ class HallController extends Controller
             return response()->json(["status" => "error", "message" => "Неправильный формат названия зала"], 400);
         }
 
-        if (Hall::getHall($name) !== null) {
+        if (Hall::getHallByName($name) !== null) {
             return response()->json(["status" => "error", "message" => "Зал с таким названием уже существует"], 400);
         } else {
-            $newHall = new Hall(['name' => $name]);
+            $newHall = new Hall(['name' => $name,'id' => uniqid()]);
             $newHall->save();
             return response()->json(["status" => "ok", "hall" => $newHall], 201);
         }
@@ -51,12 +51,12 @@ class HallController extends Controller
 
     public function removeHall(Request $request): \Illuminate\Http\JsonResponse
     {
-        $name = $request->getContent();
+        $id = $request->getContent();
 
-        if (Hall::getHall($name) === null) {
+        if (Hall::getHallById($id) === null) {
             return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 404);
         } else {
-            Hall::deleteHall($name);
+            Hall::deleteHall($id);
             return response()->json(["status" => "ok"], 200);
         }
     }
@@ -65,8 +65,8 @@ class HallController extends Controller
     {
         $wrong = ["status" => "error", "message" => "Неправильные данные" ,"data"=>json_decode($request->getContent())];
         $data = json_decode($request->getContent());
-        $name = $data->name;
-        if (Hall::getHall($name) === null) {
+        $id = $data->id;
+        if (Hall::getHallById($id) === null) {
             return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 404);
         }
 
@@ -78,7 +78,7 @@ class HallController extends Controller
             return response()->json($wrong, 400);
         }
 
-        Hall::updateHallPrices($name, $vipPrice, $standardPrice);
+        Hall::updateHallPrices($id, $vipPrice, $standardPrice);
 
         return response()->json(["status" => "ok","data"=>json_decode($request->getContent())], 200);
     }
@@ -94,7 +94,7 @@ class HallController extends Controller
             return response()->json(["status" => "error", "message" => $e->getMessage()], 400);
         }
 
-        if (Hall::getHall($data->name) === null) {
+        if (Hall::getHallById($data->id) === null) {
             return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 404);
         }
 
@@ -112,7 +112,7 @@ class HallController extends Controller
             }
         }
 
-        Hall::updateHallPlaces($data->name, json_encode($data->places->ToStdClass()), $data->rowCount, $data->placesInRow);
+        Hall::updateHallPlaces($data->id, json_encode($data->places->ToStdClass()), $data->rowCount, $data->placesInRow);
 
         return response()->json(["status" => "ok"], 200);
     }
@@ -126,15 +126,15 @@ class HallController extends Controller
         return response()->json(["status" => "ok", "data" => $hallsData], 200);
     }
 
-    public static function getHallNames()
+    public static function getHallNamesAndIds()
     {
        $halls = Hall::all();
-        return $halls->map(function ($hall) {return $hall->name;});
+        return $halls->map(function ($hall) {return HallData::GetShortDataInStdClass($hall);});
     }
 
-    public function getHallByName(string $name): \Illuminate\Http\JsonResponse
+    public function getHallById(string $id): \Illuminate\Http\JsonResponse
     {
-        $hall = Hall::getHall($name);
+        $hall = Hall::getHallByName($id);
         if ($hall === null) {
             return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400);
         }

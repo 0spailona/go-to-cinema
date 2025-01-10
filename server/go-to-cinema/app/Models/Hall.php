@@ -12,6 +12,7 @@ class Hall extends Model
     use HasFactory;
 
     protected $table = "halls";
+    protected string $id = 'id';
     protected string $name = "name";
     protected int $vipPrice = 350;
     protected int $standardPrice = 0;
@@ -19,6 +20,7 @@ class Hall extends Model
     protected int $placesInRow = 0;
     protected PlacesData $places;
     protected $fillable = [
+        'id',
         'name',
         'places',
         'vipPrice',
@@ -27,24 +29,32 @@ class Hall extends Model
         'placesInRow',
     ];
 
+    public $incrementing = false;
 
-    static function getHall($name){
+    // In Laravel 6.0+ make sure to also set $keyType
+    protected $keyType = 'string';
+
+    static function getHallByName($name){
         return DB::table('halls')->where('name', $name)->first();
     }
 
-    static function deleteHall($name)
-    {
-        DB::table('halls')->where('name', $name)->delete();
+    static function getHallById($id){
+        return DB::table('halls')->where('id', $id)->first();
     }
 
-    static function updateHallPlaces($name,$places,$rowCount,$placesInRow)
+    static function deleteHall($id)
     {
-        DB::table('halls')->where('name', $name)->update(['places' => $places,'rowsCount' => $rowCount,'placesInRow' => $placesInRow]);
+        DB::table('halls')->where('id', $id)->delete();
     }
 
-    static function updateHallPrices($name,$vipPrice,$standardPrice)
+    static function updateHallPlaces($id,$places,$rowCount,$placesInRow)
     {
-        DB::table('halls')->where('name', $name)->update(['vipPrice' => $vipPrice,'standardPrice' => $standardPrice]);
+        DB::table('halls')->where('id', $id)->update(['places' => $places,'rowsCount' => $rowCount,'placesInRow' => $placesInRow]);
+    }
+
+    static function updateHallPrices($id,$vipPrice,$standardPrice)
+    {
+        DB::table('halls')->where('id', $id)->update(['vipPrice' => $vipPrice,'standardPrice' => $standardPrice]);
     }
 
 }

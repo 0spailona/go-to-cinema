@@ -1,18 +1,12 @@
 import {Droppable} from "react-beautiful-dnd";
 import {useSelector} from "react-redux";
 import Movie from "./movie.jsx";
+import {toISOStringNoMs} from "../../js/utils.js";
 
 
-export default function SeancesHall({hallName,filmsInHall,dropId, updateIsDropAnimating, itemOnDragX, showRemoveBtn}) {
-
-
-   // const {seances,chosenDate} = useSelector(state => state.films);
-
-    //const filmsInHall = seances[chosenDate][hallId]
-   // console.log("seancesHall filmsInHall", filmsInHall);
-
-    const removeId = `remove-movie-from-hall-${hallName}`
-
+export default function SeancesHall({hallName,hallId,filmsInHall,dropId, updateIsDropAnimating, itemOnDragX, showRemoveBtn}) {
+    const removeId = `remove-movie-from-hall-${hallId}`
+    //console.log("seancesHall removeId", removeId);
     const getListStyle = (isDraggingOver) => {
         return {
             background: isDraggingOver ? "lightblue" : "lightgrey",
@@ -20,27 +14,20 @@ export default function SeancesHall({hallName,filmsInHall,dropId, updateIsDropAn
         };
     };
 
-    const getRemoveBtnStyle = () => {
-        return {
-            top: "35px",
-            right: "-30px",
-        };
-    };
-
-
     return (
         <div className="conf-step__seances-hall-wrp">
             <div className="conf-step__seances-hall">
                 <h3 className="conf-step__seances-title">{hallName}</h3>
                 <Droppable droppableId={dropId}>
                     {(provided, snapshot) => (
-                        <div className="conf-step__seances-timeline" id={dropId}
+                        <div className="conf-step__seances-timeline"
+                             id={dropId}
                              ref={provided.innerRef}
                              style={getListStyle(snapshot.isDraggingOver)}
                              {...provided.droppableProps}>
 
                             {filmsInHall ? filmsInHall.map((seance, index) => (
-                                <Movie index={index} key={index} hallName={hallName}
+                                <Movie index={index} key={index} hallId={hallId}
                                        movieId={seance.filmId} itemOnDragX={itemOnDragX}
                                        updateIsDropAnimating={updateIsDropAnimating}
                                        seanceId={seance.id}/>)) : null}
@@ -49,13 +36,18 @@ export default function SeancesHall({hallName,filmsInHall,dropId, updateIsDropAn
                     )}
                 </Droppable>
             </div>
-            <div className={`${showRemoveBtn ? "visible" : "invisible"}`}>
+            <div className={`drop-for-remove-wrp d-block ${showRemoveBtn ? '' : 'invisible'}`}>
                 <Droppable droppableId={removeId}>
                     {(provided) => (
-                        <div className="drop-for-remove"
+                        <div className="drop-for-remove border"
                              id={removeId}
                              ref={provided.innerRef}
-                             style={getRemoveBtnStyle()}
+                             style={{
+                                 top: 0,
+                                 right: 0,
+                                 width: 65,
+                                 height: 65
+                             }}
                              {...provided.droppableProps} >
                             {provided.placeholder}
                         </div>

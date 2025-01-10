@@ -81,7 +81,7 @@ export function createFilm(title, duration, description, country,poster,seances 
     }
 }
 
-let nextCountSeances = 0;
+/*let nextCountSeances = 0;
 
 export function createSeance(filmId,start){
     nextCountSeances++;
@@ -89,4 +89,4 @@ export function createSeance(filmId,start){
     return{
         id,filmId,start
     }
-}
+}*/

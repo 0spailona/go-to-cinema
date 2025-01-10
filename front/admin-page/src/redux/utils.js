@@ -1,7 +1,7 @@
 //const basedUrl = import.meta.env.VITE_URL
 
 import {placesType} from "../js/info.js";
-import {halls} from "./slices/halls.js";
+import {toISOStringNoMs} from "../js/utils.js";
 
 const basedUrl = "admin/";
 
@@ -87,10 +87,43 @@ export function getPlacesObj(arr) {
     return places;
 }
 
-export function getSeancesObj(hallNames, seances) {
+
+export function createSeance(filmId, start, index) {
+    const id = `seance-${index}`;
+    return {
+        id, filmId, start
+    };
+}
+
+export function getSeancesObj(halls, seances) {
     const obj = {};
-    for (let name of hallNames) {
-        obj[name]=[]
+    for (let hall of halls) {
+        obj[hall.id] = {hallName: hall.name, seances: []};
     }
     return obj;
 }
+
+export function getArrFromSeances(seances, date) {
+    const arr = [];
+
+    for (let hallId of Object.keys(seances)) {
+        for (let seance of seances[hallId].seances) {
+
+            const startTime = new Date(date);
+            startTime.setHours(Math.trunc(seance.start / 60), seance.start % 60);
+
+            const obj = {
+                hallId,
+                movieId: seance.filmId,
+                startTime: toISOStringNoMs(startTime),
+                id: seance.id
+            };
+            arr.push(obj);
+        }
+    }
+    console.log("getArrFromSeances", arr);
+    return arr;
+}
+
+
+
