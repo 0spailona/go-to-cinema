@@ -41,12 +41,13 @@ export const getItemOnDragX = (itemId) => {
 };
 
 export function toISOStringNoMs(date) {
+   // console.log("date",date)
     return date.toISOString().replace(/\.\d+/, "");
 }
 
 export function checkDropInHall(itemOnDragX, width, hallWidth, film, seances, films) {
 
-    console.log("checkDropInHall itemOnDragX", itemOnDragX, "width",width,"hallWidth",hallWidth);
+    //console.log("checkDropInHall itemOnDragX", itemOnDragX, "width",width,"hallWidth",hallWidth);
 
     if (itemOnDragX < -10 || itemOnDragX + width > hallWidth + 10) {
         return false;

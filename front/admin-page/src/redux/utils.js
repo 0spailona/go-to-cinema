@@ -97,9 +97,23 @@ export function createSeance(filmId, start, index) {
 
 export function getSeancesObj(halls, seances) {
     const obj = {};
+
     for (let hall of halls) {
         obj[hall.id] = {hallName: hall.name, seances: []};
+        for (let seance of seances) {
+            if (seance.hallId === hall.id) {
+                const seanceObj = {};
+                seanceObj.id = seance.id;
+                seanceObj.filmId = seance.movieId;
+                seanceObj.hallId = seance.hallId;
+                const date = new Date(seance.startTime)
+                seanceObj.start = date.getHours() * 60 + date.getMinutes();
+                obj[hall.id].seances.push(seanceObj);
+            }
+        }
     }
+    //console.log("getSeancesObj", obj);
+
     return obj;
 }
 
@@ -112,16 +126,18 @@ export function getArrFromSeances(seances, date) {
             const startTime = new Date(date);
             startTime.setHours(Math.trunc(seance.start / 60), seance.start % 60);
 
+            const id = seance.id.includes("seance-") ? null : seance.id;
+
             const obj = {
                 hallId,
                 movieId: seance.filmId,
                 startTime: toISOStringNoMs(startTime),
-                id: seance.id
+                id
             };
             arr.push(obj);
         }
     }
-    console.log("getArrFromSeances", arr);
+    //console.log("getArrFromSeances", arr);
     return arr;
 }
 

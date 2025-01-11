@@ -10,7 +10,7 @@ import PopupRemoveFilmFromList from "./popupRemoveFilm.jsx";
 import {fetchMovies, fetchNewMovie, removeMovieFromList,} from "../../redux/slices/films.js";
 import {checkDropInHall, getItemOnDragX, pxToMinutes, toISOStringNoMs} from "../../js/utils.js";
 import {getSeanceHallWidth} from "../../js/info.js";
-import {droppableIdsBase, getSeancesHallId} from "./utilsFunctions.js";
+import {draggableIdsBase, droppableIdsBase, getSeancesHallId} from "./utilsFunctions.js";
 import PopupUpdateDate from "./popupUpdateDate.jsx";
 import DatePicker, {registerLocale} from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -43,30 +43,35 @@ export default function ToUpdateTimeTable() {
 
     const {films, loadingFilms} = useSelector(state => state.films);
     const {
-        seances,// chosenDate,
+        seances,
         isUpdatedSeances, loadingSeances
     } = useSelector(state => state.seances);
     const {halls} = useSelector(state => state.halls);
 
-    //console.log("ToUpdateTimeTable seances", seances);
-    //console.log("loadingFilms", loadingFilms);
     const [showAllMoviesLoader, setShowAllMoviesLoader] = useState(loadingFilms);
 
+    const today = new Date()
+    today.setHours(0, 0, 0, 0);
+
+    useEffect(()=>{
+        if(halls && Object.keys(halls).length > 0){
+            dispatch(getSeancesByDate(toISOStringNoMs(today)))
+        }
+    },[])
+
     useEffect(() => {
-        //console.log("toUpdateTimeTable called new halls");
-        const date = chosenDate.toISOString().replace(/\.\d+/, "");
-        dispatch(getSeancesByDate(date));
+        if(halls && Object.keys(halls).length > 0){
+            dispatch(getSeancesByDate(toISOStringNoMs(chosenDate)));
+        }
     }, [halls]);
 
     useEffect(() => {
-
         setShowAllMoviesLoader(loadingFilms);
     }, [loadingFilms, films]);
 
 
     const [showPopupForAdd, setShowPopupForAdd] = useState(false);
-    // const [showPopupForRemove, setShowPopupForRemove] = useState(false);
-    const [showPopupUpdateDate, setShowPopupUpdateDate] = useState({isShown: false, with: null});
+    const [showPopupUpdateDate, setShowPopupUpdateDate] = useState({isShown: false, date: null});
 
     const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [validateError, setValidateError] = useState(null);
@@ -81,18 +86,14 @@ export default function ToUpdateTimeTable() {
     const [showRemoveFromAllMovies, setShowRemoveFromAllMovies] = useState({isShown: false, filmTitle: null});
 
     const [sourceDroppableId, setSourceDroppableId] = useState(null);
-
-
-    //const [startDate, setStartDate] = useState(new Date());
-    const [chosenDate, setChosenDate] = useState(new Date());
-    const [hasUpdatedSeances, setHasUpdatedSeances] = useState(false);
+    const [chosenDate, setChosenDate] = useState(today);
 
     function isCanDrop(hallId, filmId) {
         if (curDroppableId?.includes(droppableIdsBase.seanceHall)) {
             const width = document.getElementById(curDraggableId).getBoundingClientRect().width;
             const hallWidth = getSeanceHallWidth();
             const seancesInHall = seances[hallId].seances;
-            //console.log("isCanDrop");
+
             if (!checkDropInHall(itemOnDragX, width, hallWidth, films[filmId], seancesInHall, films)) {
                 return false;
             }
@@ -104,7 +105,6 @@ export default function ToUpdateTimeTable() {
             if (itemOnDragX + width >= hallWidth) {
                 itemOnDragX = hallWidth - width;
             }
-
         }
 
         return true;
@@ -114,7 +114,6 @@ export default function ToUpdateTimeTable() {
         if (isDropAnimating) {
             return;
         }
-        //console.log("onTimer");
         itemOnDragX = getItemOnDragX(curDraggableId, curDroppableId);
     }
 
@@ -134,11 +133,9 @@ export default function ToUpdateTimeTable() {
         //console.log("onDragStart curDraggableId",curDraggableId);
         curDroppableId = result.source.droppableId;
         setSourceDroppableId(curDroppableId);
-        if (curDraggableId.includes("movie-in-list-")) {
 
-            const filmTitle = films[curDraggableId?.replace("movie-in-list-", "")].title;
-
-            //console.log("onDragStart filmTitle",filmTitle);
+        if (curDraggableId.includes(draggableIdsBase.movieInList)) {
+            const filmTitle = films[curDraggableId?.replace(draggableIdsBase.movieInList, "")].title;
             setShowRemoveFromAllMovies({isShown: false, filmTitle});
         }
 
@@ -149,21 +146,18 @@ export default function ToUpdateTimeTable() {
         clearInterval(timerId);
         setShowRemoveFromAllMovies({isShown: false, filmTitle: null});
         setSourceDroppableId(null);
-
-
-        console.log("onDragEnd", result);
+       // console.log("onDragEnd", result);
 
         const {source, destination, draggableId} = result;
         if (!destination || destination.droppableId === droppableIdsBase.allMovies) {
             return;
         }
 
-
         const fromId = source.droppableId;
         const itemIndex = source.index;
         const toId = destination.droppableId;
-        console.log("source",source);
-        console.log("toId", toId);
+        //console.log("source",source);
+        //console.log("toId", toId);
 
         const start = pxToMinutes(itemOnDragX);
 
@@ -171,11 +165,11 @@ export default function ToUpdateTimeTable() {
             if(source.droppableId !== droppableIdsBase.allMovies){
                 return;
             }
-            const filmTitle = films[draggableId?.replace("movie-in-list-", "")].title;
+            const filmTitle = films[draggableId?.replace(draggableIdsBase.movieInList, "")].title;
             setShowRemoveFromAllMovies({isShown: true, filmTitle});
         }
         else if (toId.includes(droppableIdsBase.removeFromSeances)) {
-            console.log("removeFromSeances", droppableIdsBase.removeFromSeances);
+            //console.log("removeFromSeances", droppableIdsBase.removeFromSeances);
             if(!source.droppableId.includes(droppableIdsBase.seanceHall)) {
                 return;
             }
@@ -190,11 +184,8 @@ export default function ToUpdateTimeTable() {
             });
         }
         else {
-            //console.log("draggableId",draggableId)
             const hallId = toId.match(/^seances-hall-([0-9a-f]+)$/)[1];
             const filmId = draggableId.match(/^movie-in-[\w-]+-([0-9a-f]+)$/)[1];
-            //console.log("filmId", filmId);
-            //console.log("hallId", hallId);
 
             if (!isCanDrop(hallId, filmId)) {
                 return;
@@ -231,21 +222,18 @@ export default function ToUpdateTimeTable() {
 
     const onResetRemoveFromList = (e) => {
         e.preventDefault();
-        console.log("onResetRemove");
         setShowRemoveFromAllMovies({isShown: false, filmTitle: null});
     };
 
     const onSubmitRemoveFromList = (e) => {
         e.preventDefault();
-        //dispatch(removeFilm(curDraggableId?.replace("movie-in-list-")));
-        dispatch(removeMovieFromList(curDraggableId?.replace("movie-in-list-", "")));
+        dispatch(removeMovieFromList(curDraggableId?.replace(draggableIdsBase.movieInList, "")));
         dispatch(fetchMovies());
         setShowRemoveFromAllMovies({isShown: false, filmTitle: null});
     };
 
     const onResetRemoveFromSeance = (e) => {
         e.preventDefault();
-        console.log("onResetRemove");
         setShowRemoveFromFromSeance(initialShowRemoveFromSeance);
     };
 
@@ -261,40 +249,33 @@ export default function ToUpdateTimeTable() {
     const onDateSelected = (newDate) => {
         newDate.setHours(0, 0, 0, 0);
 
-        console.log(newDate)
-
         if (chosenDate && chosenDate !== newDate && isUpdatedSeances) {
-            setShowPopupUpdateDate({isShown: true, with: newDate});
-
+            setShowPopupUpdateDate({isShown: true, date: newDate});
         }
         else {
-            //const date = newDate.toISOString().replace(/\.\d+/, "");
             const date = toISOStringNoMs(newDate);
             dispatch(getSeancesByDate(date));
             setChosenDate(newDate);
         }
-        //setStartDate(newDate);
     };
 
     const onResetUpdateDate = (e) => {
         e.preventDefault();
-        //const date = showPopupUpdateDate.with.toISOString().replace(/\.\d+/, "")
-        const date = toISOStringNoMs(showPopupUpdateDate.with);
-        //dispatch(resetUpdateSeancesByDate());
+       // console.log("showPopupUpdateDate.date",showPopupUpdateDate.date)
+        const date = toISOStringNoMs(showPopupUpdateDate.date);
         dispatch(getSeancesByDate(date));
-        setChosenDate(showPopupUpdateDate.with);
-        // console.log("onReset");
-        setShowPopupUpdateDate({isShown: false, with: null});
+        setChosenDate(showPopupUpdateDate.date);
+        setShowPopupUpdateDate({isShown: false, date: null});
     };
 
     const onSubmitUpdateDate = (e) => {
         e.preventDefault();
-       // console.log("onDateSelected chosenDate", toUpdateDate(chosenDate));
+
         dispatch(updateSeances({seances, date:chosenDate}))
-        const date = toISOStringNoMs(showPopupUpdateDate.with);
+        const date = toISOStringNoMs(showPopupUpdateDate.date);
         dispatch(getSeancesByDate(date));
-        setChosenDate(showPopupUpdateDate.with);
-        setShowPopupUpdateDate({isShown: false, with: null});
+        setChosenDate(showPopupUpdateDate.date);
+        setShowPopupUpdateDate({isShown: false, date: null});
     };
 
     const onResetAddToList = (e) => {
@@ -323,7 +304,7 @@ export default function ToUpdateTimeTable() {
                                         onReset={onResetRemoveFromSeance}
                                         closePopup={() => setShowRemoveFromFromSeance(initialShowRemoveFromSeance)}/>
             <PopupUpdateDate showPopup={showPopupUpdateDate.isShown}
-                             closePopup={() => setShowPopupUpdateDate({isShown: false, with: null})}
+                             closePopup={() => setShowPopupUpdateDate({isShown: false, date: null})}
                              lastChosenDate={chosenDate}
                              onSubmit={onSubmitUpdateDate}
                              onReset={onResetUpdateDate}/>
@@ -422,8 +403,8 @@ export default function ToUpdateTimeTable() {
                         </div>
                     </DragDropContext>
                     <div className="conf-step__buttons text-center">
-                        <MyButton type="reset" text="Отмена" onclick={() => dispatch(resetUpdatesSeances())}/>
-                        <MyButton type="submit" text="Сохранить" onclick={() => dispatch(fetchUpdatesSeances())}/>
+                        <MyButton type="reset" text="Отмена" onclick={() => dispatch(getSeancesByDate(toISOStringNoMs(chosenDate)))}/>
+                        <MyButton type="submit" text="Сохранить" onclick={() => dispatch(updateSeances({seances, date:chosenDate}))}/>
                     </div>
                 </div>
             </section>

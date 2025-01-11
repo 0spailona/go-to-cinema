@@ -15,10 +15,10 @@ class CreateSeancesTable extends Migration
     {
         Schema::create('seances', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->timestamps();
+            $table->timestampsTz();
             $table->string('hallId');
             $table->string('movieId');
-            $table->string('startTime');
+            $table->string('startTime'); // fucking laravel cannot do datetime
         });
     }
 

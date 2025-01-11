@@ -54,7 +54,7 @@ class HallController extends Controller
         $id = $request->getContent();
 
         if (Hall::getHallById($id) === null) {
-            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 404);
+            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400);
         } else {
             Hall::deleteHall($id);
             return response()->json(["status" => "ok"], 200);
@@ -67,7 +67,7 @@ class HallController extends Controller
         $data = json_decode($request->getContent());
         $id = $data->id;
         if (Hall::getHallById($id) === null) {
-            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 404);
+            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400);
         }
 
         $vipPrice = $data->vipPrice;
@@ -95,7 +95,7 @@ class HallController extends Controller
         }
 
         if (Hall::getHallById($data->id) === null) {
-            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 404);
+            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400);
         }
 
         if (!$this->checkInt($data->rowCount, intval(env('MIN_ROWS_IN_HALL')), intval(env('MAX_ROWS_IN_HALL'))) ||

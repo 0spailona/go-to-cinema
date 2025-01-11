@@ -11,20 +11,22 @@ import {fetchHallConfig, fetchHalls} from "../redux/slices/halls.js";
 import {useDispatch} from "react-redux";
 import {fetchMovies} from "../redux/slices/films.js";
 import {getSeancesByDate} from "../redux/slices/seances.js";
+import {toISOStringNoMs} from "../js/utils.js";
 
 export default function AdminPage() {
 
     const dispatch = useDispatch();
 
-    const today = new Date()
-    today.setHours(0, 0, 0, 0);
+    //const today = new Date()
+    //today.setHours(0, 0, 0, 0);
 
     useEffect(() => {
+        //console.log("adminPage useEffect");
         dispatch(fetchHallConfig())
         dispatch(fetchHalls());
         dispatch(fetchMovies());
-        const chosenDate = today.toISOString().replace(/\.\d+/,'');
-        dispatch(getSeancesByDate(chosenDate))
+        //const chosenDate = toISOStringNoMs(today);
+        //dispatch(getSeancesByDate(chosenDate))
     }, []);
 
     return (

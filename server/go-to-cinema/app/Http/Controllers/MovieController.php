@@ -57,17 +57,16 @@ class MovieController
         $movie = Movie::getMovie($id);
 
         if(Movie::getMovie($id) === null){
-            return response()->json(["status" => "error", "message" => "Фильма с таким названием нет в базе"], 201);
+            return response()->json(["status" => "error", "message" => "Фильма с таким названием нет в базе"], 404);
         }
         Movie::deleteMovie($id);
 
-        return response()->json(["status" => "ok", "movie remove" => $id, "query" => $request->getQueryString(),"movie"=>$movie], 201);
+        return response()->json(["status" => "ok", "movie remove" => $id, "query" => $request->getQueryString(),"movie"=>$movie]);
     }
 
 
     public function getMoviesList(): \Illuminate\Http\JsonResponse
     {
-
         $movies = Movie::all();
 
         $moviesData = $movies->map(function ($movie) {

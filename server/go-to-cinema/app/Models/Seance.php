@@ -14,9 +14,9 @@ class Seance extends Model
 
     protected $table = 'seances';
     protected string $id;
-    protected string $movieID;
+    protected string $movieId;
     protected string $hallId;
-    protected string $startTime;
+    protected DateTime $startTime;
     protected $fillable = [
         'id',
         'movieId',
@@ -24,14 +24,17 @@ class Seance extends Model
         'hallId',
     ];
 
-    static function getSeancesByDate($date): \Illuminate\Support\Collection
+
+    static function getSeancesByDate(DateTime $dateStart): \Illuminate\Support\Collection
     {
-        $dateStart = DateTime::createFromFormat(DATE_FORMAT, $date);
         $dateEnd = clone $dateStart;
         $dateEnd->add(new DateInterval('P1D'));
 
-        return DB::table('seances')->where('startTime', '>=', $dateStart)->where('startTime', '<=', $dateEnd)->get();
-        //return DB::table('seances')->whereBetween('startTime', [$date,$date+1])->get();
+        return DB::table('seances')
+            ->where('startTime', '>=', $dateStart)
+            ->where('startTime', '<', $dateEnd)
+            ->get();
+
     }
 
     static function getSeanceById(string $id)
@@ -40,6 +43,6 @@ class Seance extends Model
     }
     static function updateSeance($id,$startTime)
     {
-        DB::table('halls')->where('id', $id)->update(['startTime' => $startTime]);
+        DB::table('seances')->where('id', $id)->update(['startTime' => $startTime]);
     }
 }

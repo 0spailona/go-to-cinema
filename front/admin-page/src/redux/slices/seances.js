@@ -121,7 +121,7 @@ export const seancesSlice = createSlice({
                 state.loadingSeances = true;
             });
             builder.addCase(getSeancesByDate.fulfilled, (state, action) => {
-                //console.log("getSeancesByDate fulfilled action", action.payload);
+                console.log("getSeancesByDate fulfilled action", action.payload);
                 //const halls = action.payload.halls;
                 state.seances = getSeancesObj(action.payload.halls, action.payload.seances);
                 state.isUpdatedSeances = false;

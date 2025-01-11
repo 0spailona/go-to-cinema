@@ -21,7 +21,7 @@ class CreateHallsTable extends Migration
             $table->integer('standardPrice')->default(0);
             $table->integer('rowsCount')->default(10);
             $table->integer('placesInRow')->default(8);
-            $table->timestamps();
+            $table->timestampsTz();
         });
     }
 
