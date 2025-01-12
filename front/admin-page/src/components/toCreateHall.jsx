@@ -13,8 +13,6 @@ export default function ToCreateHall() {
 
     const {halls,loadingHalls,hallConfig} = useSelector(state => state.halls);
 
-
-
     const [showPopupForAdd, setShowPopupForAdd] = useState(false);
     const [showPopupForRemove, setShowPopupForRemove] = useState(false);
     const [hallForRemove, setHallForRemove] = useState(null);

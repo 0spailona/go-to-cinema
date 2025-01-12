@@ -15,6 +15,7 @@ const token = await fetchToken();
 export const fetchHalls = createAsyncThunk(
     "fetchHalls",
     async () => {
+       // console.log("fetchHalls");
         const response = await fetch(`${basedUrl}api/hallsList`, {
             headers: {
                 Accept: "application/json",

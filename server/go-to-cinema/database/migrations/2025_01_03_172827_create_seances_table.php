@@ -18,7 +18,7 @@ class CreateSeancesTable extends Migration
             $table->timestampsTz();
             $table->string('hallId');
             $table->string('movieId');
-            $table->string('startTime'); // fucking laravel cannot do datetime
+            $table->dateTimeTz('startTime'); // fucking laravel cannot do datetime
         });
     }
 
