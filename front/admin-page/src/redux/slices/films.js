@@ -73,10 +73,24 @@ export const removeMovieFromList = createAsyncThunk(
     }
 );
 
+export const fetchPoster = createAsyncThunk(
+    "fetchPoster",
+    async () => {
+        const response = await fetch(`${basedUrl}api/poster`, {
+            headers: {
+                Accept: "application/json",
+            },
+            credentials: "same-origin",
+        });
+        return response.json();
+    }
+);
+
 const initialState = {
     loadingFilms: false,
     error: "",
     films: null,
+    poster:null,
     //seances: {},
     //chosenDate: null,
     //isUpdatedSeances: false,
@@ -93,6 +107,7 @@ export const filmsSlice = createSlice({
     selectors: {
         films: (state => state.films),
         loadingFilms: (state => state.loadingFilms),
+        poster: (state => state.poster),
         //seances: (state => state.seances),
         //chosenDate: state => state.chosenDate,
         //isUpdatedSeances: state => state.isUpdatedSeances,
@@ -186,6 +201,20 @@ export const filmsSlice = createSlice({
                 state.error = "Проблема на стороне сервера";
                 console.log("removeMovieFromList rejected action", action.payload);
             });
+
+            // get poster
+            builder.addCase(fetchPoster.pending, (state, action) => {
+                //state.loadingFilms = true;
+            });
+            builder.addCase(fetchPoster.fulfilled, (state, action) => {
+                console.log("fetchPoster fulfilled action", action.payload);
+               // state.loadingFilms = false;
+            });
+            builder.addCase(fetchPoster.rejected, (state, action) => {
+               // state.loadingFilms = false;
+                state.error = "Проблема на стороне сервера";
+                console.log("fetchPoster rejected action", action.payload);
+            });
         },
 });
 
@@ -200,6 +229,7 @@ export const {
     //seances,
     //isUpdatedSeances,
     //chosenDate
+    poster
 } = filmsSlice.selectors;
 const filmsReducer = filmsSlice.reducer;
 export default filmsReducer;

@@ -39,22 +39,27 @@ export const getSeancesByDate = createAsyncThunk(
 export const updateSeances = createAsyncThunk(
     "updateSeances",
     async (data) => {
-        console.log(data);
-        const body = {
-            seances: getArrFromSeances(data.seances, data.date
-            ), date: toISOStringNoMs(data.date)
-        };
-        const response = await fetch(`${basedUrl}api/updateSeances`, {
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "text/plain",
-                "X-CSRF-TOKEN": token,
-            },
-            method: "POST",
-            credentials: "same-origin",
-            body: JSON.stringify(body),
-        });
-        return response.json();
+        console.log("updateSeances data",data);
+        try {
+
+            const body = {
+                seances: getArrFromSeances(data.seances, data.date
+                ), date: toISOStringNoMs(data.date)
+            };
+            const response = await fetch(`${basedUrl}api/updateSeances`, {
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "text/plain",
+                    "X-CSRF-TOKEN": token,
+                },
+                method: "POST",
+                credentials: "same-origin",
+                body: JSON.stringify(body),
+            });
+            //console.log("updateSeances response.json()",response);
+            return response.json();
+        } catch (e){ console.error(e); throw e;}
+
     }
 );
 
@@ -146,7 +151,7 @@ export const seancesSlice = createSlice({
             builder.addCase(updateSeances.rejected, (state, action) => {
                 state.loadingSeances = false;
                 state.error = "Проблема на стороне сервера";
-                console.log("getSeancesByDate rejected action", action.payload);
+                console.log("updateSeances rejected", action.payload);
             });
         },
 });

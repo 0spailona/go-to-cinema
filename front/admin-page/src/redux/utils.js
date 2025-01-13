@@ -128,16 +128,18 @@ export function getArrFromSeances(seances, date) {
 
             const id = seance.id.includes("seance-") ? null : seance.id;
 
-            const obj = {
-                hallId,
-                movieId: seance.filmId,
-                startTime: toISOStringNoMs(startTime),
-                id
-            };
+            let obj = {};
+
+            obj.hallId = hallId;
+            obj.movieId = seance.filmId;
+            obj.startTime = toISOStringNoMs(startTime);
+            if(id){
+                 obj.id = id
+            }
             arr.push(obj);
         }
     }
-    //console.log("getArrFromSeances", arr);
+    console.log("getArrFromSeances", arr);
     return arr;
 }
 

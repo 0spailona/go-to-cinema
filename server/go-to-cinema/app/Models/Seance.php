@@ -33,14 +33,19 @@ class Seance extends Model
     protected $dateFormat = DATE_FORMAT;
     protected $dates = ['startTime'];
 
+    public $incrementing = false;
+
+    // In Laravel 6.0+ make sure to also set $keyType
+    protected $keyType = 'string';
+
     protected function serializeDate(DateTimeInterface $date) : string
     {
         return $date->format(DATE_FORMAT);
     }
 
-    static function getSeanceById(string $id)
+    static function byId(string $id) : Seance
     {
-        return DB::table('seances')->where('id', $id)->first();
+        return Seance::where('id', $id)->first();
     }
 
     static function updateSeance($id,$startTime)

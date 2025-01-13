@@ -404,7 +404,10 @@ export default function ToUpdateTimeTable() {
                     </DragDropContext>
                     <div className="conf-step__buttons text-center">
                         <MyButton type="reset" text="Отмена" onclick={() => dispatch(getSeancesByDate(toISOStringNoMs(chosenDate)))}/>
-                        <MyButton type="submit" text="Сохранить" onclick={() => dispatch(updateSeances({seances, date:chosenDate}))}/>
+                        <MyButton type="submit" text="Сохранить" onclick={() => {
+                            dispatch(updateSeances({seances, date: chosenDate}));
+                            dispatch(getSeancesByDate(toISOStringNoMs(chosenDate)));
+                        }}/>
                     </div>
                 </div>
             </section>

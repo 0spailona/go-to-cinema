@@ -1,18 +1,22 @@
 import MyInput from "../common/myInput.jsx";
 import MyPopup from "../common/myPopup.jsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {getValidationError} from "../../js/utils.js";
 
 
 export default function PopupAddFilm({showPopup, onReset,onSubmit,onError,closePopup}) {
 
+    if(showPopup){
+
+    }
 
     const [inputTitle, setInputTitle] = useState("");
     const [inputTime, setInputTime] = useState("");
     const [inputDescription, setInputDescription] = useState("");
     const [inputCountry, setInputCountry] = useState("");
     const [inputRelease, setInputRelease] = useState("");
-    const [poster, setPoster] = useState(null);
+    const {poster} = useState(state => state.films)
+
 
     const onSubmitAdd = (e) => {
         e.preventDefault();
@@ -67,7 +71,9 @@ export default function PopupAddFilm({showPopup, onReset,onSubmit,onError,closeP
                  onReset={e => onResetAdd(e)}
                  onSubmit={e => onSubmitAdd(e)}>
             <div className="popup__container">
-                <div className="popup__poster"></div>
+                <div className="popup__poster">
+                    {poster ? <img src={poster} alt="poster" /> : null}
+                </div>
                 <div className="popup__form">
                     <MyInput label="Название фильма" name="title" size="full" isRequired={true}
                              placeholder="Например, &laquo;Гражданин Кейн&raquo;" value={inputTitle}

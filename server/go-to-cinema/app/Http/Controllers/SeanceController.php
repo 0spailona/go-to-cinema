@@ -9,6 +9,7 @@ use App\Models\viewModals\SeanceAdminData;
 use DateInterval;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\ErrorHandler\Debug;
 use const DATE_FORMAT;
@@ -20,7 +21,7 @@ define('DATE_FORMAT', "Y-m-d\TH:i:sp");
 //to Utils
 
 
-function toDictionary( $enumerable, callable $callback )
+function toDictionary($enumerable, callable $callback)
 {
     $result = [];
 
@@ -29,7 +30,6 @@ function toDictionary( $enumerable, callable $callback )
     }
     return $result;
 }
-
 
 
 class SeanceController
@@ -50,103 +50,70 @@ class SeanceController
     {
         $data = json_decode($request->getContent());
 
+        Log::debug($request->getContent());
+
         if (!$this->checkSeances($data->seances)) {
             return response()->json(["status" => "error", "message" => "Неверные данные"], 404);
         }
         $date = DateTime::createFromFormat(DATE_FORMAT, $data->date);
 
-        $dateEnd = clone $date;
-        $dateEnd->add(new DateInterval('P1D'));
-        // make ISOStrings
-        $dateStartStr = $date->format(DATE_FORMAT1);
-        $dateEndStr = $dateEnd->format(DATE_FORMAT1);
+        $seancesInDb = $this->getListByDate($date);
 
-        $seancesInDb = Seance::where('startTime', '>=', $dateStartStr)
-            ->where('startTime', '<', $dateEndStr)
-            ->get();
+        Log::debug("seancesInDb: $seancesInDb");
+
         $seancesInDbById = toDictionary($seancesInDb, function ($x) { return $x->id; });
 
-        $seancesToCreate = array_filter($data->seances, function ($x) { return $x->id === null; }); // TODO: support if `id` is absent
+        $seancesToCreate = array_filter($data->seances, function ($x) { return !isset($x->id); });
 
-        $seancesToUpdate = array_filter($data->seances, function ($x) { return $x->id != null; }); // TODO: support if `id` is absent
+        $str = json_encode($seancesToCreate);
+        Log::debug("seancesToCreate: $str");
+
+        $seancesToUpdate = array_filter($data->seances, function ($x) { return isset($x->id); });
+
+        $str2 = json_encode($seancesToUpdate);
+        Log::debug("seancesToUpdate: $str2");
+
         $seancesToUpdateById = toDictionary($seancesToUpdate, function ($x) { return $x->id; });
 
         $seanceIdsToDelete = array_diff(array_keys($seancesInDbById), array_keys($seancesToUpdateById));
 
-        //DB::beginTransaction();
+        $str3 = json_encode($seanceIdsToDelete);
+        Log::debug("seanceIdsToDelete: $str3");
 
-        // delete
-        // create
-        // update
+        DB::transaction(function () use ($seancesToCreate, $seancesToUpdate, $seanceIdsToDelete) {
+            Seance::destroy($seanceIdsToDelete);
 
-        // commit transaction
-
-
-        foreach ($data->seances as $seance) {
-            $seancesForRemove = [...$seancesInDb];
-            foreach ($seancesInDb as $lastSeance) {
-                if ($lastSeance->id === $seance->id) {
-                    $key = array_search($seance->id, $seancesForRemove);
-                    if ($key !== false) {
-                        unset($seancesForRemove[$key]);
-                    }
-                }
+            foreach ($seancesToUpdate as $seance) {
+                $seanceModel = Seance::byId($seance->id);
+                unset ($seance->id);
+                $seanceModel->update((array)$seance);
             }
-            $startTime = DateTime::createFromFormat(DATE_FORMAT, $seance->startTime);
-            if ($seance->id !== null) {
-                Seance::updateSeance($seance->id, $startTime);
+
+            foreach ($seancesToCreate as $seance) {
+                $seance->id = uniqid();
+                Seance::create((array)$seance);
             }
-            else {
-                $seanceModel = Seance::hydrate((array)$seance);
-                $seanceModel->id = uniqid();
-                $seanceModel->create();
+        });
 
-
-                /*
-                Seance::createSeance($seance->movieId, $seance->hallId, $startTime);
-                /*$newSeance = new Seance(['id' => uniqid(),
-                    'startTime' => $startTime,
-                    'hallId' => $seance->hallId,
-                    'movieId' => $seance->movieId]);
-                $newSeance->save();*/
-            }
-        }
-
-        return response()->json(["status" => "ok", "date" => $data->date, "seances" => json_decode($request->getContent())], 200);
+        return response()->json(["status" => "ok"]);
     }
 
-    /* public function createSeance(Request $request): \Illuminate\Http\JsonResponse
-     {
-         $data = json_decode($request->getContent());
+    private function getListByDate(DateTime $date)
+    {
+        $dateEnd = clone $date;
+        $dateEnd->add(new DateInterval('P1D'));
 
-         return response()->json(["status" => "ok", "movie create" => json_decode($request->getContent())], 201);
-     }*/
+        return Seance::select()
+            ->where('startTime', '>=', $date->format(DATE_FORMAT)) // Laravel and SQLite
+            ->where('startTime', '<', $dateEnd->format(DATE_FORMAT)) // Laravel and SQLite
+            ->get();
+    }
 
     public function getSeancesByDate(Request $request): \Illuminate\Http\JsonResponse
     {
         $dateStart = DateTime::createFromFormat(DATE_FORMAT, $request->query('date'));
-        $dateEnd = clone $dateStart;
-        $dateEnd->add(new DateInterval('P1D'));
-        // make ISOStrings
-       // $dateStartStr = $dateStart->format(DATE_FORMAT);
-        //$dateEndStr = $dateEnd->format(DATE_FORMAT);
-
-        $seances = Seance::select()
-            ->where('startTime', '>=', $dateStart->format(DATE_FORMAT)) // Laravel and SQLite
-            ->where('startTime', '<', $dateEnd->format(DATE_FORMAT)) // Laravel and SQLite
-            ->get();
-
-        $query = Seance::select()
-            ->where('startTime', '>=', $dateStart)
-            ->where('startTime', '<', $dateEnd);
-
-        Log::debug($query->toSql());
-        Log::debug(json_encode($query->getBindings()));
-
-        $seancesData = $seances->toArray();
-        /*$seancesData = $seances->map(function ($seance) {
-            return SeanceAdminData::MakeSeanceAdminDataFromDb($seance);
-        });*/
+        $seances = $this->getListByDate($dateStart)->toArray();
+        
         $halls = HallController::getHallNamesAndIds();
 
         return response()->json([
@@ -155,8 +122,8 @@ class SeanceController
             "halls" => $halls,
             //"req" => $request->query('date'),
             //"seancesData" => $seancesData,
-            "seances" => $seancesData,
-        ], 200);
+            "seances" => $seances,
+        ]);
     }
 
 }
