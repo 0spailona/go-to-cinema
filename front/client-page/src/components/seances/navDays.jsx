@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {weekday} from "../../js/info.js";
 import {useDispatch, useSelector} from "react-redux";
 import {changeChosenDate} from "../../redux/slices/cinema.js";
-import {getDateStringFromDate} from "../../js/utils.js";
+import {getDateStringFromDate, toISOStringNoMs} from "../../js/utils.js";
 
 export default function NavDays() {
     const maxDays = 6;
@@ -40,7 +40,7 @@ export default function NavDays() {
 
     const changeChooseDay = (dayIndex, date) => {
 
-        const string = date.toISOString();
+        const string = toISOStringNoMs(date);
         dispatch(changeChosenDate(string));
 
     };

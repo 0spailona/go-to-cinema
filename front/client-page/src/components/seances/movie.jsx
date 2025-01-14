@@ -4,11 +4,11 @@ import {useSelector} from "react-redux";
 import {getWeekdayNumber} from "../../js/utils.js";
 
 
-export default function Movie({film}) {
+export default function Movie({film,seances}) {
 
-    const {chosenDate} = useSelector(state => state.cinema);
-    const day = getWeekdayNumber(chosenDate)
-    //console.log("Movie film",film);
+    //const {chosenDate} = useSelector(state => state.cinema);
+    //const day = getWeekdayNumber(chosenDate)
+    console.log("Movie film",film);
 
     return (
         <section className="movie">
@@ -25,7 +25,7 @@ export default function Movie({film}) {
                     </p>
                 </div>
             </div>
-            {Object.keys(film.seances[day]).map(hallId => <SeancesHall key={hallId} hallId={hallId} filmId={film.id} />)}
+            {seances.map(seance => <SeancesHall key={seance.hallId} hallId={seance.hallId} filmId={film.id} />)}
         </section>
     )
 }
