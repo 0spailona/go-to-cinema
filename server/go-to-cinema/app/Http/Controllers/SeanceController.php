@@ -109,11 +109,30 @@ class SeanceController
             ->get();
     }
 
-    public function getSeancesByDate(Request $request): \Illuminate\Http\JsonResponse
+    public function getSeancesByDateToClient(Request $request): \Illuminate\Http\JsonResponse
     {
         $dateStart = DateTime::createFromFormat(DATE_FORMAT, $request->query('date'));
         $seances = $this->getListByDate($dateStart)->toArray();
-        
+
+        //$halls = HallController::getHallNamesAndIds();
+        $movies = MovieController::getMoviesIds();
+
+        return response()->json([
+            "status" => "ok",
+            "dateStart" => $dateStart->format(DATE_FORMAT),
+            "movies" => $movies,
+            //"req" => $request->query('date'),
+            //"seancesData" => $seancesData,
+            "seances" => $seances,
+        ]);
+    }
+
+
+    public function getSeancesByDateToAdmin(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $dateStart = DateTime::createFromFormat(DATE_FORMAT, $request->query('date'));
+        $seances = $this->getListByDate($dateStart)->toArray();
+
         $halls = HallController::getHallNamesAndIds();
 
         return response()->json([

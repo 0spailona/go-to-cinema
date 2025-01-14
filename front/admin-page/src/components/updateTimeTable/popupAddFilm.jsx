@@ -2,20 +2,30 @@ import MyInput from "../common/myInput.jsx";
 import MyPopup from "../common/myPopup.jsx";
 import {useEffect, useState} from "react";
 import {getValidationError} from "../../js/utils.js";
+import {useDispatch, useSelector} from "react-redux";
+//import {getPoster, uploadPoster} from "../../redux/slices/films.js";
+import {fetchToken} from "../../redux/utils.js";
 
+const basedUrl = "admin/";
+//console.log("basedUrl", basedUrl);
+const token = await fetchToken();
 
 export default function PopupAddFilm({showPopup, onReset,onSubmit,onError,closePopup}) {
 
-    if(showPopup){
+   /* useEffect(()=>{
+        if(showPopup){
+            dispatch(getPoster())
+        }
+    },[showPopup])*/
 
-    }
+    //const dispatch = useDispatch();
 
     const [inputTitle, setInputTitle] = useState("");
     const [inputTime, setInputTime] = useState("");
     const [inputDescription, setInputDescription] = useState("");
     const [inputCountry, setInputCountry] = useState("");
     const [inputRelease, setInputRelease] = useState("");
-    const {poster} = useState(state => state.films)
+    const [posterRandom, setPosterRandom] = useState(0);
 
 
     const onSubmitAdd = (e) => {
@@ -51,12 +61,34 @@ export default function PopupAddFilm({showPopup, onReset,onSubmit,onError,closeP
 
     const cleanForm = () => {
         setInputTitle("");
-        setPoster(null);
+        //setPoster(null);
         setInputDescription("");
         setInputCountry("");
         setInputTime("");
         setInputRelease("")
     };
+
+     async function sendPoster (poster)  {
+        const formData = new FormData();
+        formData.append("poster", poster);
+        //const response = async (formData) => {
+           // console.log("uploadPoster formData", Object.fromEntries(formData).poster);
+            const response = await fetch(`${basedUrl}api/poster`, {
+                headers: {
+                    Accept: "application/json",
+                    "X-CSRF-TOKEN": token,
+                },
+                method: "POST",
+                credentials: "same-origin",
+                body: formData,
+            });
+            if(response.status === 200) {
+                setPosterRandom(Math.random())
+            }
+            else{
+                //TODO ERROR fro 413 (too large) and 415 (wrong mime-type) and other (another error)
+            }
+    }
 
     return (
         <MyPopup isVisible={showPopup} title="Добавление фильма"
@@ -67,12 +99,13 @@ export default function PopupAddFilm({showPopup, onReset,onSubmit,onError,closeP
                  textForSubmitBtn="Добавить фильм"
                  textForResetBtn="Отменить"
                  textForAddContent="Загрузить постер"
-                 uploadBtnData={{text: "Загрузить постер", name: "poster", getData: (poster) => setPoster(poster)}}
+                 uploadBtnData={{text: "Загрузить постер", name: "poster",
+                     uploadFile: (poster) => sendPoster(poster)
+        }}
                  onReset={e => onResetAdd(e)}
                  onSubmit={e => onSubmitAdd(e)}>
             <div className="popup__container">
-                <div className="popup__poster">
-                    {poster ? <img src={poster} alt="poster" /> : null}
+                <div className="popup__poster" style={{backgroundImage: `url(admin/api/posterBySession?${posterRandom})`}}>
                 </div>
                 <div className="popup__form">
                     <MyInput label="Название фильма" name="title" size="full" isRequired={true}

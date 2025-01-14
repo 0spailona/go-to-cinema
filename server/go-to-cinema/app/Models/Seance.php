@@ -14,6 +14,7 @@ class Seance extends Model
     use HasFactory;
 
     protected $table = 'seances';
+
     protected string $id;
     protected string $movieId;
     protected string $hallId;

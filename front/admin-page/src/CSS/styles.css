@@ -508,6 +508,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
 }
 
 .conf-step__movies .conf-step__movie {
+    position: relative;
     min-height: 52px;
     padding: 8px 8px 8px 48px;
     background: #FFEB85;
@@ -777,7 +778,9 @@ textarea.conf-step__input {
 }
 
 .popup__poster {
-    height: 200px;
+    height: 340px;
+    width: 255px;
+    margin-right: 25px;
     background-size: 100% 100%;
     background-repeat: no-repeat;
 }

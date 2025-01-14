@@ -35,6 +35,7 @@ export default function AdminPage() {
             <ToUpdateHall/>
             <ToUpdatePrice/>
             <ToUpdateTimeTable/>
+            <ToOpenSales/>
         </main>
     );
 }
@@ -43,4 +44,4 @@ export default function AdminPage() {
 
 
 
-            <ToOpenSales/>*/
+            */

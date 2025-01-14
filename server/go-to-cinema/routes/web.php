@@ -52,6 +52,10 @@ Route::prefix('api')->group(function () {
          abort(404, 'API not found');
     });
 
+    Route::get('seancesListByDate', [\App\Http\Controllers\SeanceController::class, 'getSeancesByDateToClient']);
+    Route::get('moviesList', [\App\Http\Controllers\MovieController::class, 'getMoviesList']);
+    Route::get('hallsList', [\App\Http\Controllers\HallController::class, 'getHallsList']);
+
     Route::get('{api_method}', function ($api_method) {
         return response()->json(["status" => "ok", "method"=> $api_method], 200);
     });
@@ -116,8 +120,11 @@ Route::prefix('admin')->group(function () {
         Route::post('newMovie', [\App\Http\Controllers\MovieController::class, 'createMovie']);
         Route::post('removeMovie', [\App\Http\Controllers\MovieController::class, 'removeMovie']);
         Route::get('moviesList', [\App\Http\Controllers\MovieController::class, 'getMoviesList']);
-        Route::get('seancesListByDate', [\App\Http\Controllers\SeanceController::class, 'getSeancesByDate']);
+        Route::get('seancesListByDate', [\App\Http\Controllers\SeanceController::class, 'getSeancesByDateToAdmin']);
         Route::post('updateSeances', [\App\Http\Controllers\SeanceController::class, 'updateSeances']);
+        Route::get('posterBySession', [\App\Http\Controllers\MovieController::class, 'getPoster']);
+        Route::get('posterByMovieId/{movieId}', [\App\Http\Controllers\MovieController::class, 'getPosterByMovieId']);
+        Route::post('poster', [\App\Http\Controllers\MovieController::class, 'uploadPoster']);
     });
 });
 

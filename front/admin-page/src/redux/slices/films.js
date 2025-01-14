@@ -73,27 +73,13 @@ export const removeMovieFromList = createAsyncThunk(
     }
 );
 
-export const fetchPoster = createAsyncThunk(
-    "fetchPoster",
-    async () => {
-        const response = await fetch(`${basedUrl}api/poster`, {
-            headers: {
-                Accept: "application/json",
-            },
-            credentials: "same-origin",
-        });
-        return response.json();
-    }
-);
+
 
 const initialState = {
     loadingFilms: false,
     error: "",
     films: null,
     poster:null,
-    //seances: {},
-    //chosenDate: null,
-    //isUpdatedSeances: false,
 };
 
 /*for (let film of startFilms) {
@@ -108,54 +94,8 @@ export const filmsSlice = createSlice({
         films: (state => state.films),
         loadingFilms: (state => state.loadingFilms),
         poster: (state => state.poster),
-        //seances: (state => state.seances),
-        //chosenDate: state => state.chosenDate,
-        //isUpdatedSeances: state => state.isUpdatedSeances,
     },
     reducers: {
-        /*addFilmToSeancesHall: (state, action) => {
-            state.isUpdatedSeances = true;
-            console.log("addNewFilmToSeancesHall", action.payload);
-            const hallId = action.payload.to;
-            const fromHallId = action.payload.from;
-            const filmId = action.payload.filmId;
-            const start = action.payload.start;
-            //console.log("addFilmToSeancesHall", action.payload.from, action.payload.to, action.payload.filmId,action.payload.filmIndex, action.payload.start);
-            const newSeance = createSeance(filmId, start);
-            state.seances[state.chosenDate][hallId].push(newSeance);
-
-            if (fromHallId) {
-                state.seances[state.chosenDate][fromHallId].splice(action.payload.filmIndex, 1);
-            }
-        },
-        removeFilmFromSeanceHall: (state, action) => {
-            state.isUpdatedSeances = true;
-            console.log("removeFilmFromSeanceHall", action.payload);
-            const fromHallId = action.payload.hallId;
-            const filmIndex = action.payload.filmIndex;
-            state.seances[state.chosenDate][fromHallId].splice(filmIndex, 1);
-        },
-        resetUpdatesSeances: (state, action) => {
-            state.isUpdatedSeances = false;
-            console.log("resetUpdatesSeances");
-        },
-        fetchUpdatesSeances: (state, action) => {
-            state.isUpdatedSeances = false;
-            console.log("fetchUpdatesSeances");
-        },
-        getFilmsByDate: (state, action) => {
-            state.isUpdatedSeances = false;
-            state.chosenDate = action.payload;
-            console.log("getFilmsByDate");
-            if (!state.seances[action.payload]) {
-                state.seances[action.payload] = createSeanceDay();
-            }
-        },
-        resetUpdateSeancesByDate: (state, action) => {
-            state.isUpdatedSeances = false;
-            delete state.seances[action.payload];
-            console.log("resetUpdateSeances");
-        },*/
     },
     extraReducers:
         builder => {
@@ -202,19 +142,6 @@ export const filmsSlice = createSlice({
                 console.log("removeMovieFromList rejected action", action.payload);
             });
 
-            // get poster
-            builder.addCase(fetchPoster.pending, (state, action) => {
-                //state.loadingFilms = true;
-            });
-            builder.addCase(fetchPoster.fulfilled, (state, action) => {
-                console.log("fetchPoster fulfilled action", action.payload);
-               // state.loadingFilms = false;
-            });
-            builder.addCase(fetchPoster.rejected, (state, action) => {
-               // state.loadingFilms = false;
-                state.error = "Проблема на стороне сервера";
-                console.log("fetchPoster rejected action", action.payload);
-            });
         },
 });
 

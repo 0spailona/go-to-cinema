@@ -11,13 +11,13 @@ class Movie extends Model
     use HasFactory;
 
     protected $table = 'movies';
-    protected string $id = 'id';
-    protected string $title = 'title';
-    protected string $country = 'country';
+    protected string $id;
+    protected string $title;
+    protected string $country;
     protected int $duration = 0;
-    protected string $description = 'description';
-    protected int $release_year = 0;
-    protected $poster = 'poster';
+    protected string $description;
+    protected int $release_year ;
+    protected string $poster ;
     protected $fillable = [
         'id',
         'title',
@@ -25,13 +25,14 @@ class Movie extends Model
         'duration',
         'description',
         'release_year',
+        'poster',
     ];
     public $incrementing = false;
 
     // In Laravel 6.0+ make sure to also set $keyType
     protected $keyType = 'string';
 
-    
+
     static function getMovie($id)
     {
         return DB::table('movies')->where('id', $id)->first();

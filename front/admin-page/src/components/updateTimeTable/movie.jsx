@@ -155,7 +155,7 @@ export default function Movie({
                          onMouseDown={onMouseDown}>
                         <MovieContent isRenderInHall={isRenderInHall} isDragOverHall={isDragOverHall}
                                       isDraggingElem={isDraggingElem} title={film.title}
-                                      poster={film.poster} duration={film.duration}
+                                      movieId={movieId} duration={film.duration}
                                       startTime={time}
                                       index={backGroundColorIndex}/>
                     </div>

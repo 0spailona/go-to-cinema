@@ -21,6 +21,7 @@ class CreateMoviesTable extends Migration
             $table->string('description');
             $table->integer('duration');
             $table->integer('release_year');
+            $table->string('poster')->nullable();
         });
     }
 
