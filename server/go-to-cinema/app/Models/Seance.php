@@ -46,21 +46,7 @@ class Seance extends Model
 
     static function byId(string $id) : Seance
     {
-        return Seance::where('id', $id)->first();
+        return self::where('id', $id)->first();
     }
 
-    static function updateSeance($id,$startTime)
-    {
-        DB::table('seances')->where('id', $id)->update(['startTime' => $startTime]);
-    }
-
-    static function createSeance($movieId,$hallId,$startTime){
-
-        $startTimeStr = $startTime->format(DATE_FORMAT);
-        $newSeance = new Seance(['id' => uniqid(),
-            'startTime' => $startTimeStr,
-            'hallId' => $hallId,
-            'movieId' => $movieId]);
-        $newSeance->save();
-    }
 }

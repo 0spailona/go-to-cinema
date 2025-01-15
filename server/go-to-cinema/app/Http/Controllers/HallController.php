@@ -19,100 +19,104 @@ class HallController extends Controller
     {
         $name = $request->getContent();
 
-        if (!$this->checkString($name, 1, 20)) {
-            return response()->json(["status" => "error", "message" => "Неправильный формат названия зала"], 400);
+        if (!ValidationUtils::checkString($name, 1, 20)) {
+            return response()->json(["status" => "error", "message" => "Неправильный формат названия зала"], 400,[],JSON_UNESCAPED_UNICODE);
         }
 
-        if (Hall::getHallByName($name) !== null) {
-            return response()->json(["status" => "error", "message" => "Зал с таким названием уже существует"], 400);
+        if (Hall::byName($name) !== null) {
+            return response()->json(["status" => "error", "message" => "Зал с таким названием уже существует"], 400,[],JSON_UNESCAPED_UNICODE);
         } else {
-            $newHall = new Hall(['name' => $name,'id' => uniqid()]);
-            $newHall->save();
-            return response()->json(["status" => "ok", "hall" => $newHall], 201);
+            Hall::create(['name' => $name, 'id' => uniqid()]);
+
+            return response()->json(["status" => "ok"], 201);
         }
     }
 
-    private function checkString($value, int $min, int $max): bool
-    {
-        $valueStr = trim($value);
-        if (!is_string($value) || strlen($valueStr) < $min || strlen($valueStr) > $max) {
-            return false;
-        }
-        return true;
-    }
-
-    private function checkInt($value, int $min, int $max): bool
-    {
-        if (!is_int($value) || $value < $min || $value >= $max) {
-            return false;
-        }
-        return true;
-    }
 
     public function removeHall(Request $request): \Illuminate\Http\JsonResponse
     {
         $id = $request->getContent();
 
-        if (Hall::getHallById($id) === null) {
-            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400);
+        if (Hall::byId($id) === null) {
+            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400,[],JSON_UNESCAPED_UNICODE);
         } else {
-            Hall::deleteHall($id);
-            return response()->json(["status" => "ok"], 200);
+            Hall::destroy($id);
+            return response()->json(["status" => "ok"]);
         }
     }
 
     public function updatePricesInHall(Request $request): \Illuminate\Http\JsonResponse
     {
-        $wrong = ["status" => "error", "message" => "Неправильные данные" ,"data"=>json_decode($request->getContent())];
+        $wrong = ["status" => "error", "message" => "Неправильные данные", "data" => json_decode($request->getContent())];
+
         $data = json_decode($request->getContent());
         $id = $data->id;
-        if (Hall::getHallById($id) === null) {
-            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400);
+        $hallToUpdate = Hall::byId($id);
+        if ($hallToUpdate === null) {
+            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400,[],JSON_UNESCAPED_UNICODE);
         }
 
         $vipPrice = $data->vipPrice;
         $standardPrice = $data->standardPrice;
-        if(!$this->checkInt($vipPrice, intval(env('MIN_VIP_PRICE')), intval(env('MAX_PRICE')))||
-        !$this->checkInt($standardPrice, intval(env('MIN_STANDARD_PRICE')), intval(env('MAX_PRICE')))
-        ||$vipPrice <= $standardPrice) {
-            return response()->json($wrong, 400);
+        if (!ValidationUtils::checkInt($vipPrice, intval(env('MIN_VIP_PRICE')), intval(env('MAX_PRICE'))) ||
+            !ValidationUtils::checkInt($standardPrice, intval(env('MIN_STANDARD_PRICE')), intval(env('MAX_PRICE')))
+            || $vipPrice <= $standardPrice) {
+            return response()->json($wrong, 400,[],JSON_UNESCAPED_UNICODE);
         }
+        $hallToUpdate->update(['vipPrice' => $vipPrice, 'standardPrice' => $standardPrice]);
 
-        Hall::updateHallPrices($id, $vipPrice, $standardPrice);
-
-        return response()->json(["status" => "ok","data"=>json_decode($request->getContent())], 200);
+        return response()->json(["status" => "ok", "data" => json_decode($request->getContent())]);
     }
 
 
     public function updatePlacesInHall(Request $request): \Illuminate\Http\JsonResponse
     {
-        $wrong = ["status" => "error", "message" => "Неправильные данные" ,"data"=>json_decode($request->getContent())];
+        $wrong = ["status" => "error", "message" => "Неправильные данные", "data" => json_decode($request->getContent())];
 
-        try {
-            $data = UpdatePlacesData::FromStdClass(json_decode($request->getContent(), false));
-        } catch (\Exception $e) {
-            return response()->json(["status" => "error", "message" => $e->getMessage()], 400);
+        $data = json_decode($request->getContent());
+
+        $str = $request->getContent();
+        Log::debug("updatePlacesInHall $str");
+
+        $id = $data->id;
+        if(!$id ||!is_string($id) || !$data->places || !is_array($data->places->vip) || !is_array($data->places->disabled)) {
+            Log::debug("updatePlacesInHall id data->places data->places->vip data->places->disabled");
+            return response()->json($wrong, 400,[],JSON_UNESCAPED_UNICODE);
+        }
+        $hallToUpdate = Hall::byId($id);
+        if ($hallToUpdate === null) {
+            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 404,[],JSON_UNESCAPED_UNICODE);
         }
 
-        if (Hall::getHallById($data->id) === null) {
-            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400);
-        }
-
-        if (!$this->checkInt($data->rowCount, intval(env('MIN_ROWS_IN_HALL')), intval(env('MAX_ROWS_IN_HALL'))) ||
-            !$this->checkInt($data->placesInRow, intval(env('MIN_PLACES_IN_ROW')), intval(env('MAX_PLACES_IN_ROW')))) {
-            return response()->json($wrong, 400);
+        if (!ValidationUtils::checkInt($data->rowCount, intval(env('MIN_ROWS_IN_HALL')), intval(env('MAX_ROWS_IN_HALL'))) ||
+            !ValidationUtils::checkInt($data->placesInRow, intval(env('MIN_PLACES_IN_ROW')), intval(env('MAX_PLACES_IN_ROW')))) {
+            Log::debug("updatePlacesInHall rowCount placesInRow");
+            return response()->json($wrong, 400,[],JSON_UNESCAPED_UNICODE);
         }
 
         $disabled = $data->places->disabled;
         foreach ($disabled as $place) {
             if (!$place ||
-                !$this->checkInt($place->row, 0, $data->rowCount) ||
-                !$this->checkInt($place->place, 0, $data->placesInRow)) {
-                return response()->json($wrong, 400);
+                !ValidationUtils::checkInt($place->row, 0, $data->rowCount) ||
+                !ValidationUtils::checkInt($place->place, 0, $data->placesInRow)) {
+                Log::debug("updatePlacesInHall disabled");
+                return response()->json($wrong, 400,[],JSON_UNESCAPED_UNICODE);
+            }
+        }
+        $vip = $data->places->vip;
+        foreach ($vip as $place) {
+
+            if (!$place ||
+                !ValidationUtils::checkInt($place->row, 0, $data->rowCount) ||
+                !ValidationUtils::checkInt($place->place, 0, $data->placesInRow)) {
+                Log::debug("updatePlacesInHall vip");
+                return response()->json($wrong, 400,[],JSON_UNESCAPED_UNICODE);
             }
         }
 
-        Hall::updateHallPlaces($data->id, json_encode($data->places->ToStdClass()), $data->rowCount, $data->placesInRow);
+        $places = json_encode($data->places);
+        $hallToUpdate->update(['places' => $places,'rowsCount' => $data->rowCount,'placesInRow' => $data->placesInRow]);
+
 
         return response()->json(["status" => "ok"], 200);
     }
@@ -121,25 +125,24 @@ class HallController extends Controller
     {
         $halls = Hall::all();
 
-        $hallsData = $halls->map(function ($hall) { return HallData::MakeHallDataFromDb($hall); });
-
-        return response()->json(["status" => "ok", "data" => $hallsData], 200);
+        return response()->json(["status" => "ok", "data" => $halls], 200);
     }
 
     public static function getHallNamesAndIds()
     {
-       $halls = Hall::all();
-        return $halls->map(function ($hall) {return HallData::GetShortDataInStdClass($hall);});
+        $halls = Hall::all();
+        return $halls->map(function ($hall) {
+            return HallData::GetShortDataInStdClass($hall);
+        });
     }
 
     public function getHallById(string $id): \Illuminate\Http\JsonResponse
     {
-        $hall = Hall::getHallByName($id);
+        $hall = Hall::byId($id);
         if ($hall === null) {
-            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400);
+            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400,[],JSON_UNESCAPED_UNICODE);
         }
-        $hallData = HallData::MakeHallDataFromDb($hall);
 
-        return response()->json(["status" => "ok", "data" => $hallData], 200);
+        return response()->json(["status" => "ok", "data" => $hall]);
     }
 }

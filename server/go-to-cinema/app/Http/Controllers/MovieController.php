@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Movie;
 use App\Models\viewModals\MovieData;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class MovieController
@@ -113,6 +114,7 @@ class MovieController
 
     public function getPosterByMovieId(string $movieId): \Symfony\Component\HttpFoundation\StreamedResponse
     {
+        Log::debug("getPosterByMovieId $movieId");
         $posterPath = self::getMoviePosterPath($movieId) ?? self::DefaultPosterPath;
         return Storage::response($posterPath);
     }

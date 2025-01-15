@@ -5,6 +5,7 @@ import PriceLegend from "./priceLegend.jsx";
 import {placesType} from "../../js/info.js";
 import MyButton from "../common/MyButton.jsx";
 import {Link} from "react-router-dom";
+import {getStartTimeStringFromMinutes} from "../../js/utils.js";
 
 export default function Hall() {
 
@@ -15,10 +16,13 @@ export default function Hall() {
         console.log("no seances selected");
     }
     else {
-        hall = chosenSeance.hall;
-        console.log("Hall hall",hall);
-        time = chosenSeance.time;
-        film = films[chosenSeance.filmId];
+        //console.log("hall chosenSeance",chosenSeance)
+        hall = halls[chosenSeance.hallId];
+        //console.log("Hall hall",hall);
+
+         time = getStartTimeStringFromMinutes(chosenSeance.startTime)
+        //time = chosenSeance.time;
+        film = films[chosenSeance.movieId];
     }
 
     const [isToDoBig, setToDoBig] = useState(false);

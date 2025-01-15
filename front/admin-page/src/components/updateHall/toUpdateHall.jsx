@@ -6,7 +6,7 @@ import Place from "../common/place.jsx";
 import MyButton from "../common/myButton.jsx";
 import {useEffect, useState} from "react";
 import {
-    fetchHallByName,
+    fetchHallById,
     fetchHalls,
     updateCustomPlaces,
     updateCustomRows,
@@ -27,7 +27,7 @@ export default function ToUpdateHall() {
 
     const [inputValueRows, setInputValueRows] = useState(0);
     const [inputValuePlaces, setInputValuePlaces] = useState(0);
-    const [hallToUpdate, setHallToUpdate] = useState({hallName: null, isUpdated: false});
+    const [hallToUpdate, setHallToUpdate] = useState({hallId: null, isUpdated: false});
     const [showPopup, setShowPopup] = useState(false);
     const [nextCheckedHallName, setNextCheckedHallName] = useState(null);
     const [validateError, setValidateError] = useState(null);
@@ -37,17 +37,17 @@ export default function ToUpdateHall() {
         //console.log("set initial state hall",hall);
         setInputValueRows(hall.rowCount);
         setInputValuePlaces(hall.placeInRowCount);
-        setHallToUpdate({hallName: hall.name, isUpdated: false});
+        setHallToUpdate({hallId: hall.id, isUpdated: false});
     };
 
     useEffect(() => {
         //console.log("useEffect by halls",halls)
-        if((!halls || Object.keys(halls).length === 0) && hallToUpdate.hallName !== null) {
-            setHallToUpdate({hallName: null, isUpdated: false});
+        if((!halls || Object.keys(halls).length === 0) && hallToUpdate.hallId !== null) {
+            setHallToUpdate({hallId: null, isUpdated: false});
         }
 
-        else if ((halls && Object.keys(halls).length !== 0 && hallToUpdate.hallName === null)
-        ||(hallToUpdate.hallName !== null && !Object.keys(halls).includes(hallToUpdate.hallName))) {
+        else if ((halls && Object.keys(halls).length !== 0 && hallToUpdate.hallId === null)
+        ||(hallToUpdate.hallId !== null && !Object.keys(halls).includes(hallToUpdate.hallId))) {
             //console.log("set initial state")
             setInitialState(halls[Object.keys(halls)[0]]);
         }
@@ -55,7 +55,7 @@ export default function ToUpdateHall() {
 
 
     const onBlurPlacesInput = (e) => {
-        const lastData = halls[hallToUpdate.hallName].placeInRowCount;
+        const lastData = halls[hallToUpdate.hallId].placeInRowCount;
         const value = +e.target.value.trim();
         const error = getValidationError(value, hallConfig.placesInRow.min, hallConfig.placesInRow.max);
         if (error) {
@@ -65,18 +65,18 @@ export default function ToUpdateHall() {
         else {
             dispatch(updateCustomPlaces({
                 places: value,
-                hallId: hallToUpdate.hallName
+                hallId: hallToUpdate.hallId
             }));
             setValidateError(null);
 
             if (value !== lastData) {
-                setHallToUpdate({hallName: hallToUpdate.hallName, isUpdated: true});
+                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
             }
         }
     };
 
     const onBlurRowsInput = (e) => {
-        const lastData = halls[hallToUpdate.hallName].rowCount;
+        const lastData = halls[hallToUpdate.hallId].rowCount;
         const value = +e.target.value.trim();
         const error = getValidationError(value, hallConfig.rowsCount.min, hallConfig.rowsCount.max);
         if (error) {
@@ -86,19 +86,19 @@ export default function ToUpdateHall() {
         else {
             dispatch(updateCustomRows({
                 rows: value,
-                hallId: hallToUpdate.hallName
+                hallId: hallToUpdate.hallId
             }));
 
             setValidateError(null);
 
             if (value !== lastData) {
-                setHallToUpdate({hallName: hallToUpdate.hallName, isUpdated: true});
+                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
             }
         }
     };
 
     const changeHall = (newHallToUpdate) => {
-        dispatch(fetchHallByName(newHallToUpdate));
+        //dispatch(fetchHallById(newHallToUpdate));
         setInitialState(halls[newHallToUpdate]);
     };
 
@@ -110,7 +110,8 @@ export default function ToUpdateHall() {
 
     const toSaveChanges = (e, newHallToUpdate) => {
         e.preventDefault();
-        dispatch(updatePlacesInHall(halls[hallToUpdate.hallName]));
+        dispatch(updatePlacesInHall(halls[hallToUpdate.hallId]));
+        dispatch(fetchHalls());
         changeHall(newHallToUpdate);
     };
 
@@ -124,8 +125,8 @@ export default function ToUpdateHall() {
             setShowErrorPopup(true);
         }
         else {
-            dispatch(updatePlacesInHall(halls[hallToUpdate.hallName]));
-            setHallToUpdate({hallName: hallToUpdate.hallName, isUpdated: false});
+            dispatch(updatePlacesInHall(halls[hallToUpdate.hallId]));
+            setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: false});
             setValidateError(null);
         }
     };
@@ -137,12 +138,12 @@ export default function ToUpdateHall() {
             <section className="conf-step">
                 <ConfStepHeader title="Конфигурация залов"/>
                 <div className="conf-step__wrapper">
-                    {halls && hallToUpdate.hallName ? <>
+                    {halls && hallToUpdate.hallId ? <>
                             <MyPopup isVisible={showErrorPopup} title="Неверно введенные данные"
                                      onClose={() => setShowErrorPopup(false)}>
                                 <p className="conf-step__paragraph">{`${validateError}`}</p>
                             </MyPopup>
-                            <MyPopup isVisible={showPopup} title={`Сохранить изменения в зале "${hallToUpdate.hallName}"`}
+                            <MyPopup isVisible={showPopup} title={`Сохранить изменения в зале "${halls[hallToUpdate.hallId].name}"`}
                                      onClose={() => setShowPopup(false)}
                                      onReset={e => {
                                          notToSaveChanges(e, nextCheckedHallName);
@@ -155,13 +156,13 @@ export default function ToUpdateHall() {
                                      textForSubmitBtn="Да"
                                      textForResetBtn="Нет"/>
                             <ToSelectHall selectedHall={hallToUpdate}
-                                          onChange={(e, hallName) => {
+                                          onChange={(e, hallId) => {
                                               if (hallToUpdate.isUpdated) {
                                                   setShowPopup(true);
-                                                  setNextCheckedHallName(hallName);
+                                                  setNextCheckedHallName(hallId);
                                               }
                                               else {
-                                                  notToSaveChanges(e, hallName);
+                                                  notToSaveChanges(e, hallId);
                                               }
                                           }
                                           }/>
@@ -187,9 +188,9 @@ export default function ToUpdateHall() {
                                 <p className="conf-step__hint">Чтобы изменить вид кресла, нажмите по нему левой кнопкой
                                     мыши</p>
                             </div>
-                            <Hall hallName={hallToUpdate.hallName}
+                            <Hall hallId={hallToUpdate.hallId}
                                   onUpdate={() => {
-                                      setHallToUpdate({hallName: hallToUpdate.hallName, isUpdated: true});
+                                      setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
                                   }
                                   }/>
                             <div className="conf-step__buttons text-center">

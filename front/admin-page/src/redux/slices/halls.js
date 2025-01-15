@@ -39,11 +39,11 @@ export const fetchHallConfig = createAsyncThunk(
     }
 );
 
-export const fetchHallByName = createAsyncThunk(
-    "fetchHallByName",
-    async (name) => {
-        console.log("fetchHallByName", name);
-        const response = await fetch(`${basedUrl}api/hall/${name}`, {
+export const fetchHallById = createAsyncThunk(
+    "fetchHallById",
+    async (id) => {
+        console.log("fetchHallById", id);
+        const response = await fetch(`${basedUrl}api/hall/${id}`, {
             headers: {
                 Accept: "application/json",
             },
@@ -70,9 +70,9 @@ export const fetchNewHall = createAsyncThunk(
     }
 );
 
-export const removeHallByName = createAsyncThunk(
-    "removeHallByName",
-    async (name) => {
+export const removeHall = createAsyncThunk(
+    "removeHall",
+    async (id) => {
         const response = await fetch(`${basedUrl}api/removeHall`, {
             headers: {
                 Accept: "application/json",
@@ -81,7 +81,7 @@ export const removeHallByName = createAsyncThunk(
             },
             method: "POST",
             credentials: "same-origin",
-            body: name
+            body: id
         });
         return response.json();
     }
@@ -93,7 +93,7 @@ export const updatePlacesInHall = createAsyncThunk(
         //console.log("updatePlacesInHall request hall", hall);
         const places = getPlacesObj(hall.places);
         const body = JSON.stringify({
-            name: hall.name,
+            id: hall.id,
             places,
             rowCount: hall.rowCount,
             placesInRow: hall.placeInRowCount
@@ -118,7 +118,7 @@ export const updatePricesInHall = createAsyncThunk(
     async (hall) => {
         //console.log("updatePricesInHall request hall", hall);
         const body = JSON.stringify({
-            name: hall.name,
+            id: hall.id,
             vipPrice: hall.prices.vip,
             standardPrice: hall.prices.standard
         });
@@ -207,7 +207,7 @@ const hallsSlice = createSlice({
                 console.log("slice halls change PlaceStatus");
                 const rowIndex = action.payload.rowIndex;
                 const placeIndex = action.payload.placeIndex;
-                state.halls[action.payload.hallName].places[rowIndex][placeIndex] = action.payload.newStatus;
+                state.halls[action.payload.hallId].places[rowIndex][placeIndex] = action.payload.newStatus;
             }
         },
         extraReducers:
@@ -230,7 +230,7 @@ const hallsSlice = createSlice({
                     state.loadingHalls = true;
                 });
                 builder.addCase(fetchHalls.fulfilled, (state, action) => {
-                    //console.log("fetchHalls fulfilled action", action.payload);
+                    console.log("fetchHalls fulfilled action", action.payload);
                     const hallsArr = action.payload.data;
                     state.halls = getHallsObj(hallsArr);
                     state.loadingHalls = false;
@@ -242,19 +242,19 @@ const hallsSlice = createSlice({
                 });
 
                 // get hall by name
-                builder.addCase(fetchHallByName.pending, (state, action) => {
+                builder.addCase(fetchHallById.pending, (state, action) => {
                     state.loadingHalls = true;
                 });
-                builder.addCase(fetchHallByName.fulfilled, (state, action) => {
+                builder.addCase(fetchHallById.fulfilled, (state, action) => {
                     // console.log("fetchHallByName.fulfilled", action.payload);
                     const hallFullData = action.payload.data;
-                    const hall = getHallsObj([hallFullData])[hallFullData.name];
-                    state.halls[hallFullData.name] = hall;
+                    const hall = getHallsObj([hallFullData])[hallFullData.id];
+                    state.halls[hallFullData.id] = hall;
                     // console.log("fetchHallByName hall", hall);
 
                     state.loadingHalls = false;
                 });
-                builder.addCase(fetchHallByName.rejected, (state, action) => {
+                builder.addCase(fetchHallById.rejected, (state, action) => {
                     state.loadingHalls = false;
                     state.error = "Проблема на стороне сервера";
                     console.log("fetchHalls rejected action", action.payload);
@@ -276,17 +276,17 @@ const hallsSlice = createSlice({
                 });
 
                 //remove hall
-                builder.addCase(removeHallByName.pending, (state, action) => {
+                builder.addCase(removeHall.pending, (state, action) => {
                     state.loadingHalls = true;
                 });
-                builder.addCase(removeHallByName.fulfilled, (state, action) => {
+                builder.addCase(removeHall.fulfilled, (state, action) => {
                     state.loadingHalls = false;
                     //console.log("removeHalls fulfilled action", action.payload);
                     if (action.payload.status !== "ok") {
                         state.error = action.payload.message;
                     }
                 });
-                builder.addCase(removeHallByName.rejected, (state, action) => {
+                builder.addCase(removeHall.rejected, (state, action) => {
                     state.error = "Проблема на стороне сервера";
                     //console.log("removeHalls rejected  action", action.payload);
                     state.loadingHalls = false;

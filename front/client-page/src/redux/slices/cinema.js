@@ -2,12 +2,12 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {startFilms, startHalls} from "../hardcode.js";
 //import {fetchToken, getObjMovies, getSeancesObj} from "../../../../admin-page/src/redux/utils.js";
 import {fetchNewMovie, removeMovieFromList} from "../../../../admin-page/src/redux/slices/films.js";
-import {fetchToken, getHallsObj, getObjMovies, getSeancesObj} from "../utils.js";
+import {fetchToken, getHallsObj, getObjMovies} from "../utils.js";
 import {toISOStringNoMs} from "../../js/utils.js";
 
 //const basedUrl = import.meta.env.VITE_URL
 //const basedUrl = "import.meta.env.VITE_URL";
-const basedUrl = "client/";
+const basedUrl = "";
 const token = await fetchToken();
 
 export const getSeancesByDate = createAsyncThunk(
@@ -50,13 +50,32 @@ export const fetchHalls = createAsyncThunk(
     }
 );
 
+export const fetchSeanceById = createAsyncThunk(
+    "fetchSeanceById",
+    async (id) => {
+         console.log("fetchSeanceById id",id);
+        const response = await fetch(`${basedUrl}api/seance/${id}`, {
+            headers: {
+                Accept: "application/json",
+            },
+            credentials: "same-origin",
+        });
+        return response.json();
+    }
+);
+
+
+
+const initialDate = new Date();
+initialDate.setHours(0, 0, 0, 0);
 
 const initialState = {
     loadingFilms: true,
     error: "",
     films: {},
     halls:{},
-    chosenDate: toISOStringNoMs(new Date()),
+    seances:[],
+    chosenDate: toISOStringNoMs(initialDate),
     chosenSeance:null,
     chosenPlaces:[],
     prices:{standard:250,vip:350},
@@ -96,9 +115,9 @@ export const cinemaSlice = createSlice({
         },
         changeChosenSeance: (state, action) => {
             console.log("changeChosenSeance", action.payload)
-            const hall = {...state.halls[action.payload.hallId]};
-            console.log("changeChosenSeance hall", hall)
-            state.chosenSeance = {hall:hall, filmId:action.payload.filmId,time:action.payload.time};
+            //const hall = {...state.halls[action.payload.hallId]};
+            //console.log("changeChosenSeance hall", hall)
+            state.chosenSeance = action.payload;
         },
         changePlaceStatus: (state, action) => {
             console.log("slice halls change PlaceStatus");
@@ -130,7 +149,7 @@ export const cinemaSlice = createSlice({
             });
             builder.addCase(getSeancesByDate.fulfilled, (state, action) => {
                 //console.log("getSeancesByDate fulfilled action", action.payload);
-                state.seances = getSeancesObj(action.payload.movies, action.payload.seances);
+                state.seances =  action.payload.seances;
                 state.loadingFilms = false;
             });
             builder.addCase(getSeancesByDate.rejected, (state, action) => {
@@ -144,7 +163,7 @@ export const cinemaSlice = createSlice({
                 state.loadingFilms = true;
             });
             builder.addCase(fetchMovies.fulfilled, (state, action) => {
-                console.log("fetchMovies fulfilled action", action.payload);
+                //console.log("fetchMovies fulfilled action", action.payload);
                 state.films = getObjMovies(action.payload.data);
                 state.loadingFilms = false;
             });
@@ -158,7 +177,7 @@ export const cinemaSlice = createSlice({
                 state.loadingFilms = true;
             });
             builder.addCase(fetchHalls.fulfilled, (state, action) => {
-                console.log("fetchHalls fulfilled action", action.payload);
+                //console.log("fetchHalls fulfilled action", action.payload);
                 const hallsArr = action.payload.data;
                 state.halls = getHallsObj(hallsArr);
                 state.loadingFilms = false;
@@ -167,6 +186,21 @@ export const cinemaSlice = createSlice({
                 state.loadingFilms = false;
                 state.error = "Проблема на стороне сервера";
                 console.log("fetchMovies rejected action", action.payload);
+            });
+
+            //get seance by id
+            builder.addCase(fetchSeanceById.pending, (state, action) => {
+                state.loadingFilms = true;
+            });
+            builder.addCase(fetchSeanceById.fulfilled, (state, action) => {
+                console.log("fetchSeanceById fulfilled action", action.payload);
+                state.chosenSeance = action.payload.seance;
+                state.loadingFilms = false;
+            });
+            builder.addCase(fetchSeanceById.rejected, (state, action) => {
+                state.loadingFilms = false;
+                state.error = "Проблема на стороне сервера";
+                console.log("fetchSeanceById rejected action", action.payload);
             });
         },
 });

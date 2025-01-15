@@ -31,28 +31,32 @@ export function getHallsObj(arr) {
     const obj = {};
     for (let hall of arr) {
         //console.log("getHallsObj hall",hall)
-        obj[hall.name] = {};
-        obj[hall.name].name = hall?.name;
-        obj[hall.name].rowCount = hall.rowsCount;
-        obj[hall.name].placeInRowCount = hall.placesInRow;
+        obj[hall.id] = {};
+        obj[hall.id].name = hall.name;
+        obj[hall.id].id = hall.id;
+        obj[hall.id].rowCount = hall.rowsCount;
+        obj[hall.id].placeInRowCount = hall.placesInRow;
 
         const places = fillPlacesByStandard([], hall.rowsCount, hall.placesInRow);
 
-        for (let p of hall.places.vip) {
+        //console.log("getHallsObj hall.places",hall.places);
+        const hallPlaces = JSON.parse(hall.places)
+        //console.log("getHallsObj hallPlaces",hallPlaces);
+        for (let p of hallPlaces.vip) {
             places[p.row][p.place] = placesType.vip;
         }
 
-        for (let p of hall.places.disabled) {
+        for (let p of hallPlaces.disabled) {
             places[p.row][p.place] = placesType.disabled;
         }
-        obj[hall.name].places = places;
-        obj[hall.name].prices = {
+        obj[hall.id].places = places;
+        obj[hall.id].prices = {
             vip: hall.vipPrice,
             standard: hall.standardPrice,
         };
         //console.log("getHallsObj obj",obj[hall.name])
     }
-    //console.log("getHallsObj obj",obj);
+    console.log("getHallsObj obj",obj);
     return obj;
 }
 

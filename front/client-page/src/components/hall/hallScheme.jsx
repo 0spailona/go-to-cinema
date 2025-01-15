@@ -6,10 +6,10 @@ export default function HallScheme() {
 
     const dispatch = useDispatch();
 
-    const {chosenSeance
+    const {chosenSeance,halls
     } = useSelector(state => state.cinema);
 
-    const hall = chosenSeance.hall;
+    const hall = halls[chosenSeance.hallId];
 
     const onPlaceChange = (rowIndex, placeIndex, newStatus,isSelected) => {
 

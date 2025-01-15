@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSeancesTable extends Migration
+class CreateTicketsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateSeancesTable extends Migration
      */
     public function up()
     {
-        Schema::create('seances', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->timestampsTz();
-            $table->string('hallId');
-            $table->string('movieId');
+        Schema::create('tickets', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+            $table->string('seanceId');
             $table->dateTimeTz('startTime');
+            $table->integer('row');
+            $table->integer('place');
         });
     }
 
@@ -29,6 +30,6 @@ class CreateSeancesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('seances');
+        Schema::dropIfExists('tickets');
     }
 }

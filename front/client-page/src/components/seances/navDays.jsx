@@ -39,7 +39,7 @@ export default function NavDays() {
     };
 
     const changeChooseDay = (dayIndex, date) => {
-
+        date.setHours(0, 0, 0, 0);
         const string = toISOStringNoMs(date);
         dispatch(changeChosenDate(string));
 

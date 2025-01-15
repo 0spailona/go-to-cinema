@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 import MyPopup from "./common/myPopup.jsx";
 import MyInput from "./common/myInput.jsx";
-import {fetchHalls, fetchNewHall, removeHallByName} from "../redux/slices/halls.js";
+import {fetchHalls, fetchNewHall, removeHall} from "../redux/slices/halls.js";
 import Loader from "react-js-loader";
 
 export default function ToCreateHall() {
@@ -29,10 +29,11 @@ export default function ToCreateHall() {
         dispatch(fetchHalls());
     };
 
-    const removeHall = (e) => {
+    const removeOneHall = (e) => {
         e.preventDefault();
         setShowPopupForRemove(false);
-        dispatch(removeHallByName(hallForRemove))
+        console.log("hallForREmove",hallForRemove)
+        dispatch(removeHall(hallForRemove))
         dispatch(fetchHalls());
         setHallForRemove(null);
     };
@@ -64,7 +65,7 @@ export default function ToCreateHall() {
             </MyPopup>
             <MyPopup isVisible={showPopupForRemove} title="Удаление зала"
                      onClose={() => onResetForRemove()}
-                     onSubmit={(e) => removeHall(e)}
+                     onSubmit={(e) => removeOneHall(e)}
                      onReset={() => onResetForRemove()}
                      textForSubmitBtn="Удалить"
                      textForResetBtn="Отменить">
@@ -82,9 +83,9 @@ export default function ToCreateHall() {
                                     size={50}/>
                         </div> :
                         halls && Object.keys(halls).length > 0 ? <ul className="conf-step__list">
-                            {Object.keys(halls).map((hallName) => <li key={hallName}>{hallName}{"\u00A0"}
+                            {Object.keys(halls).map((hallId) => <li key={hallId}>{halls[hallId].name}{"\u00A0"}
                                 <MyButton type={"trash"} onclick={() => {
-                                    setHallForRemove(hallName);
+                                    setHallForRemove(hallId);
                                     setShowPopupForRemove(true);
                                 }}/>
                             </li>)}

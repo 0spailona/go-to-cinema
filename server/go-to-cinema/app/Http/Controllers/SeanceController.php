@@ -38,7 +38,7 @@ class SeanceController
     private function checkSeances(array $seances): bool
     {
         foreach ($seances as $seance) {
-            if (Hall::getHallById($seance->hallId) === null
+            if (Hall::byId($seance->hallId) === null
                 || Movie::getMovie($seance->movieId) === null) {
                 return false;
             }
@@ -111,18 +111,17 @@ class SeanceController
 
     public function getSeancesByDateToClient(Request $request): \Illuminate\Http\JsonResponse
     {
-        $dateStart = DateTime::createFromFormat(DATE_FORMAT, $request->query('date'));
-        $seances = $this->getListByDate($dateStart)->toArray();
 
-        //$halls = HallController::getHallNamesAndIds();
-        $movies = MovieController::getMoviesIds();
+        $dateStart = DateTime::createFromFormat(DATE_FORMAT, $request->query('date'));
+        $debug = json_encode($dateStart);
+        Log::debug("getSeancesByDateToClient dateStart: $debug");
+        $seances = $this->getListByDate($dateStart)->toArray();
+        $debug2 = json_encode($seances);
+        Log::debug("getSeancesByDateToClient dateStart: $debug2");
 
         return response()->json([
             "status" => "ok",
             "dateStart" => $dateStart->format(DATE_FORMAT),
-            "movies" => $movies,
-            //"req" => $request->query('date'),
-            //"seancesData" => $seancesData,
             "seances" => $seances,
         ]);
     }
@@ -131,8 +130,12 @@ class SeanceController
     public function getSeancesByDateToAdmin(Request $request): \Illuminate\Http\JsonResponse
     {
         $dateStart = DateTime::createFromFormat(DATE_FORMAT, $request->query('date'));
-        $seances = $this->getListByDate($dateStart)->toArray();
+        $debug1 = json_encode($dateStart);
+        Log::debug("getSeancesByDateToAdmin dateStart: $debug1");
 
+        $seances = $this->getListByDate($dateStart)->toArray();
+        $debug2 = json_encode($seances);
+        Log::debug("getSeancesByDateToAdmin dateStart: $debug2");
         $halls = HallController::getHallNamesAndIds();
 
         return response()->json([
@@ -143,6 +146,17 @@ class SeanceController
             //"seancesData" => $seancesData,
             "seances" => $seances,
         ]);
+    }
+
+    public function getSeanceById(string $id): \Illuminate\Http\JsonResponse
+    {
+        //$id = $request->query('id');
+        Log::debug("getSeanceById: id: $id");
+        $seance = Seance::byId($id);
+        if($seance == null) {
+            return response()->json(["status" => "error"]);
+        }
+        return response()->json(["status" => "ok", "seance" => $seance]);
     }
 
 }

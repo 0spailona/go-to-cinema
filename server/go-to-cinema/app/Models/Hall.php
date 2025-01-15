@@ -29,18 +29,30 @@ class Hall extends Model
         'placesInRow',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public $incrementing = false;
 
     // In Laravel 6.0+ make sure to also set $keyType
     protected $keyType = 'string';
 
-    static function getHallByName($name){
-        return DB::table('halls')->where('name', $name)->first();
+    static function byName($name)
+    {
+        return self::where('name', $name)->first();
     }
 
-    static function getHallById($id){
-        return DB::table('halls')->where('id', $id)->first();
+    static function byId($id)
+    {
+        return self::where('id', $id)->first();
     }
+
+/*
+
+
+
 
     static function deleteHall($id)
     {
@@ -56,5 +68,5 @@ class Hall extends Model
     {
         DB::table('halls')->where('id', $id)->update(['vipPrice' => $vipPrice,'standardPrice' => $standardPrice]);
     }
-
+*/
 }

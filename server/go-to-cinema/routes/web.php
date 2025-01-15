@@ -52,9 +52,16 @@ Route::prefix('api')->group(function () {
          abort(404, 'API not found');
     });
 
+    Route::get('csrf', function (Request $request) {
+        // $token =
+        return $request->session()->token();
+    });
+
     Route::get('seancesListByDate', [\App\Http\Controllers\SeanceController::class, 'getSeancesByDateToClient']);
     Route::get('moviesList', [\App\Http\Controllers\MovieController::class, 'getMoviesList']);
     Route::get('hallsList', [\App\Http\Controllers\HallController::class, 'getHallsList']);
+    Route::get('posterByMovieId/{movieId}', [\App\Http\Controllers\MovieController::class, 'getPosterByMovieId']);
+    Route::get('seance/{id}', [\App\Http\Controllers\SeanceController::class, 'getSeanceById']);
 
     Route::get('{api_method}', function ($api_method) {
         return response()->json(["status" => "ok", "method"=> $api_method], 200);
