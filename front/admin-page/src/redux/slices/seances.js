@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {createSeance, fetchToken, getArrFromSeances, getSeancesObj} from "../utils.js";
+import {createSeance, fetchToken, getArrFromSeances} from "../utils.js";
 import {toISOStringNoMs} from "../../js/utils.js";
 //import {createSeance} from "../../js/modelUtils.js";
 
@@ -7,23 +7,7 @@ const basedUrl = "admin/";
 //console.log("basedUrl", basedUrl);
 const token = await fetchToken();
 
-/*const startFilms = [createFilm("Звёздные войны XXIII: Атака клонированных клонов", 130, "description", "country", null),
-    createFilm("Миссия выполнима", 120, "description", "country", null),
-    createFilm("Серая пантера", 90, "description", "country", null),
-    createFilm("Движение вбок", 95, "description", "country", null),
-    createFilm("Кот Да Винчи", 100, "description", "country", null)];
-
-const createSeanceDay = () => {
-    const halls = ["h-1", "h-2"];
-    const day = {};
-
-    for (let hall of halls) {
-        day[hall] = [];
-    }
-    return day;
-};*/
-
-export const getSeancesByDate = createAsyncThunk(
+/*export const getSeancesByDate = createAsyncThunk(
     "getSeancesByDate",
     async (date) => {
         const response = await fetch(`${basedUrl}api/seancesListByDate?date=${date}`, {
@@ -34,7 +18,7 @@ export const getSeancesByDate = createAsyncThunk(
         });
         return response.json();
     }
-);
+);*/
 
 export const updateSeances = createAsyncThunk(
     "updateSeances",
@@ -66,7 +50,8 @@ export const updateSeances = createAsyncThunk(
 const initialState = {
     loadingSeances: false,
     error: "",
-    seances: {},
+    seances: null,
+
     // chosenDate: null,
     isUpdatedSeances: false,
 };
@@ -84,14 +69,15 @@ export const seancesSlice = createSlice({
     reducers: {
         addFilmToSeancesHall: (state, action) => {
             state.isUpdatedSeances = true;
-            //console.log("addNewFilmToSeancesHall", action.payload);
-            // console.log("seances",state.seances);
+            console.log("addNewFilmToSeancesHall", action.payload);
+            //console.log("seances",state.seances);
             const hallId = action.payload.to;
             const fromHallId = action.payload.from;
             const filmId = action.payload.filmId;
             const start = action.payload.start;
             //console.log("addFilmToSeancesHall", action.payload.from, action.payload.to, action.payload.filmId,action.payload.filmIndex, action.payload.start);
             const newSeance = createSeance(filmId, start, state.seances[hallId].seances.length);
+            //console.log("state.seances[hallId].seances",state.seances[hallId]);
             state.seances[hallId].seances.push(newSeance);
 
             if (fromHallId) {
@@ -118,17 +104,24 @@ export const seancesSlice = createSlice({
             //delete state.seances[action.payload];
             console.log("resetUpdateSeances");
         },
+        setLoadingSeances: (state, action) => {
+            state.loadingSeances = action.payload;
+        },
+        setSeances: (state, action) => {
+            state.seances = action.payload;
+        }
     },
     extraReducers:
         builder => {
             // get seances by date
-            builder.addCase(getSeancesByDate.pending, (state, action) => {
+            /*builder.addCase(getSeancesByDate.pending, (state, action) => {
                 state.loadingSeances = true;
             });
             builder.addCase(getSeancesByDate.fulfilled, (state, action) => {
                 console.log("getSeancesByDate fulfilled action", action.payload);
                 //const halls = action.payload.halls;
-                state.seances = getSeancesObj(action.payload.halls, action.payload.seances);
+                state.seances = action.payload.seances;
+
                 state.isUpdatedSeances = false;
                 state.loadingSeances = false;
             });
@@ -136,7 +129,7 @@ export const seancesSlice = createSlice({
                 state.loadingSeances = false;
                 state.error = "Проблема на стороне сервера";
                 console.log("getSeancesByDate rejected action", action.payload);
-            });
+            });*/
 
             // update seances
             builder.addCase(updateSeances.pending, (state, action) => {
@@ -158,7 +151,8 @@ export const seancesSlice = createSlice({
 
 export const {
     fetchUpdatesSeances,
-    addFilmToSeancesHall, resetUpdatesSeances,
+    addFilmToSeancesHall,
+    setLoadingSeances,setSeances,resetUpdatesSeances,
     removeFilm, removeFilmFromSeanceHall, resetUpdateSeancesByDate,
 } = seancesSlice.actions;
 export const {

@@ -30,16 +30,8 @@ export function getHallsObj(arr) {
 
     const obj = {};
     for (let hall of arr) {
-        //console.log("getHallsObj hall",hall)
-        obj[hall.id] = {};
-        obj[hall.id].name = hall.name;
-        obj[hall.id].id = hall.id;
-        obj[hall.id].rowCount = hall.rowsCount;
-        obj[hall.id].placeInRowCount = hall.placesInRow;
-
+        obj[hall.id] = {name:hall.name,id:hall.id,rowCount:hall.rowCount,placeInRowCount: hall.placesInRow};
         const places = fillPlacesByStandard([], hall.rowsCount, hall.placesInRow);
-
-        //console.log("getHallsObj hall.places",hall.places);
         const hallPlaces = JSON.parse(hall.places)
         //console.log("getHallsObj hallPlaces",hallPlaces);
         for (let p of hallPlaces.vip) {
@@ -99,27 +91,26 @@ export function createSeance(filmId, start, index) {
     };
 }
 
-export function getSeancesObj(halls, seances) {
-    const obj = {};
+/*export function getSeancesObj(seances) {
+    const hallsIds = [ ...new Set(seances.map(x => x.hallId))];
+    console.log("getSeancesObj hallsIds",hallsIds);
+    const result = {};
 
-    for (let hall of halls) {
-        obj[hall.id] = {hallName: hall.name, seances: []};
-        for (let seance of seances) {
-            if (seance.hallId === hall.id) {
-                const seanceObj = {};
-                seanceObj.id = seance.id;
-                seanceObj.filmId = seance.movieId;
-                seanceObj.hallId = seance.hallId;
-                const date = new Date(seance.startTime)
-                seanceObj.start = date.getHours() * 60 + date.getMinutes();
-                obj[hall.id].seances.push(seanceObj);
-            }
-        }
+    for(let hallId of hallsIds){
+        const seancesForHall = seances.filter(x => x.hallId === hallId);
+        seancesForHall.map(x=>{
+            const date = new Date(x.startTime)
+            x.startTime = date.getHours() * 60 + date.getMinutes()
+            return x
+        })
+
+        result[hallId] = {seances:seancesForHall};
     }
-    //console.log("getSeancesObj", obj);
 
-    return obj;
-}
+    console.log("getSeancesObj", result);
+
+    return result;
+}*/
 
 export function getArrFromSeances(seances, date) {
     const arr = [];
@@ -132,11 +123,11 @@ export function getArrFromSeances(seances, date) {
 
             const id = seance.id.includes("seance-") ? null : seance.id;
 
-            let obj = {};
+            let obj = {hallId,movieId:seance.filmId,startTime:toISOStringNoMs(startTime)};
 
-            obj.hallId = hallId;
-            obj.movieId = seance.filmId;
-            obj.startTime = toISOStringNoMs(startTime);
+            //obj.hallId = hallId;
+            //obj.movieId = seance.filmId;
+            //obj.startTime = toISOStringNoMs(startTime);
             if(id){
                  obj.id = id
             }

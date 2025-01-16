@@ -22,10 +22,11 @@ export default function Movie({
     } = useSelector(state => state.films);
     const {seances} = useSelector(state => state.seances);
     const film = films[movieId];
-    //console.log("movie film", film);
+    console.log("movie movieId", movieId);
     const id = hallId ? `${draggableIdsBase.movieInSeance}${seanceId}-${hallId}-${movieId}`
         : `${draggableIdsBase.movieInList}${movieId}`;
     const backGroundColorIndex = Object.keys(films).indexOf(movieId);
+
     const width = minutesToPx(film.duration);
     //console.log("movie width", minutesToPx(12));
     const height = 40;

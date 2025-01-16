@@ -23,7 +23,7 @@ export default function ClientPage() {
     },[])
 
     useEffect(() => {
-       // console.log("useEffect chosenDate",chosenDate)
+        console.log("useEffect chosenDate",chosenDate)
 
         dispatch(getSeancesByDate(chosenDate));
     },[chosenDate]);

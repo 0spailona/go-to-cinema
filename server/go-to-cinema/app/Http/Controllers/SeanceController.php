@@ -141,7 +141,7 @@ class SeanceController
         return response()->json([
             "status" => "ok",
             "dateStart" => $dateStart->format(DATE_FORMAT),
-            "halls" => $halls,
+            //"halls" => $halls,
             //"req" => $request->query('date'),
             //"seancesData" => $seancesData,
             "seances" => $seances,

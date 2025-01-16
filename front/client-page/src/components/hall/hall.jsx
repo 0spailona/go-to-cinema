@@ -12,17 +12,17 @@ export default function Hall() {
     const {chosenSeance, halls, films} = useSelector(state => state.cinema);
 
     let hall, time, film;
-    if (!chosenSeance) {
+    if (!chosenSeance.seanceData) {
         console.log("no seances selected");
     }
     else {
         //console.log("hall chosenSeance",chosenSeance)
-        hall = halls[chosenSeance.hallId];
+        hall = halls[chosenSeance.seanceData.hallId];
         //console.log("Hall hall",hall);
 
          time = getStartTimeStringFromMinutes(chosenSeance.startTime)
         //time = chosenSeance.time;
-        film = films[chosenSeance.movieId];
+        film = films[chosenSeance.seanceData.movieId];
     }
 
     const [isToDoBig, setToDoBig] = useState(false);
@@ -44,7 +44,7 @@ export default function Hall() {
 
     return (
         <main onClick={toggleBig}>
-            {chosenSeance ? <section className="buying">
+            {chosenSeance.seanceData ? <section className="buying">
                 <div className="buying__info">
                     <div className="buying__info-description">
                         <h2 className="buying__info-title">{film.title}</h2>

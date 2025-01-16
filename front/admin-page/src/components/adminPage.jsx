@@ -10,7 +10,7 @@ import {useEffect} from "react";
 import {fetchHallConfig, fetchHalls} from "../redux/slices/halls.js";
 import {useDispatch} from "react-redux";
 import {fetchMovies} from "../redux/slices/films.js";
-import {getSeancesByDate} from "../redux/slices/seances.js";
+//import {getSeancesByDate} from "../redux/slices/seances.js";
 import {toISOStringNoMs} from "../js/utils.js";
 
 export default function AdminPage() {

@@ -1,7 +1,5 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {startFilms, startHalls} from "../hardcode.js";
 //import {fetchToken, getObjMovies, getSeancesObj} from "../../../../admin-page/src/redux/utils.js";
-import {fetchNewMovie, removeMovieFromList} from "../../../../admin-page/src/redux/slices/films.js";
 import {fetchToken, getHallsObj, getObjMovies} from "../utils.js";
 import {toISOStringNoMs} from "../../js/utils.js";
 
@@ -53,7 +51,7 @@ export const fetchHalls = createAsyncThunk(
 export const fetchSeanceById = createAsyncThunk(
     "fetchSeanceById",
     async (id) => {
-         console.log("fetchSeanceById id",id);
+        console.log("fetchSeanceById id", id);
         const response = await fetch(`${basedUrl}api/seance/${id}`, {
             headers: {
                 Accept: "application/json",
@@ -65,7 +63,6 @@ export const fetchSeanceById = createAsyncThunk(
 );
 
 
-
 const initialDate = new Date();
 initialDate.setHours(0, 0, 0, 0);
 
@@ -73,13 +70,13 @@ const initialState = {
     loadingFilms: true,
     error: "",
     films: {},
-    halls:{},
-    seances:[],
+    halls: {},
+    seances: [],
     chosenDate: toISOStringNoMs(initialDate),
-    chosenSeance:null,
-    chosenPlaces:[],
-    prices:{standard:250,vip:350},
-    qr:false
+    chosenSeance: {seanceData:null,takenPlaces:[],selectedPlaces:[]},
+    chosenPlaces: [],
+    prices: {standard: 250, vip: 350},
+    qr: false
 };
 
 /*for (let film of startFilms) {
@@ -114,7 +111,7 @@ export const cinemaSlice = createSlice({
             state.chosenDate = action.payload;
         },
         changeChosenSeance: (state, action) => {
-            console.log("changeChosenSeance", action.payload)
+            console.log("changeChosenSeance", action.payload);
             //const hall = {...state.halls[action.payload.hallId]};
             //console.log("changeChosenSeance hall", hall)
             state.chosenSeance = action.payload;
@@ -123,22 +120,25 @@ export const cinemaSlice = createSlice({
             console.log("slice halls change PlaceStatus");
             const rowIndex = action.payload.rowIndex;
             const placeIndex = action.payload.placeIndex;
-            state.chosenSeance.hall.places[rowIndex][placeIndex] = action.payload.newStatus;
+            const hallId = state.chosenSeance.seanceData.hallId;
+            state.halls[hallId].places[rowIndex][placeIndex] = action.payload.newStatus;
+
+            //state.chosenSeance.hall.places[rowIndex][placeIndex] = action.payload.newStatus;
         },
-        changeChosenPlaces:(state, action)=>{
+        changeChosenPlaces: (state, action) => {
             const rowIndex = action.payload.rowIndex;
             const placeIndex = action.payload.placeIndex;
 
-            if(action.payload.isSelected) {
+            if (action.payload.isSelected) {
                 state.chosenPlaces.push({rowIndex, placeIndex});
             }
             else {
-                state.chosenPlaces = state.chosenPlaces.filter(place => place.rowIndex !== rowIndex && place.placeIndex !== placeIndex)
+                state.chosenPlaces = state.chosenPlaces.filter(place => place.rowIndex !== rowIndex && place.placeIndex !== placeIndex);
             }
         },
-        getQR:(state, action) => {
+        getQR: (state, action) => {
             console.log("getQR state", action.payload);
-            state.qr = true
+            state.qr = true;
         }
     },
     extraReducers:
@@ -149,7 +149,7 @@ export const cinemaSlice = createSlice({
             });
             builder.addCase(getSeancesByDate.fulfilled, (state, action) => {
                 //console.log("getSeancesByDate fulfilled action", action.payload);
-                state.seances =  action.payload.seances;
+                state.seances = action.payload.seances;
                 state.loadingFilms = false;
             });
             builder.addCase(getSeancesByDate.rejected, (state, action) => {
@@ -194,7 +194,10 @@ export const cinemaSlice = createSlice({
             });
             builder.addCase(fetchSeanceById.fulfilled, (state, action) => {
                 console.log("fetchSeanceById fulfilled action", action.payload);
-                state.chosenSeance = action.payload.seance;
+                if (action.payload.status === "ok") {
+
+                }
+                state.chosenSeance.seanceData = action.payload.seance;
                 state.loadingFilms = false;
             });
             builder.addCase(fetchSeanceById.rejected, (state, action) => {
@@ -205,18 +208,20 @@ export const cinemaSlice = createSlice({
         },
 });
 
-export const {getFilmsByDate,
+export const {
+    getFilmsByDate,
     changePlaceStatus,
     changeChosenDate,
-    changeChosenSeance,
+    //changeChosenSeance,
     changeChosenPlaces,
-    getQR} = cinemaSlice.actions;
+    getQR
+} = cinemaSlice.actions;
 export const {
     films,
-    loadingFilms,halls,
-    chosenDate,chosenSeance,
+    loadingFilms, halls,
+    chosenDate, chosenSeance,
     chosenPlaces,
-    prices,qr
+    prices, qr
 } = cinemaSlice.selectors;
 const cinemaReducer = cinemaSlice.reducer;
 export default cinemaReducer;

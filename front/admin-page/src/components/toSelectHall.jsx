@@ -8,7 +8,7 @@ export default function ToSelectHall({selectedHall,onChange}) {
         halls
     } = useSelector(state => state.halls);
 
-    console.log("selectedHall", selectedHall);
+    //console.log("selectedHall", selectedHall);
 
     return (
         <>

@@ -6,7 +6,7 @@ import {toISOStringNoMs} from "../../js/utils.js";
 
 export default function SeancesHall({hallName,hallId,filmsInHall,dropId, updateIsDropAnimating, itemOnDragX, showRemoveBtn}) {
     const removeId = `remove-movie-from-hall-${hallId}`
-    //console.log("seancesHall removeId", removeId);
+    console.log("seancesHall filmsInHall", filmsInHall);
     const getListStyle = (isDraggingOver) => {
         return {
             background: isDraggingOver ? "lightblue" : "lightgrey",

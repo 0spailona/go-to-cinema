@@ -67,3 +67,24 @@ export function checkDropInHall(itemOnDragX, width, hallWidth, film, seances, fi
 
     return true;
 }
+
+export function getSeancesObj(halls,seances) {
+    const hallsIds = Object.keys(halls);
+    //console.log("getSeancesObj hallsIds",hallsIds);
+    const result = {};
+
+    for(let hallId of hallsIds){
+        const seancesForHall = seances.filter(x => x.hallId === hallId);
+        seancesForHall.map(x=>{
+            const date = new Date(x.startTime)
+            x.startTime = date.getHours() * 60 + date.getMinutes()
+            return x
+        })
+
+        result[hallId] = {seances:seancesForHall};
+    }
+
+    //console.log("getSeancesObj", result);
+
+    return result;
+}

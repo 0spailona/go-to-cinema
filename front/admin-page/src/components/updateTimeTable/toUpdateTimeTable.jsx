@@ -8,7 +8,7 @@ import {useDispatch, useSelector} from "react-redux";
 import PopupAddFilm from "./popupAddFilm.jsx";
 import PopupRemoveFilmFromList from "./popupRemoveFilm.jsx";
 import {fetchMovies, fetchNewMovie, removeMovieFromList,} from "../../redux/slices/films.js";
-import {checkDropInHall, getItemOnDragX, pxToMinutes, toISOStringNoMs} from "../../js/utils.js";
+import {checkDropInHall, getItemOnDragX, getSeancesObj, pxToMinutes, toISOStringNoMs} from "../../js/utils.js";
 import {getSeanceHallWidth} from "../../js/info.js";
 import {draggableIdsBase, droppableIdsBase, getSeancesHallId} from "./utilsFunctions.js";
 import PopupUpdateDate from "./popupUpdateDate.jsx";
@@ -20,11 +20,13 @@ import PopupRemoveFilmFromSeances from "./popupRemoveFilmFromSeances.jsx";
 import MyPopup from "../common/myPopup.jsx";
 import {
     addFilmToSeancesHall,
-    fetchUpdatesSeances,
-    getSeancesByDate,
     removeFilmFromSeanceHall,
-    resetUpdatesSeances, updateSeances
+    setLoadingSeances,
+    setSeances,
+    updateSeances
 } from "../../redux/slices/seances.js";
+
+import {getSeancesByDate} from "../../js/api.js";
 
 registerLocale("ru", ru);
 
@@ -42,26 +44,58 @@ export default function ToUpdateTimeTable() {
     const dispatch = useDispatch();
 
     const {films, loadingFilms} = useSelector(state => state.films);
+
     const {
         seances,
-        isUpdatedSeances, loadingSeances
+        isUpdatedSeances,
+        loadingSeances
     } = useSelector(state => state.seances);
     const {halls} = useSelector(state => state.halls);
 
     const [showAllMoviesLoader, setShowAllMoviesLoader] = useState(loadingFilms);
 
-    const today = new Date()
+    const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const [chosenDate, setChosenDate] = useState(today);
 
-    useEffect(()=>{
+    /*useEffect(()=>{
         if(halls && Object.keys(halls).length > 0){
             dispatch(getSeancesByDate(toISOStringNoMs(today)))
         }
-    },[])
+    },[])*/
+
+   // const [seancesObj, setSeancesObj] = useState({});
+    //const[loadingSeances, setLoadingSeances] = useState(loadingSeances);
+
+    const getSeances = async (date) => {
+        dispatch(setLoadingSeances(true));
+        const response = await getSeancesByDate(date);
+        if (response.status === "success") {
+            const seances = getSeancesObj(halls, response.data);
+            dispatch(setSeances(seances));
+        }
+        else {
+            //TODO ERROR
+        }
+       // console.log("getSeances", response);
+        dispatch(setLoadingSeances(false));
+    };
+
+   /* useEffect(() => {
+        //console.log("useEffect seances");
+        if (seances && halls) {
+            //setSeancesObj(getSeancesObj(halls, seances));
+        }
+    }, [seances]);*/
 
     useEffect(() => {
-        if(halls && Object.keys(halls).length > 0){
-            dispatch(getSeancesByDate(toISOStringNoMs(chosenDate)));
+        if (halls && Object.keys(halls).length > 0) {
+            async function getSeancesByDate() {
+                await getSeances(toISOStringNoMs(chosenDate));
+            }
+
+            getSeancesByDate();
+            //dispatch(getSeancesByDate(toISOStringNoMs(chosenDate)));
         }
     }, [halls]);
 
@@ -86,7 +120,7 @@ export default function ToUpdateTimeTable() {
     const [showRemoveFromAllMovies, setShowRemoveFromAllMovies] = useState({isShown: false, filmTitle: null});
 
     const [sourceDroppableId, setSourceDroppableId] = useState(null);
-    const [chosenDate, setChosenDate] = useState(today);
+
 
     function isCanDrop(hallId, filmId) {
         if (curDroppableId?.includes(droppableIdsBase.seanceHall)) {
@@ -146,7 +180,7 @@ export default function ToUpdateTimeTable() {
         clearInterval(timerId);
         setShowRemoveFromAllMovies({isShown: false, filmTitle: null});
         setSourceDroppableId(null);
-       // console.log("onDragEnd", result);
+         console.log("onDragEnd", result);
 
         const {source, destination, draggableId} = result;
         if (!destination || destination.droppableId === droppableIdsBase.allMovies) {
@@ -162,7 +196,7 @@ export default function ToUpdateTimeTable() {
         const start = pxToMinutes(itemOnDragX);
 
         if (toId === droppableIdsBase.removeFromAllMovies) {
-            if(source.droppableId !== droppableIdsBase.allMovies){
+            if (source.droppableId !== droppableIdsBase.allMovies) {
                 return;
             }
             const filmTitle = films[draggableId?.replace(draggableIdsBase.movieInList, "")].title;
@@ -170,7 +204,7 @@ export default function ToUpdateTimeTable() {
         }
         else if (toId.includes(droppableIdsBase.removeFromSeances)) {
             //console.log("removeFromSeances", droppableIdsBase.removeFromSeances);
-            if(!source.droppableId.includes(droppableIdsBase.seanceHall)) {
+            if (!source.droppableId.includes(droppableIdsBase.seanceHall)) {
                 return;
             }
             const hallId = toId.match(/^remove-movie-from-hall-([0-9a-f]+)$/)[1];
@@ -246,7 +280,7 @@ export default function ToUpdateTimeTable() {
         setShowRemoveFromFromSeance(initialShowRemoveFromSeance);
     };
 
-    const onDateSelected = (newDate) => {
+    const onDateSelected = async (newDate) => {
         newDate.setHours(0, 0, 0, 0);
 
         if (chosenDate && chosenDate !== newDate && isUpdatedSeances) {
@@ -254,26 +288,29 @@ export default function ToUpdateTimeTable() {
         }
         else {
             const date = toISOStringNoMs(newDate);
-            dispatch(getSeancesByDate(date));
+            await getSeances(date)
+            //dispatch(getSeancesByDate(date));
             setChosenDate(newDate);
         }
     };
 
-    const onResetUpdateDate = (e) => {
+    const onResetUpdateDate = async (e) => {
         e.preventDefault();
-       // console.log("showPopupUpdateDate.date",showPopupUpdateDate.date)
+        // console.log("showPopupUpdateDate.date",showPopupUpdateDate.date)
         const date = toISOStringNoMs(showPopupUpdateDate.date);
-        dispatch(getSeancesByDate(date));
+        await getSeances(date)
+        //dispatch(getSeancesByDate(date));
         setChosenDate(showPopupUpdateDate.date);
         setShowPopupUpdateDate({isShown: false, date: null});
     };
 
-    const onSubmitUpdateDate = (e) => {
+    const onSubmitUpdateDate = async (e) => {
         e.preventDefault();
 
-        dispatch(updateSeances({seances, date:chosenDate}))
+        dispatch(updateSeances({seancesObj, date: chosenDate}));
         const date = toISOStringNoMs(showPopupUpdateDate.date);
-        dispatch(getSeancesByDate(date));
+        await getSeances(date)
+        //dispatch(getSeancesByDate(date));
         setChosenDate(showPopupUpdateDate.date);
         setShowPopupUpdateDate({isShown: false, date: null});
     };
@@ -296,7 +333,7 @@ export default function ToUpdateTimeTable() {
         setValidateError(msg);
         setShowErrorPopup(true);
     };
-    // console.log("showLoaderAllMovies", showAllMoviesLoader);
+    console.log("toUpdateTime seances", seances);
     return (<>
             <PopupRemoveFilmFromSeances showPopup={showRemoveFromSeance.isShown}
                                         title={showRemoveFromSeance.filmTitle}
@@ -388,25 +425,34 @@ export default function ToUpdateTimeTable() {
                                 </>
                                 : null
                         }
-                        <div className="conf-step__seances">
-                            {films && Object.keys(films).length > 0 && seances ? Object.keys(seances).map((hallId) => (
-                                <SeancesHall key={seances[hallId].hallName}
-                                             hallName={seances[hallId].hallName}
-                                             hallId={hallId}
-                                             dropId={getSeancesHallId(hallId)}
-                                             filmsInHall={seances[hallId].seances} itemOnDragX={itemOnDragX}
-                                             updateIsDropAnimating={bool => isDropAnimating = bool}
-                                             showRemoveBtn={sourceDroppableId === getSeancesHallId(hallId)}
-                                             sourceDroppableId={sourceDroppableId}
-                                />
-                            )) : ""}
-                        </div>
+                        {loadingSeances ? <div className="loader">
+                                <Loader type="bubble-scale" bgColor="#63536C" color="#FFFFFF"
+                                        size={50}/>
+                            </div> :
+                            <div className="conf-step__seances">
+                                {films && Object.keys(films).length > 0 && halls && seances? Object.keys(halls).map((hallId) => (
+                                    <SeancesHall key={hallId}
+                                                 hallName={halls[hallId].name}
+                                                 hallId={hallId}
+                                                 dropId={getSeancesHallId(hallId)}
+                                                 filmsInHall={seances[hallId].seances}
+                                                 itemOnDragX={itemOnDragX}
+                                                 updateIsDropAnimating={bool => isDropAnimating = bool}
+                                                 showRemoveBtn={sourceDroppableId === getSeancesHallId(hallId)}
+                                                 sourceDroppableId={sourceDroppableId}
+                                    />
+                                )) : ""}
+                            </div>
+                        }
+
                     </DragDropContext>
                     <div className="conf-step__buttons text-center">
-                        <MyButton type="reset" text="Отмена" onclick={() => dispatch(getSeancesByDate(toISOStringNoMs(chosenDate)))}/>
-                        <MyButton type="submit" text="Сохранить" onclick={() => {
+                        <MyButton type="reset" text="Отмена"
+                                  onclick={() => dispatch(getSeancesByDate(toISOStringNoMs(chosenDate)))}/>
+                        <MyButton type="submit" text="Сохранить" onclick={async () => {
                             dispatch(updateSeances({seances, date: chosenDate}));
-                            dispatch(getSeancesByDate(toISOStringNoMs(chosenDate)));
+                            await getSeances(date)
+                           // dispatch(getSeancesByDate(toISOStringNoMs(chosenDate)));
                         }}/>
                     </div>
                 </div>
