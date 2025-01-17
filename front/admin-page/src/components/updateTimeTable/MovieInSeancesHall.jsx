@@ -4,7 +4,7 @@ import {getItemOnDragX, getViewTime, minutesToPx, pxToMinutes} from "../../js/ut
 import {backgroundColorForMovie} from "../../js/info.js";
 import {useState} from "react";
 
-export default function MovieInSeancesHall({movieId, hallId, index, itemOnDragX, updateIsDropAnimating}) {
+/*export default function MovieInSeancesHall({movieId, hallId, index, itemOnDragX, updateIsDropAnimating}) {
 
     //const {films, seances} = useSelector(state => state.films);
     //const filmStart = seances[hallId].find(x => x.filmId === movieId).start;
@@ -63,4 +63,4 @@ export default function MovieInSeancesHall({movieId, hallId, index, itemOnDragX,
             )}
         </Draggable>
     );
-}
+}*/

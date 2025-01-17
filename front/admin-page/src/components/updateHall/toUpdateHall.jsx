@@ -6,8 +6,9 @@ import Place from "../common/place.jsx";
 import MyButton from "../common/myButton.jsx";
 import {useEffect, useState} from "react";
 import {
-    fetchHallById,
-    fetchHalls,
+    //fetchHallById,
+   // fetchHalls,
+    setHalls, setLoadingHalls,
     updateCustomPlaces,
     updateCustomRows,
     updatePlacesInHall
@@ -16,6 +17,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {getValidationError} from "../../js/utils.js";
 import {placesType} from "../../js/info.js";
 import MyPopup from "../common/myPopup.jsx";
+import {getHalls} from "../../js/api.js";
 
 export default function ToUpdateHall() {
 
@@ -35,13 +37,15 @@ export default function ToUpdateHall() {
 
     const setInitialState = (hall) => {
         //console.log("set initial state hall",hall);
-        setInputValueRows(hall.rowCount);
-        setInputValuePlaces(hall.placeInRowCount);
+        setInputValueRows(hall.rowsCount);
+        setInputValuePlaces(hall.placesInRow);
         setHallToUpdate({hallId: hall.id, isUpdated: false});
     };
 
+
+
     useEffect(() => {
-        //console.log("useEffect by halls",halls)
+        console.log("ToUpdateHall useEffect by halls",halls)
         if((!halls || Object.keys(halls).length === 0) && hallToUpdate.hallId !== null) {
             setHallToUpdate({hallId: null, isUpdated: false});
         }
@@ -53,9 +57,20 @@ export default function ToUpdateHall() {
         }
     }, [halls]);
 
+    const getHallsFromServer = async () => {
+        dispatch(setLoadingHalls(true));
+        const response = await getHalls();
+        if (response.status === "success") {
+            dispatch(setHalls(response.data));
+        }
+        else {
+            //TODO ERROR
+        }
+        dispatch(setLoadingHalls(false));
+    };
 
     const onBlurPlacesInput = (e) => {
-        const lastData = halls[hallToUpdate.hallId].placeInRowCount;
+        const lastData = halls[hallToUpdate.hallId].placeInRow;
         const value = +e.target.value.trim();
         const error = getValidationError(value, hallConfig.placesInRow.min, hallConfig.placesInRow.max);
         if (error) {
@@ -102,16 +117,18 @@ export default function ToUpdateHall() {
         setInitialState(halls[newHallToUpdate]);
     };
 
-    const notToSaveChanges = (e, newHallToUpdate) => {
+    const notToSaveChanges = async (e, newHallToUpdate) => {
         e.preventDefault();
-        dispatch(fetchHalls());
+        await getHallsFromServer()
+        //dispatch(fetchHalls());
         changeHall(newHallToUpdate);
     };
 
-    const toSaveChanges = (e, newHallToUpdate) => {
+    const toSaveChanges = async (e, newHallToUpdate) => {
         e.preventDefault();
         dispatch(updatePlacesInHall(halls[hallToUpdate.hallId]));
-        dispatch(fetchHalls());
+        await getHallsFromServer()
+        //dispatch(fetchHalls());
         changeHall(newHallToUpdate);
     };
 
@@ -194,7 +211,10 @@ export default function ToUpdateHall() {
                                   }
                                   }/>
                             <div className="conf-step__buttons text-center">
-                                <MyButton type="reset" text="Отмена" onclick={() => dispatch(fetchHalls())}/>
+                                <MyButton type="reset" text="Отмена" onclick={async () => {
+                                    await getHallsFromServer()
+                                    //dispatch(fetchHalls())
+                                }}/>
                                 <MyButton type="submit" text="Сохранить" onclick={toSaveByButton}/>
                             </div>
                         </> :

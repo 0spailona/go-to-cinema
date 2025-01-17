@@ -41,11 +41,11 @@ export const getItemOnDragX = (itemId) => {
 };
 
 export function toISOStringNoMs(date) {
-   // console.log("date",date)
+     //console.log("date",date)
     return date.toISOString().replace(/\.\d+/, "");
 }
 
-export function checkDropInHall(itemOnDragX, width, hallWidth, film, seances, films) {
+export function checkDropInHall(itemOnDragX, width, hallWidth, dragMovie, seances, movies) {
 
     //console.log("checkDropInHall itemOnDragX", itemOnDragX, "width",width,"hallWidth",hallWidth);
 
@@ -53,10 +53,11 @@ export function checkDropInHall(itemOnDragX, width, hallWidth, film, seances, fi
         return false;
     }
     const startTime = pxToMinutes(itemOnDragX);
-    const endTime = startTime + film.duration;
+    const endTime = startTime + dragMovie.duration;
 
     for (let seance of seances) {
-            const endSeance = seance.start + films[seance.filmId].duration;
+        //console.log("checkDropInHall seance", seance);
+            const endSeance = seance.start + movies[seance.movieId].duration;
 
             if((startTime > seance.start && startTime < endSeance) ||
                 (endTime > seance.start && endTime < endSeance)) {
@@ -70,7 +71,7 @@ export function checkDropInHall(itemOnDragX, width, hallWidth, film, seances, fi
 
 export function getSeancesObj(halls,seances) {
     const hallsIds = Object.keys(halls);
-    //console.log("getSeancesObj hallsIds",hallsIds);
+    //console.log("getSeancesObj seances",seances);
     const result = {};
 
     for(let hallId of hallsIds){

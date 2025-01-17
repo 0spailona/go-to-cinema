@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-//import {createFilm, createSeance} from "../../js/modelUtils.js";
+//import {createMovie, createSeance} from "../../js/modelUtils.js";
 import {fetchToken, getObjMovies} from "../utils.js";
 
 //const basedUrl = import.meta.env.VITE_URL
@@ -10,21 +10,6 @@ const basedUrl = "admin/";
 //console.log("basedUrl", basedUrl);
 const token = await fetchToken();
 
-/*const startFilms = [createFilm("Звёздные войны XXIII: Атака клонированных клонов", 130, "description", "country", null),
-    createFilm("Миссия выполнима", 120, "description", "country", null),
-    createFilm("Серая пантера", 90, "description", "country", null),
-    createFilm("Движение вбок", 95, "description", "country", null),
-    createFilm("Кот Да Винчи", 100, "description", "country", null)];
-
-const createSeanceDay = () => {
-    const halls = ["h-1", "h-2"];
-    const day = {};
-
-    for (let hall of halls) {
-        day[hall] = [];
-    }
-    return day;
-};*/
 
 
 export const fetchMovies = createAsyncThunk(
@@ -76,23 +61,19 @@ export const removeMovieFromList = createAsyncThunk(
 
 
 const initialState = {
-    loadingFilms: false,
+    loadingMovies: false,
     error: "",
-    films: null,
+    movies: null,
     poster:null,
 };
 
-/*for (let film of startFilms) {
-    initialState.films[film.id] = film;
-}*/
 
-
-export const filmsSlice = createSlice({
-    name: "films",
+export const moviesSlice = createSlice({
+    name: "movies",
     initialState,
     selectors: {
-        films: (state => state.films),
-        loadingFilms: (state => state.loadingFilms),
+        movies: (state => state.movies),
+        loadingMovies: (state => state.loadingMovies),
         poster: (state => state.poster),
     },
     reducers: {
@@ -101,43 +82,43 @@ export const filmsSlice = createSlice({
         builder => {
             // get all movies
             builder.addCase(fetchMovies.pending, (state, action) => {
-                state.loadingFilms = true;
+                state.loadingMovies = true;
             });
             builder.addCase(fetchMovies.fulfilled, (state, action) => {
                 //console.log("fetchMovies fulfilled action", action.payload);
-                state.films = getObjMovies(action.payload.data);
-                state.loadingFilms = false;
+                state.movies = getObjMovies(action.payload.data);
+                state.loadingMovies = false;
             });
             builder.addCase(fetchMovies.rejected, (state, action) => {
-                state.loadingFilms = false;
+                state.loadingMovies = false;
                 state.error = "Проблема на стороне сервера";
                 console.log("fetchMovies rejected action", action.payload);
             });
 
             // create new movie
             builder.addCase(fetchNewMovie.pending, (state, action) => {
-                state.loadingFilms = true;
+                state.loadingMovies = true;
             });
             builder.addCase(fetchNewMovie.fulfilled, (state, action) => {
                 console.log("fetchNewMovie fulfilled action", action.payload);
-                state.loadingFilms = false;
+                state.loadingMovies = false;
             });
             builder.addCase(fetchNewMovie.rejected, (state, action) => {
-                state.loadingFilms = false;
+                state.loadingMovies = false;
                 state.error = "Проблема на стороне сервера";
                 console.log("fetchNewMovie rejected action", action.payload);
             });
 
             // remove movie from list
             builder.addCase(removeMovieFromList.pending, (state, action) => {
-                state.loadingFilms = true;
+                state.loadingMovies = true;
             });
             builder.addCase(removeMovieFromList.fulfilled, (state, action) => {
                 console.log("removeMovieFromList fulfilled action", action.payload);
-                state.loadingFilms = false;
+                state.loadingMovies = false;
             });
             builder.addCase(removeMovieFromList.rejected, (state, action) => {
-                state.loadingFilms = false;
+                state.loadingMovies = false;
                 state.error = "Проблема на стороне сервера";
                 console.log("removeMovieFromList rejected action", action.payload);
             });
@@ -147,16 +128,16 @@ export const filmsSlice = createSlice({
 
 export const {
     //fetchUpdatesSeances,
-    //addFilmToSeancesHall, resetUpdatesSeances,
-    //removeFilm, removeFilmFromSeanceHall, resetUpdateSeancesByDate, getFilmsByDate
-} = filmsSlice.actions;
+    //addMovieToSeancesHall, resetUpdatesSeances,
+    //removeMovie, removeMovieFromSeanceHall, resetUpdateSeancesByDate, getMoviesByDate
+} = moviesSlice.actions;
 export const {
-    films,
-    loadingFilms,
+    movies,
+    loadingMovies,
     //seances,
     //isUpdatedSeances,
     //chosenDate
     poster
-} = filmsSlice.selectors;
-const filmsReducer = filmsSlice.reducer;
-export default filmsReducer;
+} = moviesSlice.selectors;
+const moviesReducer = moviesSlice.reducer;
+export default moviesReducer;

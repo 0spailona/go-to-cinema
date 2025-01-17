@@ -1,58 +1,10 @@
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {createSeance, fetchToken, getArrFromSeances} from "../utils.js";
-import {toISOStringNoMs} from "../../js/utils.js";
-//import {createSeance} from "../../js/modelUtils.js";
+import {createSlice} from "@reduxjs/toolkit";
+import {createSeance} from "../utils.js";
 
-const basedUrl = "admin/";
-//console.log("basedUrl", basedUrl);
-const token = await fetchToken();
-
-/*export const getSeancesByDate = createAsyncThunk(
-    "getSeancesByDate",
-    async (date) => {
-        const response = await fetch(`${basedUrl}api/seancesListByDate?date=${date}`, {
-            headers: {
-                Accept: "application/json",
-            },
-            credentials: "same-origin",
-        });
-        return response.json();
-    }
-);*/
-
-export const updateSeances = createAsyncThunk(
-    "updateSeances",
-    async (data) => {
-        console.log("updateSeances data",data);
-        try {
-
-            const body = {
-                seances: getArrFromSeances(data.seances, data.date
-                ), date: toISOStringNoMs(data.date)
-            };
-            const response = await fetch(`${basedUrl}api/updateSeances`, {
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "text/plain",
-                    "X-CSRF-TOKEN": token,
-                },
-                method: "POST",
-                credentials: "same-origin",
-                body: JSON.stringify(body),
-            });
-            //console.log("updateSeances response.json()",response);
-            return response.json();
-        } catch (e){ console.error(e); throw e;}
-
-    }
-);
 
 const initialState = {
     loadingSeances: false,
-    error: "",
     seances: null,
-
-    // chosenDate: null,
     isUpdatedSeances: false,
 };
 
@@ -60,107 +12,59 @@ export const seancesSlice = createSlice({
     name: "seances",
     initialState,
     selectors: {
-        //films: (state => state.films),
         loadingSeances: (state => state.loadingSeances),
         seances: (state => state.seances),
-        //chosenDate: state => state.chosenDate,
         isUpdatedSeances: state => state.isUpdatedSeances,
     },
     reducers: {
-        addFilmToSeancesHall: (state, action) => {
+        addMovieToSeancesHall: (state, action) => {
             state.isUpdatedSeances = true;
-            console.log("addNewFilmToSeancesHall", action.payload);
-            //console.log("seances",state.seances);
+            console.log("addNewMovieToSeancesHall", action.payload);
             const hallId = action.payload.to;
             const fromHallId = action.payload.from;
-            const filmId = action.payload.filmId;
+            const movieId = action.payload.movieId;
             const start = action.payload.start;
-            //console.log("addFilmToSeancesHall", action.payload.from, action.payload.to, action.payload.filmId,action.payload.filmIndex, action.payload.start);
-            const newSeance = createSeance(filmId, start, state.seances[hallId].seances.length);
-            //console.log("state.seances[hallId].seances",state.seances[hallId]);
+            const newSeance = createSeance(movieId, start, state.seances[hallId].seances.length);
             state.seances[hallId].seances.push(newSeance);
 
             if (fromHallId) {
-                state.seances[fromHallId].seances.splice(action.payload.filmIndex, 1);
+                state.seances[fromHallId].seances.splice(action.payload.movieIndex, 1);
             }
         },
-        removeFilmFromSeanceHall: (state, action) => {
+        removeMovieFromSeanceHall: (state, action) => {
             state.isUpdatedSeances = true;
-            console.log("removeFilmFromSeanceHall", action.payload);
+            console.log("removeMovieFromSeanceHall", action.payload);
             const fromHallId = action.payload.hallId;
-            const filmIndex = action.payload.filmIndex;
-            state.seances[fromHallId].seances.splice(filmIndex, 1);
-        },
-        resetUpdatesSeances: (state, action) => {
-            state.isUpdatedSeances = false;
-            console.log("resetUpdatesSeances");
-        },
-        fetchUpdatesSeances: (state, action) => {
-            state.isUpdatedSeances = false;
-            console.log("fetchUpdatesSeances");
-        },
-        resetUpdateSeancesByDate: (state) => {
-            //state.isUpdatedSeances = false;
-            //delete state.seances[action.payload];
-            console.log("resetUpdateSeances");
+            const movieIndex = action.payload.movieIndex;
+            state.seances[fromHallId].seances.splice(movieIndex, 1);
         },
         setLoadingSeances: (state, action) => {
             state.loadingSeances = action.payload;
         },
         setSeances: (state, action) => {
             state.seances = action.payload;
+        },
+        setIsUpdateSeancesFalse: (state, action) => {
+            state.isUpdatedSeances = false;
         }
     },
     extraReducers:
         builder => {
-            // get seances by date
-            /*builder.addCase(getSeancesByDate.pending, (state, action) => {
-                state.loadingSeances = true;
-            });
-            builder.addCase(getSeancesByDate.fulfilled, (state, action) => {
-                console.log("getSeancesByDate fulfilled action", action.payload);
-                //const halls = action.payload.halls;
-                state.seances = action.payload.seances;
 
-                state.isUpdatedSeances = false;
-                state.loadingSeances = false;
-            });
-            builder.addCase(getSeancesByDate.rejected, (state, action) => {
-                state.loadingSeances = false;
-                state.error = "Проблема на стороне сервера";
-                console.log("getSeancesByDate rejected action", action.payload);
-            });*/
-
-            // update seances
-            builder.addCase(updateSeances.pending, (state, action) => {
-                state.loadingSeances = true;
-            });
-            builder.addCase(updateSeances.fulfilled, (state, action) => {
-                console.log("updateSeances fulfilled action", action.payload);
-                //const halls = action.payload.halls;
-
-                state.loadingSeances = false;
-            });
-            builder.addCase(updateSeances.rejected, (state, action) => {
-                state.loadingSeances = false;
-                state.error = "Проблема на стороне сервера";
-                console.log("updateSeances rejected", action.payload);
-            });
         },
 });
 
 export const {
-    fetchUpdatesSeances,
-    addFilmToSeancesHall,
-    setLoadingSeances,setSeances,resetUpdatesSeances,
-    removeFilm, removeFilmFromSeanceHall, resetUpdateSeancesByDate,
+    addMovieToSeancesHall,
+    setLoadingSeances,
+    setSeances,
+    removeMovieFromSeanceHall,
+    setIsUpdateSeancesFalse
 } = seancesSlice.actions;
 export const {
-    films,
-    loadingFilms,
+    loadingMovies,
     seances,
     isUpdatedSeances,
-    //chosenDate
 } = seancesSlice.selectors;
 const seancesReducer = seancesSlice.reducer;
 export default seancesReducer;

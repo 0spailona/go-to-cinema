@@ -18,28 +18,29 @@ export default function Movie({
     //console.log("movie id", movieId)
 //console.log("movie itemOnDragX", itemOnDragX);
     const {
-        films, //seances//,chosenDate
-    } = useSelector(state => state.films);
+        movies, //seances//,chosenDate
+    } = useSelector(state => state.movies);
     const {seances} = useSelector(state => state.seances);
-    const film = films[movieId];
-    console.log("movie movieId", movieId);
+    const movie = movies[movieId];
+    //console.log("movie movie", movie);
     const id = hallId ? `${draggableIdsBase.movieInSeance}${seanceId}-${hallId}-${movieId}`
         : `${draggableIdsBase.movieInList}${movieId}`;
-    const backGroundColorIndex = Object.keys(films).indexOf(movieId);
+    const backGroundColorIndex = Object.keys(movies).indexOf(movieId);
 
-    const width = minutesToPx(film.duration);
+    const width = minutesToPx(movie.duration);
     //console.log("movie width", minutesToPx(12));
     const height = 40;
 
-    let filmStart = null;
+    let seanceStart = null;
     let timeStart = "";
     let offset = 0;
     let isRenderInHall = false;
 
     if (hallId) {
-        filmStart = seances[hallId].seances.find(x => x.id === seanceId).start;
-        timeStart = getViewTime(filmStart);
-        offset = minutesToPx(filmStart);
+        //console.log("seances[hallId].seances.find(x => x.id === seanceId)",seances[hallId].seances.find(x => x.id === seanceId))
+        seanceStart = seances[hallId].seances.find(x => x.id === seanceId).startTime;
+        timeStart = getViewTime(seanceStart);
+        offset = minutesToPx(seanceStart);
         isRenderInHall = true;
     }
 
@@ -155,8 +156,8 @@ export default function Movie({
                          ref={provided.innerRef}
                          onMouseDown={onMouseDown}>
                         <MovieContent isRenderInHall={isRenderInHall} isDragOverHall={isDragOverHall}
-                                      isDraggingElem={isDraggingElem} title={film.title}
-                                      movieId={movieId} duration={film.duration}
+                                      isDraggingElem={isDraggingElem} title={movie.title}
+                                      movieId={movieId} duration={movie.duration}
                                       startTime={time}
                                       index={backGroundColorIndex}/>
                     </div>

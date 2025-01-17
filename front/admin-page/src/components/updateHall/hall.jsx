@@ -1,6 +1,8 @@
 import Place from "../common/place.jsx";
 import {useDispatch, useSelector} from "react-redux";
-import {changePlaceStatus, fetchHalls} from "../../redux/slices/halls.js";
+import {changePlaceStatus,
+    //fetchHalls
+} from "../../redux/slices/halls.js";
 import {useEffect, useState} from "react";
 
 export default function Hall({hallId,onUpdate}) {
@@ -12,10 +14,10 @@ export default function Hall({hallId,onUpdate}) {
     } = useSelector(state => state.halls);
 
     //const [hall, setHall] = useState(halls[chairsUpdateHall.name])
-    useEffect(() => {
+   /* useEffect(() => {
         dispatch(fetchHalls());
         //setHall(halls[chairsUpdateHall.name])
-    }, []);
+    }, []);*/
 
     const hall = halls[hallId];
     if(!hall){return null}

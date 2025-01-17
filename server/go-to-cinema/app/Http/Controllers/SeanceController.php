@@ -38,10 +38,17 @@ class SeanceController
     private function checkSeances(array $seances): bool
     {
         foreach ($seances as $seance) {
-            if (Hall::byId($seance->hallId) === null
-                || Movie::getMovie($seance->movieId) === null) {
+            if(!is_string($seance->hallId) || Hall::byId($seance->hallId) === null){
                 return false;
             }
+            if(!isset($seance->movieId)){
+                break;
+            }
+
+            if( is_string($seance->movieId) && Movie::getMovie($seance->movieId) === null)
+           {
+               return false;
+           }
         }
         return true;
     }
@@ -50,7 +57,7 @@ class SeanceController
     {
         $data = json_decode($request->getContent());
 
-        Log::debug($request->getContent());
+        //Log::debug($request->getContent());
 
         if (!$this->checkSeances($data->seances)) {
             return response()->json(["status" => "error", "message" => "Неверные данные"], 404);
@@ -59,26 +66,26 @@ class SeanceController
 
         $seancesInDb = $this->getListByDate($date);
 
-        Log::debug("seancesInDb: $seancesInDb");
+        //Log::debug("seancesInDb: $seancesInDb");
 
         $seancesInDbById = toDictionary($seancesInDb, function ($x) { return $x->id; });
 
         $seancesToCreate = array_filter($data->seances, function ($x) { return !isset($x->id); });
 
         $str = json_encode($seancesToCreate);
-        Log::debug("seancesToCreate: $str");
+       // Log::debug("seancesToCreate: $str");
 
         $seancesToUpdate = array_filter($data->seances, function ($x) { return isset($x->id); });
 
         $str2 = json_encode($seancesToUpdate);
-        Log::debug("seancesToUpdate: $str2");
+        //Log::debug("seancesToUpdate: $str2");
 
         $seancesToUpdateById = toDictionary($seancesToUpdate, function ($x) { return $x->id; });
 
         $seanceIdsToDelete = array_diff(array_keys($seancesInDbById), array_keys($seancesToUpdateById));
 
         $str3 = json_encode($seanceIdsToDelete);
-        Log::debug("seanceIdsToDelete: $str3");
+       // Log::debug("seanceIdsToDelete: $str3");
 
         DB::transaction(function () use ($seancesToCreate, $seancesToUpdate, $seanceIdsToDelete) {
             Seance::destroy($seanceIdsToDelete);
@@ -114,10 +121,10 @@ class SeanceController
 
         $dateStart = DateTime::createFromFormat(DATE_FORMAT, $request->query('date'));
         $debug = json_encode($dateStart);
-        Log::debug("getSeancesByDateToClient dateStart: $debug");
+        //Log::debug("getSeancesByDateToClient dateStart: $debug");
         $seances = $this->getListByDate($dateStart)->toArray();
         $debug2 = json_encode($seances);
-        Log::debug("getSeancesByDateToClient dateStart: $debug2");
+        //Log::debug("getSeancesByDateToClient dateStart: $debug2");
 
         return response()->json([
             "status" => "ok",

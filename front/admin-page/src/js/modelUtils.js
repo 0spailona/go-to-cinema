@@ -71,11 +71,11 @@ export function createHall(name, templateId) {
     };
 }
 
-let nextCountFilms = 0;
+let nextCountMovies = 0;
 
-export function createFilm(title, duration, description, country,poster,seances ) {
-    nextCountFilms++;
-    const id = `film-${nextCountFilms}`;
+export function createMovie(title, duration, description, country,poster,seances ) {
+    nextCountMovies++;
+    const id = `movie-${nextCountMovies}`;
     return {
         id,title,duration,description,country,poster,seances
     }
@@ -83,10 +83,10 @@ export function createFilm(title, duration, description, country,poster,seances 
 
 /*let nextCountSeances = 0;
 
-export function createSeance(filmId,start){
+export function createSeance(movieId,start){
     nextCountSeances++;
     const id = `seance-${nextCountSeances}`;
     return{
-        id,filmId,start
+        id,movieId,start
     }
 }*/

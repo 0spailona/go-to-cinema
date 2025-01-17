@@ -80,7 +80,7 @@ class HallController extends Controller
 
         $id = $data->id;
         if(!$id ||!is_string($id) || !$data->places || !is_array($data->places->vip) || !is_array($data->places->disabled)) {
-            Log::debug("updatePlacesInHall id data->places data->places->vip data->places->disabled");
+           // Log::debug("updatePlacesInHall id data->places data->places->vip data->places->disabled");
             return response()->json($wrong, 400,[],JSON_UNESCAPED_UNICODE);
         }
         $hallToUpdate = Hall::byId($id);
@@ -88,7 +88,7 @@ class HallController extends Controller
             return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 404,[],JSON_UNESCAPED_UNICODE);
         }
 
-        if (!ValidationUtils::checkInt($data->rowCount, intval(env('MIN_ROWS_IN_HALL')), intval(env('MAX_ROWS_IN_HALL'))) ||
+        if (!ValidationUtils::checkInt($data->rowsCount, intval(env('MIN_ROWS_IN_HALL')), intval(env('MAX_ROWS_IN_HALL'))) ||
             !ValidationUtils::checkInt($data->placesInRow, intval(env('MIN_PLACES_IN_ROW')), intval(env('MAX_PLACES_IN_ROW')))) {
             Log::debug("updatePlacesInHall rowCount placesInRow");
             return response()->json($wrong, 400,[],JSON_UNESCAPED_UNICODE);
@@ -97,7 +97,7 @@ class HallController extends Controller
         $disabled = $data->places->disabled;
         foreach ($disabled as $place) {
             if (!$place ||
-                !ValidationUtils::checkInt($place->row, 0, $data->rowCount) ||
+                !ValidationUtils::checkInt($place->row, 0, $data->rowsCount) ||
                 !ValidationUtils::checkInt($place->place, 0, $data->placesInRow)) {
                 Log::debug("updatePlacesInHall disabled");
                 return response()->json($wrong, 400,[],JSON_UNESCAPED_UNICODE);
@@ -107,7 +107,7 @@ class HallController extends Controller
         foreach ($vip as $place) {
 
             if (!$place ||
-                !ValidationUtils::checkInt($place->row, 0, $data->rowCount) ||
+                !ValidationUtils::checkInt($place->row, 0, $data->rowsCount) ||
                 !ValidationUtils::checkInt($place->place, 0, $data->placesInRow)) {
                 Log::debug("updatePlacesInHall vip");
                 return response()->json($wrong, 400,[],JSON_UNESCAPED_UNICODE);
@@ -115,7 +115,7 @@ class HallController extends Controller
         }
 
         $places = json_encode($data->places);
-        $hallToUpdate->update(['places' => $places,'rowsCount' => $data->rowCount,'placesInRow' => $data->placesInRow]);
+        $hallToUpdate->update(['places' => $places,'rowsCount' => $data->rowsCount,'placesInRow' => $data->placesInRow]);
 
 
         return response()->json(["status" => "ok"], 200);
@@ -125,7 +125,7 @@ class HallController extends Controller
     {
         $halls = Hall::all();
 
-        return response()->json(["status" => "ok", "data" => $halls], 200);
+        return response()->json(["status" => "ok", "halls" => $halls], 200);
     }
 
     public static function getHallNamesAndIds()

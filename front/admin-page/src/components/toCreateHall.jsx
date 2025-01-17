@@ -4,8 +4,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 import MyPopup from "./common/myPopup.jsx";
 import MyInput from "./common/myInput.jsx";
-import {fetchHalls, fetchNewHall, removeHall} from "../redux/slices/halls.js";
+import {//fetchHalls,
+    fetchNewHall, removeHall, setHalls, setLoadingHalls
+} from "../redux/slices/halls.js";
 import Loader from "react-js-loader";
+import {createHall, getHalls} from "../js/api.js";
 
 export default function ToCreateHall() {
 
@@ -19,23 +22,46 @@ export default function ToCreateHall() {
 
     const [inputValueNameHall, setInputValueNameHall] = useState("");
 
-    const createHall = (e) => {
-        e.preventDefault();
-        setShowPopupForAdd(false);
-        setInputValueNameHall("");
-        const formdata = new FormData(e.currentTarget);
-        const content = Object.fromEntries(formdata).name;
-        dispatch(fetchNewHall(content))
-        dispatch(fetchHalls());
+    const getHallsFromServer = async () => {
+        dispatch(setLoadingHalls(true));
+        const response = await getHalls();
+        if (response.status === "success") {
+            dispatch(setHalls(response.data));
+        }
+        else {
+            //TODO ERROR
+        }
+        dispatch(setLoadingHalls(false));
     };
 
-    const removeOneHall = (e) => {
+    const createNewHall = async (e) => {
+        e.preventDefault();
+
+        setShowPopupForAdd(false);
+        setInputValueNameHall("");
+        const formData = new FormData(e.currentTarget);
+        const name = Object.fromEntries(formData).name;
+
+        dispatch(setLoadingHalls(true));
+
+        const response = await createHall(name);
+        if (response.status !== "success") {
+            //TODO ERROR
+        }
+
+        //dispatch(fetchNewHall(content))
+        await getHallsFromServer()
+        dispatch(setLoadingHalls(false));
+    };
+
+    const removeOneHall = async (e) => {
         e.preventDefault();
         setShowPopupForRemove(false);
-        console.log("hallForREmove",hallForRemove)
+        console.log("hallForREmove", hallForRemove)
         dispatch(removeHall(hallForRemove))
-        dispatch(fetchHalls());
+        // dispatch(fetchHalls());
         setHallForRemove(null);
+        await getHallsFromServer()
     };
 
     const onResetForAdd = () => {
@@ -48,11 +74,14 @@ export default function ToCreateHall() {
         setHallForRemove(null);
     };
 
+    //console.log("toCreateHall hallForRemove",hallForRemove);
+   // console.log("toCreateHall halls",halls);
+
     return (
         <>
             <MyPopup isVisible={showPopupForAdd} title="Добавление зала"
                      onClose={() => onResetForAdd()}
-                     onSubmit={(e) => createHall(e)}
+                     onSubmit={(e) => createNewHall(e)}
                      onReset={() => onResetForAdd()}
                      textForSubmitBtn="Добавить зал"
                      textForResetBtn="Отменить">

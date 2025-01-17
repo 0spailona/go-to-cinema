@@ -1,11 +1,11 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
-import filmsReducer from "./slices/films.js";
+import moviesReducer from "./slices/movies.js";
 import hallsReducer from "./slices/halls.js";
 import {listenerMiddleware} from "./listenerMiddleware.js";
 import seancesReducer from "./slices/seances.js";
 
 const rootReducer = combineReducers({
-    films:filmsReducer,
+    movies:moviesReducer,
     halls:hallsReducer,
     seances:seancesReducer,
 });

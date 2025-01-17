@@ -12,10 +12,10 @@ const token = await fetchToken();
 
 //const tokenHalls = token;
 
-export const fetchHalls = createAsyncThunk(
+/*export const fetchHalls = createAsyncThunk(
     "fetchHalls",
     async () => {
-       // console.log("fetchHalls");
+        // console.log("fetchHalls");
         const response = await fetch(`${basedUrl}api/hallsList`, {
             headers: {
                 Accept: "application/json",
@@ -24,9 +24,9 @@ export const fetchHalls = createAsyncThunk(
         });
         return response.json();
     }
-);
+);*/
 
-export const fetchHallConfig = createAsyncThunk(
+/*export const fetchHallConfig = createAsyncThunk(
     "fetchHallConfig",
     async () => {
         const response = await fetch(`${basedUrl}api/hallConfig`, {
@@ -37,12 +37,12 @@ export const fetchHallConfig = createAsyncThunk(
         });
         return response.json();
     }
-);
+);*/
 
-export const fetchHallById = createAsyncThunk(
+/*export const fetchHallById = createAsyncThunk(
     "fetchHallById",
     async (id) => {
-        console.log("fetchHallById", id);
+        //console.log("fetchHallById", id);
         const response = await fetch(`${basedUrl}api/hall/${id}`, {
             headers: {
                 Accept: "application/json",
@@ -51,7 +51,7 @@ export const fetchHallById = createAsyncThunk(
         });
         return response.json();
     }
-);
+);*/
 
 export const fetchNewHall = createAsyncThunk(
     "fetchNewHall",
@@ -90,13 +90,13 @@ export const removeHall = createAsyncThunk(
 export const updatePlacesInHall = createAsyncThunk(
     "updatePlacesInHall",
     async (hall) => {
-        //console.log("updatePlacesInHall request hall", hall);
+        console.log("updatePlacesInHall request hall", hall);
         const places = getPlacesObj(hall.places);
         const body = JSON.stringify({
             id: hall.id,
             places,
-            rowCount: hall.rowCount,
-            placesInRow: hall.placeInRowCount
+            rowsCount: hall.rowsCount,
+            placesInRow: hall.placesInRow
         });
 
         const response = await fetch(`${basedUrl}api/updatePlacesInHall`, {
@@ -163,21 +163,21 @@ const hallsSlice = createSlice({
                 console.log("slice halls update rows");
                 const newRowCount = action.payload.rows;
                 const hall = state.halls[action.payload.hallId];
-                const oldRowCount = hall.rowCount;
+                const oldRowCount = hall.rowsCount;
                 const difference = newRowCount - oldRowCount;
 
                 hall.places = difference < 0 ? hall.places.splice(0, newRowCount) :
-                    difference > 0 ? fillPlacesByStandard(hall.places, difference, hall.placeInRowCount) : hall.places;
+                    difference > 0 ? fillPlacesByStandard(hall.places, difference, hall.placesInRow) : hall.places;
 
-                hall.rowCount = newRowCount;
+                hall.rowsCount = newRowCount;
 
             },
             updateCustomPlaces: (state, action) => {
                 console.log("slice halls update places");
                 const newPlacesInRow = action.payload.places;
                 const hall = state.halls[action.payload.hallId];
-                const oldPlaceInRowCount = hall.placeInRowCount;
-                const difference = newPlacesInRow - oldPlaceInRowCount;
+                const oldPlacesInRow = hall.placesInRow;
+                const difference = newPlacesInRow - oldPlacesInRow;
                 if (difference !== 0) {
                     if (difference < 0) {
                         for (let row of hall.places) {
@@ -190,7 +190,7 @@ const hallsSlice = createSlice({
                             row.push(...newPlaces);
                         }
                     }
-                    hall.placeInRowCount = newPlacesInRow;
+                    hall.placesInRow = newPlacesInRow;
                 }
             },
             updateVipPrice: (state, action) => {
@@ -208,11 +208,20 @@ const hallsSlice = createSlice({
                 const rowIndex = action.payload.rowIndex;
                 const placeIndex = action.payload.placeIndex;
                 state.halls[action.payload.hallId].places[rowIndex][placeIndex] = action.payload.newStatus;
+            },
+            setHalls: (state, action) => {
+                state.halls = action.payload;
+            },
+            setLoadingHalls: (state, action) => {
+                state.loadingHalls = action.payload;
+            },
+            setConfig: (state, action) => {
+                state.hallConfig = action.payload;
             }
         },
         extraReducers:
             builder => {
-                // get hall config
+              /*  // get hall config
                 builder.addCase(fetchHallConfig.pending, (state, action) => {
                 });
                 builder.addCase(fetchHallConfig.fulfilled, (state, action) => {
@@ -223,15 +232,15 @@ const hallsSlice = createSlice({
                     state.error = "Проблема на стороне сервера";
                     console.log("fetchHallConfig rejected action", action.payload);
                 });
+*/
 
-
-                // get all halls
+               /* // get all halls
                 builder.addCase(fetchHalls.pending, (state, action) => {
                     state.loadingHalls = true;
                 });
                 builder.addCase(fetchHalls.fulfilled, (state, action) => {
-                    console.log("fetchHalls fulfilled action", action.payload);
-                    const hallsArr = action.payload.data;
+                    //console.log("fetchHalls fulfilled action", action.payload);
+                    const hallsArr = action.payload.halls;
                     state.halls = getHallsObj(hallsArr);
                     state.loadingHalls = false;
                 });
@@ -239,9 +248,9 @@ const hallsSlice = createSlice({
                     state.loadingHalls = false;
                     state.error = "Проблема на стороне сервера";
                     console.log("fetchHalls rejected action", action.payload);
-                });
+                });*/
 
-                // get hall by name
+               /* // get hall by name
                 builder.addCase(fetchHallById.pending, (state, action) => {
                     state.loadingHalls = true;
                 });
@@ -258,7 +267,7 @@ const hallsSlice = createSlice({
                     state.loadingHalls = false;
                     state.error = "Проблема на стороне сервера";
                     console.log("fetchHalls rejected action", action.payload);
-                });
+                });*/
 
                 // create new hall
                 builder.addCase(fetchNewHall.pending, (state, action) => {
@@ -325,12 +334,15 @@ const hallsSlice = createSlice({
 
 
 export const {
-    addFilmToHall,
+    addMovieToHall,
     updateCustomRows,
     updateCustomPlaces,
     updateStandardPrice,
     updateVipPrice,
     changePlaceStatus,
+    setHalls,
+    setLoadingHalls,
+    setConfig,
 } = hallsSlice.actions;
 export const {
     halls,
@@ -342,24 +354,3 @@ export const {
 const hallsReducer = hallsSlice.reducer;
 export default hallsReducer;
 
-
-/*
-
-
-/admin/api/crud/halls - base url
-
-create
-POST /admin/api/crud/halls/ body: json { "name": "hall1", ... } - create new hall
-
-receive
-GET /admin/api/crud/halls/ - [ {}, {}, {} ] - get all halls
-GET /admin/api/crud/halls/hall1 - { "name": "hall1", ... } - get one hall
-
-update
-PUT /admin/api/crud/halls/hall1 body: json { "name": "hall1", ... } - update one hall
-
-delete
-DELETE /admin/api/crud/halls/hall1 - delete one hall
-
-
- */

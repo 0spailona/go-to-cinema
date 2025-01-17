@@ -25,7 +25,7 @@ class Hall extends Model
         'places',
         'vipPrice',
         'standardPrice',
-        'rowCount',
+        'rowsCount',
         'placesInRow',
     ];
 

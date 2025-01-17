@@ -3,14 +3,14 @@ import MyPopup from "../common/myPopup.jsx";
 import {useEffect, useState} from "react";
 import {getValidationError} from "../../js/utils.js";
 import {useDispatch, useSelector} from "react-redux";
-//import {getPoster, uploadPoster} from "../../redux/slices/films.js";
+//import {getPoster, uploadPoster} from "../../redux/slices/movies.js";
 import {fetchToken} from "../../redux/utils.js";
 
 const basedUrl = "admin/";
 //console.log("basedUrl", basedUrl);
 const token = await fetchToken();
 
-export default function PopupAddFilm({showPopup, onReset,onSubmit,onError,closePopup}) {
+export default function PopupAddMovie({showPopup, onReset,onSubmit,onError,closePopup}) {
 
    /* useEffect(()=>{
         if(showPopup){

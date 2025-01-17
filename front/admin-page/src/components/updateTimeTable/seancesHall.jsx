@@ -4,9 +4,9 @@ import Movie from "./movie.jsx";
 import {toISOStringNoMs} from "../../js/utils.js";
 
 
-export default function SeancesHall({hallName,hallId,filmsInHall,dropId, updateIsDropAnimating, itemOnDragX, showRemoveBtn}) {
+export default function SeancesHall({hallName,hallId,seancesInHall,dropId, updateIsDropAnimating, itemOnDragX, showRemoveBtn}) {
     const removeId = `remove-movie-from-hall-${hallId}`
-    console.log("seancesHall filmsInHall", filmsInHall);
+    //console.log("seancesHall moviesInHall", seancesInHall);
     const getListStyle = (isDraggingOver) => {
         return {
             background: isDraggingOver ? "lightblue" : "lightgrey",
@@ -26,9 +26,9 @@ export default function SeancesHall({hallName,hallId,filmsInHall,dropId, updateI
                              style={getListStyle(snapshot.isDraggingOver)}
                              {...provided.droppableProps}>
 
-                            {filmsInHall ? filmsInHall.map((seance, index) => (
+                            {seancesInHall ? seancesInHall.map((seance, index) => (
                                 <Movie index={index} key={index} hallId={hallId}
-                                       movieId={seance.filmId} itemOnDragX={itemOnDragX}
+                                       movieId={seance.movieId} itemOnDragX={itemOnDragX}
                                        updateIsDropAnimating={updateIsDropAnimating}
                                        seanceId={seance.id}/>)) : null}
                             {provided.placeholder}

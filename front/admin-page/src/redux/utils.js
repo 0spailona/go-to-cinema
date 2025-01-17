@@ -30,7 +30,7 @@ export function getHallsObj(arr) {
 
     const obj = {};
     for (let hall of arr) {
-        obj[hall.id] = {name:hall.name,id:hall.id,rowCount:hall.rowCount,placeInRowCount: hall.placesInRow};
+        obj[hall.id] = {name:hall.name,id:hall.id,rowsCount:hall.rowsCount,placesInRow: hall.placesInRow};
         const places = fillPlacesByStandard([], hall.rowsCount, hall.placesInRow);
         const hallPlaces = JSON.parse(hall.places)
         //console.log("getHallsObj hallPlaces",hallPlaces);
@@ -48,7 +48,7 @@ export function getHallsObj(arr) {
         };
         //console.log("getHallsObj obj",obj[hall.name])
     }
-    console.log("getHallsObj obj",obj);
+    //console.log("getHallsObj obj",obj);
     return obj;
 }
 
@@ -84,33 +84,13 @@ export function getPlacesObj(arr) {
 }
 
 
-export function createSeance(filmId, start, index) {
+export function createSeance(movieId, startTime, index) {
     const id = `seance-${index}`;
     return {
-        id, filmId, start
+        id, movieId, startTime
     };
 }
 
-/*export function getSeancesObj(seances) {
-    const hallsIds = [ ...new Set(seances.map(x => x.hallId))];
-    console.log("getSeancesObj hallsIds",hallsIds);
-    const result = {};
-
-    for(let hallId of hallsIds){
-        const seancesForHall = seances.filter(x => x.hallId === hallId);
-        seancesForHall.map(x=>{
-            const date = new Date(x.startTime)
-            x.startTime = date.getHours() * 60 + date.getMinutes()
-            return x
-        })
-
-        result[hallId] = {seances:seancesForHall};
-    }
-
-    console.log("getSeancesObj", result);
-
-    return result;
-}*/
 
 export function getArrFromSeances(seances, date) {
     const arr = [];
@@ -118,23 +98,19 @@ export function getArrFromSeances(seances, date) {
     for (let hallId of Object.keys(seances)) {
         for (let seance of seances[hallId].seances) {
 
-            const startTime = new Date(date);
-            startTime.setHours(Math.trunc(seance.start / 60), seance.start % 60);
+            const startTime = new Date(date.getTime())
+            startTime.setHours(Math.trunc(seance.startTime / 60), seance.startTime % 60);
 
             const id = seance.id.includes("seance-") ? null : seance.id;
-
-            let obj = {hallId,movieId:seance.filmId,startTime:toISOStringNoMs(startTime)};
-
-            //obj.hallId = hallId;
-            //obj.movieId = seance.filmId;
-            //obj.startTime = toISOStringNoMs(startTime);
+//console.log("getArrFromSeances startTime",date)
+            let obj = {hallId,movieId:seance.movieId,startTime:toISOStringNoMs(startTime)};
             if(id){
                  obj.id = id
             }
             arr.push(obj);
         }
     }
-    console.log("getArrFromSeances", arr);
+    //console.log("getArrFromSeances", arr);
     return arr;
 }
 

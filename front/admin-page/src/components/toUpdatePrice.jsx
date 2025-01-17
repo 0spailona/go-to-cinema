@@ -8,13 +8,15 @@ import {useDispatch, useSelector} from "react-redux";
 import {getValidationError} from "../js/utils.js";
 import {placesType} from "../js/info.js";
 import {
-    fetchHallById,
-    fetchHalls,
+    //fetchHallById,
+    setHalls, setLoadingHalls,
+    //fetchHalls,
     updatePricesInHall,
     updateStandardPrice,
     updateVipPrice
 } from "../redux/slices/halls.js";
 import MyPopup from "./common/myPopup.jsx";
+import {getHalls} from "../js/api.js";
 
 export default function ToUpdatePrice() {
 
@@ -48,14 +50,29 @@ export default function ToUpdatePrice() {
     };
 
     useEffect(() => {
-       // console.log("useEffect by halls halls",halls)
+       console.log("ToUpdatePrice useEffect by halls halls",halls)
         //console.log("useEffect by halls Object.keys(halls).length",Object.keys(halls).length)
         //console.log("useEffect by halls hallToUpdate.id",hallToUpdate.hallId)
         //console.log("ToUpdateHall useEffect hall.rowCount",hall.rowCount)
         if (halls && Object.keys(halls).length > 0 && hallToUpdate.hallId === null) {
             setInitialState(halls[Object.keys(halls)[0]]);
         }
+        if (halls && Object.keys(halls).length > 0 && hallToUpdate.hallId !== null && !halls[hallToUpdate.hallId]) {
+            setInitialState(halls[Object.keys(halls)[0]]);
+        }
     }, [halls]);
+
+    const getHallsFromServer = async () => {
+        dispatch(setLoadingHalls(true));
+        const response = await getHalls();
+        if (response.status === "success") {
+            dispatch(setHalls(response.data));
+        }
+        else {
+            //TODO ERROR
+        }
+        dispatch(setLoadingHalls(false));
+    };
 
     const onBlurVipPrice = (e) => {
         const value = +e.target.value.trim();
@@ -104,16 +121,18 @@ export default function ToUpdatePrice() {
         setInitialState(halls[newHallToUpdate]);
     };
 
-    const notToSaveChanges = (e, newHallToUpdate) => {
+    const notToSaveChanges = async (e, newHallToUpdate) => {
         e.preventDefault();
-        dispatch(fetchHalls());
+        await getHallsFromServer()
+       // dispatch(fetchHalls());
         changeHall(newHallToUpdate);
     };
 
-    const toSaveChanges = (e, newHallToUpdate) => {
+    const toSaveChanges = async (e, newHallToUpdate) => {
         e.preventDefault();
         dispatch(updatePricesInHall(halls[hallToUpdate.hallId]));
-        dispatch(fetchHalls());
+        await getHallsFromServer()
+        //dispatch(fetchHalls());
         changeHall(newHallToUpdate);
     };
 
@@ -181,7 +200,10 @@ export default function ToUpdatePrice() {
                                      onBlur={e => onBlurVipPrice(e)}/> за <Place status={`${placesType.vip}`}/> VIP кресла
                         </div>
                         <div className="conf-step__buttons text-center">
-                            <MyButton type="reset" text="Отмена" onclick={() => dispatch(fetchHalls())}/>
+                            <MyButton type="reset" text="Отмена" onclick={async () => {
+                                await getHallsFromServer()
+                                // dispatch(fetchHalls());
+                            }}/>
                             <MyButton type="submit" text="Сохранить" onclick={toSaveByButton}/>
                         </div>
                     </> :
