@@ -11,12 +11,12 @@ import {
     //fetchHallById,
     setHalls, setLoadingHalls,
     //fetchHalls,
-    updatePricesInHall,
+    //updatePricesInHall,
     updateStandardPrice,
     updateVipPrice
 } from "../redux/slices/halls.js";
 import MyPopup from "./common/myPopup.jsx";
-import {getHalls} from "../js/api.js";
+import {getHalls, updatePricesInHall} from "../js/api.js";
 
 export default function ToUpdatePrice() {
 
@@ -50,7 +50,7 @@ export default function ToUpdatePrice() {
     };
 
     useEffect(() => {
-       console.log("ToUpdatePrice useEffect by halls halls",halls)
+       //console.log("ToUpdatePrice  useEffect by halls halls",halls)
         //console.log("useEffect by halls Object.keys(halls).length",Object.keys(halls).length)
         //console.log("useEffect by halls hallToUpdate.id",hallToUpdate.hallId)
         //console.log("ToUpdateHall useEffect hall.rowCount",hall.rowCount)
@@ -116,6 +116,18 @@ export default function ToUpdatePrice() {
         }
     };
 
+    const updatePricesOnServer = async ()=>{
+        dispatch(setLoadingHalls(true));
+
+        const response = await updatePricesInHall(halls[hallToUpdate.hallId])
+
+        if(response.status !== "success") {
+            //TODO ERROR
+        }
+
+        dispatch(setLoadingHalls(false));
+    }
+
     const changeHall = (newHallToUpdate) => {
        // dispatch(fetchHallById(newHallToUpdate));
         setInitialState(halls[newHallToUpdate]);
@@ -128,15 +140,18 @@ export default function ToUpdatePrice() {
         changeHall(newHallToUpdate);
     };
 
+
     const toSaveChanges = async (e, newHallToUpdate) => {
         e.preventDefault();
-        dispatch(updatePricesInHall(halls[hallToUpdate.hallId]));
+
+        await updatePricesOnServer()
+       // dispatch(updatePricesInHall(halls[hallToUpdate.hallId]));
         await getHallsFromServer()
         //dispatch(fetchHalls());
         changeHall(newHallToUpdate);
     };
 
-    const toSaveByButton = () => {
+    const toSaveByButton = async () => {
         const errorVip = getValidationError(inputValueVipPrice, hallConfig.minVipPrice, hallConfig.maxPrice);
         const errorStandard = getValidationError(inputValueStandardPrice, hallConfig.minStandardPrice, hallConfig.maxPrice);
         if (errorVip || errorStandard) {
@@ -146,7 +161,8 @@ export default function ToUpdatePrice() {
             setShowErrorPopup(true);
         }
         else {
-            dispatch(updatePricesInHall(halls[hallToUpdate.hallId]));
+            await updatePricesOnServer()
+            //dispatch(updatePricesInHall(halls[hallToUpdate.hallId]));
             setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: false});
             setValidateError(null);
         }
@@ -164,7 +180,7 @@ export default function ToUpdatePrice() {
                                  onClose={() => setShowErrorPopup(false)}>
                             <p className="conf-step__paragraph">{`${validateError}`}</p>
                         </MyPopup>
-                        <MyPopup isVisible={showPopup} title={`Сохранить изменения в зале "${halls[hallToUpdate.hallId].name}"`}
+                        <MyPopup isVisible={showPopup} title={`Сохранить изменения в зале "${halls[hallToUpdate.hallId]?.name}"`}
                                  onClose={() => setShowPopup(false)}
                                  onReset={e => {
                                      notToSaveChanges(e, nextCheckedHallId);

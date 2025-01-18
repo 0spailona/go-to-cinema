@@ -132,6 +132,9 @@ Route::prefix('admin')->group(function () {
         Route::get('posterBySession', [\App\Http\Controllers\MovieController::class, 'getPoster']);
         Route::get('posterByMovieId/{movieId}', [\App\Http\Controllers\MovieController::class, 'getPosterByMovieId']);
         Route::post('poster', [\App\Http\Controllers\MovieController::class, 'uploadPoster']);
+
+        Route::post('openSails', [\App\Http\Controllers\SailsController::class, 'toOpenSails']);
+        Route::post('closeSails', [\App\Http\Controllers\SailsController::class, 'toCloseSails']);
     });
 });
 

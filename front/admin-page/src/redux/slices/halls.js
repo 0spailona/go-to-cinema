@@ -1,13 +1,12 @@
 //const basedUrl = import.meta.env.VITE_URL
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {createSlice} from "@reduxjs/toolkit";
 import {placesType} from "../../js/info.js";
 import {fillPlacesByStandard} from "../../js/modelUtils.js";
-import {fetchToken, getHallsObj, getPlacesObj} from "../utils.js";
 //192.168.23.15:3002
 //const basedUrl = import.meta.env.VITE_URL; //http://127.0.0.1:8000/admin/
-const basedUrl = "admin/";
+//const basedUrl = "admin/";
 //console.log("basedUrl", basedUrl);
-const token = await fetchToken();
+//const token = await fetchToken();
 //console.log("fetchToken",await fetchToken());
 
 //const tokenHalls = token;
@@ -53,7 +52,7 @@ const token = await fetchToken();
     }
 );*/
 
-export const fetchNewHall = createAsyncThunk(
+/*export const fetchNewHall = createAsyncThunk(
     "fetchNewHall",
     async (name) => {
         const response = await fetch(`${basedUrl}api/newHall`, {
@@ -85,9 +84,9 @@ export const removeHall = createAsyncThunk(
         });
         return response.json();
     }
-);
+);*/
 
-export const updatePlacesInHall = createAsyncThunk(
+/*export const updatePlacesInHall = createAsyncThunk(
     "updatePlacesInHall",
     async (hall) => {
         console.log("updatePlacesInHall request hall", hall);
@@ -111,9 +110,9 @@ export const updatePlacesInHall = createAsyncThunk(
         });
         return response.json();
     }
-);
+);*/
 
-export const updatePricesInHall = createAsyncThunk(
+/*export const updatePricesInHall = createAsyncThunk(
     "updatePricesInHall",
     async (hall) => {
         //console.log("updatePricesInHall request hall", hall);
@@ -135,13 +134,16 @@ export const updatePricesInHall = createAsyncThunk(
         });
         return response.json();
     }
-);
+);*/
 
 const initialState = {
     loadingSeances: true,
     loadingHalls: true,
     error: "",
     halls: null,
+    canUpdate: false,
+    // hallToUpdatePrice:null,
+    // hallToUpdatePlaces: null,
     hallConfig: {
         hallNameLength: {min: 2, max: 15}, rowsCount: {min: 6, max: 20}, placesInRow: {min: 6, max: 20},
         maxPrice: 1000, minVipPrice: 360, minStandardPrice: 20
@@ -157,8 +159,14 @@ const hallsSlice = createSlice({
             loadingSeances: (state => state.loadingSeances),
             loadingHalls: (state => state.loadingHalls),
             hallConfig: (state) => state.hallConfig,
+            canUpdate: (state) => state.canUpdate,
+            // hallToUpdatePrice: (state) => state.hallToUpdatePrice,
+            //hallToUpdatePlaces: (state) => state.hallToUpdatePlaces,
         },
         reducers: {
+            setCanUpdate: (state, action) => {
+                state.canUpdate = action.payload;
+            },
             updateCustomRows: (state, action) => {
                 console.log("slice halls update rows");
                 const newRowCount = action.payload.rows;
@@ -217,124 +225,131 @@ const hallsSlice = createSlice({
             },
             setConfig: (state, action) => {
                 state.hallConfig = action.payload;
-            }
+            },
+            /*setHallToUpdatePrice: (state, action) => {
+                state.hallToUpdatePrice = state.halls;
+            },
+            setHallToUpdatePlaces: (state, action) => {
+                state.hallToUpdatePlaces = action.payload;
+            }*/
         },
         extraReducers:
             builder => {
-              /*  // get hall config
-                builder.addCase(fetchHallConfig.pending, (state, action) => {
-                });
-                builder.addCase(fetchHallConfig.fulfilled, (state, action) => {
-                    state.hallConfig = action.payload.hallConfig;
+                /*  // get hall config
+                  builder.addCase(fetchHallConfig.pending, (state, action) => {
+                  });
+                  builder.addCase(fetchHallConfig.fulfilled, (state, action) => {
+                      state.hallConfig = action.payload.hallConfig;
 
-                });
-                builder.addCase(fetchHallConfig.rejected, (state, action) => {
-                    state.error = "Проблема на стороне сервера";
-                    console.log("fetchHallConfig rejected action", action.payload);
-                });
-*/
+                  });
+                  builder.addCase(fetchHallConfig.rejected, (state, action) => {
+                      state.error = "Проблема на стороне сервера";
+                      console.log("fetchHallConfig rejected action", action.payload);
+                  });
+  */
 
-               /* // get all halls
-                builder.addCase(fetchHalls.pending, (state, action) => {
-                    state.loadingHalls = true;
-                });
-                builder.addCase(fetchHalls.fulfilled, (state, action) => {
-                    //console.log("fetchHalls fulfilled action", action.payload);
-                    const hallsArr = action.payload.halls;
-                    state.halls = getHallsObj(hallsArr);
-                    state.loadingHalls = false;
-                });
-                builder.addCase(fetchHalls.rejected, (state, action) => {
-                    state.loadingHalls = false;
-                    state.error = "Проблема на стороне сервера";
-                    console.log("fetchHalls rejected action", action.payload);
-                });*/
+                /* // get all halls
+                 builder.addCase(fetchHalls.pending, (state, action) => {
+                     state.loadingHalls = true;
+                 });
+                 builder.addCase(fetchHalls.fulfilled, (state, action) => {
+                     //console.log("fetchHalls fulfilled action", action.payload);
+                     const hallsArr = action.payload.halls;
+                     state.halls = getHallsObj(hallsArr);
+                     state.loadingHalls = false;
+                 });
+                 builder.addCase(fetchHalls.rejected, (state, action) => {
+                     state.loadingHalls = false;
+                     state.error = "Проблема на стороне сервера";
+                     console.log("fetchHalls rejected action", action.payload);
+                 });*/
 
-               /* // get hall by name
-                builder.addCase(fetchHallById.pending, (state, action) => {
-                    state.loadingHalls = true;
-                });
-                builder.addCase(fetchHallById.fulfilled, (state, action) => {
-                    // console.log("fetchHallByName.fulfilled", action.payload);
-                    const hallFullData = action.payload.data;
-                    const hall = getHallsObj([hallFullData])[hallFullData.id];
-                    state.halls[hallFullData.id] = hall;
-                    // console.log("fetchHallByName hall", hall);
+                /* // get hall by name
+                 builder.addCase(fetchHallById.pending, (state, action) => {
+                     state.loadingHalls = true;
+                 });
+                 builder.addCase(fetchHallById.fulfilled, (state, action) => {
+                     // console.log("fetchHallByName.fulfilled", action.payload);
+                     const hallFullData = action.payload.data;
+                     const hall = getHallsObj([hallFullData])[hallFullData.id];
+                     state.halls[hallFullData.id] = hall;
+                     // console.log("fetchHallByName hall", hall);
 
-                    state.loadingHalls = false;
-                });
-                builder.addCase(fetchHallById.rejected, (state, action) => {
-                    state.loadingHalls = false;
-                    state.error = "Проблема на стороне сервера";
-                    console.log("fetchHalls rejected action", action.payload);
-                });*/
+                     state.loadingHalls = false;
+                 });
+                 builder.addCase(fetchHallById.rejected, (state, action) => {
+                     state.loadingHalls = false;
+                     state.error = "Проблема на стороне сервера";
+                     console.log("fetchHalls rejected action", action.payload);
+                 });*/
 
-                // create new hall
-                builder.addCase(fetchNewHall.pending, (state, action) => {
-                    state.loadingHalls = true;
-                });
-                builder.addCase(fetchNewHall.fulfilled, (state, action) => {
-                    state.loadingHalls = false;
-                    if (action.payload.status !== "ok") {
-                        state.error = action.payload.message;
-                    }
-                });
-                builder.addCase(fetchNewHall.rejected, (state, action) => {
-                    state.error = "Проблема на стороне сервера";
-                    state.loadingHalls = false;
-                });
+                /*  // create new hall
+                  builder.addCase(fetchNewHall.pending, (state, action) => {
+                      state.loadingHalls = true;
+                  });
+                  builder.addCase(fetchNewHall.fulfilled, (state, action) => {
+                      state.loadingHalls = false;
+                      if (action.payload.status !== "ok") {
+                          state.error = action.payload.message;
+                      }
+                  });
+                  builder.addCase(fetchNewHall.rejected, (state, action) => {
+                      state.error = "Проблема на стороне сервера";
+                      state.loadingHalls = false;
+                  });
 
-                //remove hall
-                builder.addCase(removeHall.pending, (state, action) => {
-                    state.loadingHalls = true;
-                });
-                builder.addCase(removeHall.fulfilled, (state, action) => {
-                    state.loadingHalls = false;
-                    //console.log("removeHalls fulfilled action", action.payload);
-                    if (action.payload.status !== "ok") {
-                        state.error = action.payload.message;
-                    }
-                });
-                builder.addCase(removeHall.rejected, (state, action) => {
-                    state.error = "Проблема на стороне сервера";
-                    //console.log("removeHalls rejected  action", action.payload);
-                    state.loadingHalls = false;
-                });
-
-                // update places in hall
-                builder.addCase(updatePlacesInHall.pending, (state, action) => {
-                    state.loadingHalls = true;
-                });
-                builder.addCase(updatePlacesInHall.fulfilled, (state, action) => {
-                    console.log("updatePlacesInHall fulfilled  action", action.payload);
-                    state.loadingHalls = false;
-                });
-                builder.addCase(updatePlacesInHall.rejected, (state, action) => {
-                    state.error = "Проблема на стороне сервера";
-                    console.log("updatePlacesInHall rejected  action", action.payload);
-                    state.loadingHalls = false;
-                });
-
-                // update prices in hall
-                builder.addCase(updatePricesInHall.pending, (state, action) => {
-                    state.loadingHalls = true;
-                });
-                builder.addCase(updatePricesInHall.fulfilled, (state, action) => {
-                    console.log("updatePricesInHall fulfilled  action", action.payload);
-                    state.loadingHalls = false;
-                });
-                builder.addCase(updatePricesInHall.rejected, (state, action) => {
-                    state.error = "Проблема на стороне сервера";
-                    console.log("updatePlacesInHall rejected  action", action.payload);
-                    state.loadingHalls = false;
-                });
+                  //remove hall
+                  builder.addCase(removeHall.pending, (state, action) => {
+                      state.loadingHalls = true;
+                  });
+                  builder.addCase(removeHall.fulfilled, (state, action) => {
+                      state.loadingHalls = false;
+                      //console.log("removeHalls fulfilled action", action.payload);
+                      if (action.payload.status !== "ok") {
+                          state.error = action.payload.message;
+                      }
+                  });
+                  builder.addCase(removeHall.rejected, (state, action) => {
+                      state.error = "Проблема на стороне сервера";
+                      //console.log("removeHalls rejected  action", action.payload);
+                      state.loadingHalls = false;
+                  });
+  */
+                /*   // update places in hall
+                   builder.addCase(updatePlacesInHall.pending, (state, action) => {
+                       state.loadingHalls = true;
+                   });
+                   builder.addCase(updatePlacesInHall.fulfilled, (state, action) => {
+                       console.log("updatePlacesInHall fulfilled  action", action.payload);
+                       state.loadingHalls = false;
+                   });
+                   builder.addCase(updatePlacesInHall.rejected, (state, action) => {
+                       state.error = "Проблема на стороне сервера";
+                       console.log("updatePlacesInHall rejected  action", action.payload);
+                       state.loadingHalls = false;
+                   });
+   */
+                /*    // update prices in hall
+                    builder.addCase(updatePricesInHall.pending, (state, action) => {
+                        state.loadingHalls = true;
+                    });
+                    builder.addCase(updatePricesInHall.fulfilled, (state, action) => {
+                        console.log("updatePricesInHall fulfilled  action", action.payload);
+                        state.loadingHalls = false;
+                    });
+                    builder.addCase(updatePricesInHall.rejected, (state, action) => {
+                        state.error = "Проблема на стороне сервера";
+                        console.log("updatePlacesInHall rejected  action", action.payload);
+                        state.loadingHalls = false;
+                    });*/
             },
     })
 ;
 
 
 export const {
-    addMovieToHall,
+    //addMovieToHall,
+    setCanUpdate,
     updateCustomRows,
     updateCustomPlaces,
     updateStandardPrice,
@@ -343,8 +358,11 @@ export const {
     setHalls,
     setLoadingHalls,
     setConfig,
+    // setHallToUpdatePrice,
+    // setHallToUpdatePlaces,
 } = hallsSlice.actions;
 export const {
+    canUpdate,
     halls,
     loadingSeances,
     pricesUpdateHall,

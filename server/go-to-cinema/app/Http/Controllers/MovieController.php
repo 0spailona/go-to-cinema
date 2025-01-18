@@ -77,7 +77,7 @@ class MovieController
 
         $movie->save();
 
-        return response()->json(["status" => "ok", "movie create" => json_decode($request->getContent())], 201);
+        return response()->json(["status" => "ok"], 201);
     }
 
 
@@ -103,7 +103,7 @@ class MovieController
             return MovieData::MakeMovieDataFromDb($movie);
         });
 
-        return response()->json(["status" => "ok", "data" => $moviesData]);
+        return response()->json(["status" => "ok", "movies" => $moviesData]);
     }
 
     public function getPoster(): \Symfony\Component\HttpFoundation\StreamedResponse

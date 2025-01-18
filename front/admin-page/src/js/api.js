@@ -1,4 +1,4 @@
-import {getArrFromSeances, getHallsObj} from "../redux/utils.js";
+import {getArrFromSeances, getHallsObj, getObjMovies, getPlacesObj} from "../redux/utils.js";
 import {toISOStringNoMs} from "./utils.js";
 
 const basedUrl = "admin/";
@@ -9,6 +9,74 @@ export async function fetchToken() {
 }
 
 const token = await fetchToken();
+
+//Global
+
+export async function canIUpdate() {
+
+    const response = await fetch(`${basedUrl}api/canUpdate`, {
+        headers: {
+            Accept: "application/json",
+        },
+        credentials: "same-origin",
+    });
+
+    const json = await response.json();
+
+    if (Math.floor(response.status / 100) === 2) {
+        return {status: "success", data: json.data};
+    }
+
+    return {status: "error"};
+}
+
+export async function openSails() {
+    const response = await fetch(`${basedUrl}api/openSails`, {
+        headers: {
+            Accept: "application/json",
+            "X-CSRF-TOKEN": token,
+        },
+        method: "POST",
+        credentials: "same-origin",
+    });
+
+   // const json = await response.json();
+
+    //console.log("createHall response.json()", json);
+
+    if (Math.floor(response.status / 100) === 2) {
+        return {status: "success"};
+    }
+    else {
+        // console.log("createHall error");
+        return {status: "error"};
+    }
+}
+
+export async function closeSails() {
+    const response = await fetch(`${basedUrl}api/closeSails`, {
+        headers: {
+            Accept: "application/json",
+            "X-CSRF-TOKEN": token,
+        },
+        method: "POST",
+        credentials: "same-origin",
+    });
+
+    // const json = await response.json();
+
+    //console.log("createHall response.json()", json);
+
+    if (Math.floor(response.status / 100) === 2) {
+        return {status: "success"};
+    }
+    else {
+        // console.log("createHall error");
+        return {status: "error"};
+    }
+}
+
+
 
 // API for seances
 export async function getSeancesByDate(date) {
@@ -63,6 +131,7 @@ export async function updateSeances(data) {
 }
 
 //API for halls
+
 export async function getHalls() {
     const response = await fetch(`${basedUrl}api/hallsList`, {
         headers: {
@@ -72,7 +141,7 @@ export async function getHalls() {
     });
 
     const json = await response.json();
-    console.log("getHalls response.json()", json);
+    //console.log("getHalls response.json()", json);
     if (Math.floor(response.status / 100) === 2) {
         //console.log("getHalls success",json.halls);
         const halls = getHallsObj(json.halls);
@@ -95,7 +164,7 @@ export async function getHallConfig() {
     const json = await response.json();
 
 
-    console.log("getHallConfig response.json()", json);
+    //console.log("getHallConfig response.json()", json);
 
     if (Math.floor(response.status / 100) === 2) {
         return {status: "success", data: json.hallConfig};
@@ -121,16 +190,186 @@ export async function createHall(name) {
 
     const json = await response.json();
 
-    console.log("createHall response.json()", json);
+    //console.log("createHall response.json()", json);
 
     if (Math.floor(response.status / 100) === 2) {
         return {status: "success"};
     }
     else {
-        console.log("createHall error");
+        // console.log("createHall error");
         return {status: "error"};
     }
 }
+
+export async function removeHall(id) {
+    const response = await fetch(`${basedUrl}api/removeHall`, {
+        headers: {
+            Accept: "application/json",
+            "X-CSRF-TOKEN": token,
+            "Content-Type": "text/plain",
+        },
+        method: "POST",
+        credentials: "same-origin",
+        body: id
+    });
+    const json = await response.json();
+
+    //console.log("removeHall response.json()", json);
+
+    if (Math.floor(response.status / 100) === 2) {
+        return {status: "success"};
+    }
+    else {
+        console.log("removeHall error");
+        return {status: "error", message: json.message};
+    }
+    // return response.json();
+}
+
+
+export async function updatePlacesInHall(hall) {
+    console.log("updatePlacesInHall request hall", hall);
+    const places = getPlacesObj(hall.places);
+    const body = JSON.stringify({
+        id: hall.id,
+        places,
+        rowsCount: hall.rowsCount,
+        placesInRow: hall.placesInRow
+    });
+
+    const response = await fetch(`${basedUrl}api/updatePlacesInHall`, {
+        headers: {
+            Accept: "application/json",
+            "X-CSRF-TOKEN": token,
+            "Content-Type": "text/plain",
+        },
+        method: "POST",
+        credentials: "same-origin",
+        body: body
+    });
+    const json = await response.json();
+
+    //console.log("removeHall response.json()", json);
+
+    if (Math.floor(response.status / 100) === 2) {
+        return {status: "success"};
+    }
+    else {
+        console.log("removeHall error");
+        return {status: "error", message: json.message};
+    }
+    //return response.json();
+}
+
+export async function updatePricesInHall(hall) {
+    //console.log("updatePricesInHall request hall", hall);
+    const body = JSON.stringify({
+        id: hall.id,
+        vipPrice: hall.prices.vip,
+        standardPrice: hall.prices.standard
+    });
+
+    const response = await fetch(`${basedUrl}api/updatePricesInHall`, {
+        headers: {
+            Accept: "application/json",
+            "X-CSRF-TOKEN": token,
+            "Content-Type": "text/plain",
+        },
+        method: "POST",
+        credentials: "same-origin",
+        body: body
+    });
+
+    const json = await response.json();
+
+    //console.log("removeHall response.json()", json);
+
+    if (Math.floor(response.status / 100) === 2) {
+        return {status: "success"};
+    }
+    else {
+        console.log("removeHall error");
+        return {status: "error", message: json.message};
+    }
+    //return response.json();
+}
+
+//API for movies
+
+export async function getMovies() {
+    const response = await fetch(`${basedUrl}api/moviesList`, {
+        headers: {
+            Accept: "application/json",
+        },
+        credentials: "same-origin",
+    });
+    //return response.json();
+    const json = await response.json();
+
+    //console.log("removeHall response.json()", json);
+
+    if (Math.floor(response.status / 100) === 2) {
+
+        const movies = getObjMovies(json.movies);
+        return {status: "success", data: movies};
+    }
+    else {
+        console.log("getMovies error");
+        return {status: "error"};
+    }
+}
+
+export async function createMovie(data) {
+    const response = await fetch(`${basedUrl}api/newMovie`, {
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "text/plain",
+            "X-CSRF-TOKEN": token,
+        },
+        method: "POST",
+        credentials: "same-origin",
+        body: JSON.stringify(data),
+    });
+    //return response.json();
+    const json = await response.json();
+
+    //console.log("createMovie response.json()", json);
+
+    if (Math.floor(response.status / 100) === 2) {
+        return {status: "success"};
+    }
+    else {
+        console.log("createMovie error");
+        return {status: "error", message: json.message};
+    }
+}
+
+
+export async function removeMovieFromList(id) {
+    console.log("removeMovieFromList", id);
+    const response = await fetch(`${basedUrl}api/removeMovie?id=${id}`, {
+        headers: {
+            Accept: "application/json",
+            "X-CSRF-TOKEN": token,
+        },
+        method: "POST",
+        credentials: "same-origin",
+    });
+    //return response.json();
+    const json = await response.json();
+
+    //console.log("createMovie response.json()", json);
+
+    if (Math.floor(response.status / 100) === 2) {
+        return {status: "success"};
+    }
+    else {
+        console.log("removeMovieFromList error");
+        return {status: "error", message: json.message};
+    }
+}
+
+
 
 
 

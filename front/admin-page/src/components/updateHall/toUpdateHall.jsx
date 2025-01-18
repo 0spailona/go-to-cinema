@@ -11,13 +11,13 @@ import {
     setHalls, setLoadingHalls,
     updateCustomPlaces,
     updateCustomRows,
-    updatePlacesInHall
+    //updatePlacesInHall
 } from "../../redux/slices/halls.js";
 import {useDispatch, useSelector} from "react-redux";
 import {getValidationError} from "../../js/utils.js";
 import {placesType} from "../../js/info.js";
 import MyPopup from "../common/myPopup.jsx";
-import {getHalls} from "../../js/api.js";
+import {getHalls, updatePlacesInHall} from "../../js/api.js";
 
 export default function ToUpdateHall() {
 
@@ -43,9 +43,8 @@ export default function ToUpdateHall() {
     };
 
 
-
     useEffect(() => {
-        console.log("ToUpdateHall useEffect by halls",halls)
+        //console.log("ToUpdateHall useEffect by halls",halls)
         if((!halls || Object.keys(halls).length === 0) && hallToUpdate.hallId !== null) {
             setHallToUpdate({hallId: null, isUpdated: false});
         }
@@ -124,15 +123,28 @@ export default function ToUpdateHall() {
         changeHall(newHallToUpdate);
     };
 
+    const updatePlacesInHallOnServer = async ()=>{
+        setLoadingHalls(true);
+
+        const response = await updatePlacesInHall(halls[hallToUpdate.hallId])
+
+        if(response.status !== "success") {
+            // TODO ERROR
+        }
+        setLoadingHalls(false);
+    }
+
     const toSaveChanges = async (e, newHallToUpdate) => {
         e.preventDefault();
-        dispatch(updatePlacesInHall(halls[hallToUpdate.hallId]));
+
+        await updatePlacesInHallOnServer()
+        //dispatch(updatePlacesInHall(halls[hallToUpdate.hallId]));
         await getHallsFromServer()
         //dispatch(fetchHalls());
         changeHall(newHallToUpdate);
     };
 
-    const toSaveByButton = () => {
+    const toSaveByButton = async () => {
         const errorRow = getValidationError(inputValueRows, hallConfig.rowsCount.min, hallConfig.rowsCount.max);
         const errorPlacesInRow = getValidationError(inputValuePlaces, hallConfig.placesInRow.min, hallConfig.placesInRow.max);
         if (errorRow || errorPlacesInRow) {
@@ -142,7 +154,8 @@ export default function ToUpdateHall() {
             setShowErrorPopup(true);
         }
         else {
-            dispatch(updatePlacesInHall(halls[hallToUpdate.hallId]));
+            await updatePlacesInHallOnServer()
+            //dispatch(updatePlacesInHall(halls[hallToUpdate.hallId]));
             setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: false});
             setValidateError(null);
         }
@@ -160,7 +173,7 @@ export default function ToUpdateHall() {
                                      onClose={() => setShowErrorPopup(false)}>
                                 <p className="conf-step__paragraph">{`${validateError}`}</p>
                             </MyPopup>
-                            <MyPopup isVisible={showPopup} title={`Сохранить изменения в зале "${halls[hallToUpdate.hallId].name}"`}
+                            <MyPopup isVisible={showPopup} title={`Сохранить изменения в зале "${halls[hallToUpdate.hallId]?.name}"`}
                                      onClose={() => setShowPopup(false)}
                                      onReset={e => {
                                          notToSaveChanges(e, nextCheckedHallName);

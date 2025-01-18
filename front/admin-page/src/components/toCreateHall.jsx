@@ -5,16 +5,19 @@ import {useEffect, useState} from "react";
 import MyPopup from "./common/myPopup.jsx";
 import MyInput from "./common/myInput.jsx";
 import {//fetchHalls,
-    fetchNewHall, removeHall, setHalls, setLoadingHalls
+    //fetchNewHall, removeHall,
+    setHalls,
+    //setHallToUpdatePlaces, setHallToUpdatePrice,
+    setLoadingHalls
 } from "../redux/slices/halls.js";
 import Loader from "react-js-loader";
-import {createHall, getHalls} from "../js/api.js";
+import {createHall, getHalls, removeHall} from "../js/api.js";
 
 export default function ToCreateHall() {
 
     const dispatch = useDispatch();
 
-    const {halls,loadingHalls,hallConfig} = useSelector(state => state.halls);
+    const {halls,loadingHalls,hallConfig,hallToUpdatePrice,hallToUpdatePlaces} = useSelector(state => state.halls);
 
     const [showPopupForAdd, setShowPopupForAdd] = useState(false);
     const [showPopupForRemove, setShowPopupForRemove] = useState(false);
@@ -56,12 +59,21 @@ export default function ToCreateHall() {
 
     const removeOneHall = async (e) => {
         e.preventDefault();
+        dispatch(setLoadingHalls(true));
         setShowPopupForRemove(false);
-        console.log("hallForREmove", hallForRemove)
-        dispatch(removeHall(hallForRemove))
-        // dispatch(fetchHalls());
-        setHallForRemove(null);
-        await getHallsFromServer()
+        //console.log("hallForREmove", hallForRemove)
+
+        const response = await removeHall(hallForRemove)
+
+        if(response.status === "success") {
+            setHallForRemove(null);
+            await getHallsFromServer()
+        }
+        else{
+            //TODO ERROR
+        }
+
+        dispatch(setLoadingHalls(false));
     };
 
     const onResetForAdd = () => {

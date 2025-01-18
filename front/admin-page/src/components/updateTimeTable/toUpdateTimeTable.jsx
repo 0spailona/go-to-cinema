@@ -7,7 +7,7 @@ import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import PopupAddMovie from "./popupAddMovie.jsx";
 import PopupRemoveMovie from "./popupRemoveMovie.jsx";
-import {fetchMovies, fetchNewMovie, removeMovieFromList,} from "../../redux/slices/movies.js";
+import {setLoadingMovies, setMovies,} from "../../redux/slices/movies.js";
 import {checkDropInHall, getItemOnDragX, getSeancesObj, pxToMinutes, toISOStringNoMs} from "../../js/utils.js";
 import {getSeanceHallWidth} from "../../js/info.js";
 import {draggableIdsBase, droppableIdsBase, getSeancesHallId} from "./utilsFunctions.js";
@@ -20,12 +20,13 @@ import PopupRemoveMovieFromSeances from "./popupRemoveMovieFromSeances.jsx";
 import MyPopup from "../common/myPopup.jsx";
 import {
     addMovieToSeancesHall,
-    removeMovieFromSeanceHall, setIsUpdateSeancesFalse,
+    removeMovieFromSeanceHall,
+    setIsUpdateSeancesFalse,
     setLoadingSeances,
     setSeances,
 } from "../../redux/slices/seances.js";
 
-import {getSeancesByDate, updateSeances} from "../../js/api.js";
+import {createMovie, getMovies, getSeancesByDate, removeMovieFromList, updateSeances} from "../../js/api.js";
 
 registerLocale("ru", ru);
 
@@ -70,7 +71,7 @@ export default function ToUpdateTimeTable() {
             //TODO ERROR
         }
         // console.log("getSeances", response);
-        dispatch(setIsUpdateSeancesFalse())
+        dispatch(setIsUpdateSeancesFalse());
         dispatch(setLoadingSeances(false));
     };
 
@@ -84,7 +85,7 @@ export default function ToUpdateTimeTable() {
     };
 
     useEffect(() => {
-        console.log("useEffect [] ]")
+        //console.log("useEffect [] ]")
         if (halls && Object.keys(halls).length > 0 && !seances) {
             async function getSeancesByDate() {
                 await getSeances(toISOStringNoMs(chosenDate));
@@ -92,17 +93,17 @@ export default function ToUpdateTimeTable() {
 
             getSeancesByDate();
         }
-    }, [halls])
-   /* useEffect(() => {
-        console.log("useEffect by halls")
-        if (halls && Object.keys(halls).length > 0) {
-            async function getSeancesByDate() {
-                await getSeances(toISOStringNoMs(chosenDate));
-            }
+    }, [halls]);
+    /* useEffect(() => {
+         console.log("useEffect by halls")
+         if (halls && Object.keys(halls).length > 0) {
+             async function getSeancesByDate() {
+                 await getSeances(toISOStringNoMs(chosenDate));
+             }
 
-            getSeancesByDate();
-        }
-    }, [halls]);*/
+             getSeancesByDate();
+         }
+     }, [halls]);*/
 
     useEffect(() => {
         setShowAllMoviesLoader(loadingMovies);
@@ -158,6 +159,13 @@ export default function ToUpdateTimeTable() {
         itemOnDragX = getItemOnDragX(curDraggableId, curDroppableId);
     }
 
+    const setInitialDnDState = () => {
+        curDraggableId = null;
+        curDroppableId = null;
+        isDropAnimating = false;
+        timerId = null;
+        itemOnDragX = null;
+    };
 
     const onDragUpdate = (result) => {
         curDroppableId = result.destination?.droppableId;
@@ -165,7 +173,7 @@ export default function ToUpdateTimeTable() {
 
     const onDragStart = (result) => {
         curDraggableId = result.draggableId;
-        //console.log("onDragStart curDraggableId",curDraggableId);
+        console.log("onDragStart curDraggableId", curDraggableId);
         curDroppableId = result.source.droppableId;
         setSourceDroppableId(curDroppableId);
 
@@ -246,30 +254,55 @@ export default function ToUpdateTimeTable() {
                     movieIndex: itemIndex
                 }));
             }
+            setInitialDnDState()
         }
-        curDraggableId = null;
-        curDroppableId = null;
-        isDropAnimating = false;
-        timerId = null;
-        itemOnDragX = null;
+        //console.log("onDragEnd showRemoveFromAllMovies.isShown", showRemoveFromAllMovies.isShown);
+        //console.log("onDragEnd showRemoveFromSeance.isShown", showRemoveFromSeance.isShown);
+
     };
 
+    const getMoviesFromServer = async () => {
+        dispatch(setLoadingMovies(true));
+        const response = await getMovies();
+        if (response.status === "success") {
+            dispatch(setMovies(response.data));
+        }
+        else {
+            //TODO ERROR
+        }
+        dispatch(setLoadingMovies(false));
+    };
 
     const onResetRemoveFromList = (e) => {
         e.preventDefault();
         setShowRemoveFromAllMovies({isShown: false, movieTitle: null});
+        setInitialDnDState()
     };
 
-    const onSubmitRemoveFromList = (e) => {
+    const onSubmitRemoveFromList = async (e) => {
         e.preventDefault();
-        dispatch(removeMovieFromList(curDraggableId?.replace(draggableIdsBase.movieInList, "")));
-        dispatch(fetchMovies());
+        dispatch(setLoadingMovies(true));
+        //console.log("curDraggableId", curDraggableId);
+        //const id = curDraggableId?.replace(draggableIdsBase.movieInList, "");
+        //console.log("onSubmitRemoveFromList id", id);
+        const response = await removeMovieFromList(curDraggableId?.replace(draggableIdsBase.movieInList, ""));
+
+        if (response.status !== "success") {
+            //TODO ERROR
+        }
+
+        dispatch(setLoadingMovies(false));
+        //dispatch(removeMovieFromList(curDraggableId?.replace(draggableIdsBase.movieInList, "")));
+        await getMoviesFromServer();
+        //dispatch(fetchMovies());
         setShowRemoveFromAllMovies({isShown: false, movieTitle: null});
+        setInitialDnDState()
     };
 
     const onResetRemoveFromSeance = (e) => {
         e.preventDefault();
         setShowRemoveFromFromSeance(initialShowRemoveFromSeance);
+        setInitialDnDState()
     };
 
     const onSubmitRemoveFromSeance = (e) => {
@@ -279,6 +312,7 @@ export default function ToUpdateTimeTable() {
             hallId: showRemoveFromSeance.hallId
         }));
         setShowRemoveFromFromSeance(initialShowRemoveFromSeance);
+        setInitialDnDState()
     };
 
     const onDateSelected = async (newDate) => {
@@ -318,20 +352,30 @@ export default function ToUpdateTimeTable() {
         setShowPopupForAdd(false);
     };
 
-    const onSubmitAddToList = (data) => {
-        dispatch(fetchNewMovie(data));
+    const onSubmitAddToList = async (data) => {
+        dispatch(setLoadingMovies(true));
+
+        const response = await createMovie(data);
+
+        if (response.status !== "success") {
+            //TODO ERROR
+        }
+
+        dispatch(setLoadingMovies(false));
+        //dispatch(fetchNewMovie(data));
         setShowErrorPopup(false);
         setValidateError(null);
         setShowPopupForAdd(false);
-        dispatch(fetchMovies());
+        await getMoviesFromServer();
+        //dispatch(fetchMovies());
     };
 
     const onValidateError = (msg) => {
         setValidateError(msg);
         setShowErrorPopup(true);
     };
-    console.log("toUpdateTime seances", seances);
-    console.log("toUpdateTime halls", halls)
+    //console.log("toUpdateTime seances", seances);
+    //console.log("toUpdateTime halls", halls)
     return (<>
             <PopupRemoveMovieFromSeances showPopup={showRemoveFromSeance.isShown}
                                          title={showRemoveFromSeance.movieTitle}
@@ -433,7 +477,7 @@ export default function ToUpdateTimeTable() {
                                                  hallName={halls[hallId].name}
                                                  hallId={hallId}
                                                  dropId={getSeancesHallId(hallId)}
-                                                 seancesInHall={seances[hallId]?seances[hallId].seances : []}
+                                                 seancesInHall={seances[hallId] ? seances[hallId].seances : []}
                                                  itemOnDragX={itemOnDragX}
                                                  updateIsDropAnimating={bool => isDropAnimating = bool}
                                                  showRemoveBtn={sourceDroppableId === getSeancesHallId(hallId)}

@@ -12,7 +12,7 @@ const token = await fetchToken();
 
 
 
-export const fetchMovies = createAsyncThunk(
+/*export const fetchMovies = createAsyncThunk(
     "fetchMovies",
     async () => {
         const response = await fetch(`${basedUrl}api/moviesList`, {
@@ -23,9 +23,9 @@ export const fetchMovies = createAsyncThunk(
         });
         return response.json();
     }
-);
+);*/
 
-export const fetchNewMovie = createAsyncThunk(
+/*export const fetchNewMovie = createAsyncThunk(
     "fetchNewMovie",
     async (data) => {
         const response = await fetch(`${basedUrl}api/newMovie`, {
@@ -40,9 +40,9 @@ export const fetchNewMovie = createAsyncThunk(
         });
         return response.json();
     }
-);
+);*/
 
-export const removeMovieFromList = createAsyncThunk(
+/*export const removeMovieFromList = createAsyncThunk(
     "removeMovieFromList",
     async (id) => {
         console.log("removeMovieFromList",id);
@@ -56,7 +56,7 @@ export const removeMovieFromList = createAsyncThunk(
         });
         return response.json();
     }
-);
+);*/
 
 
 
@@ -77,11 +77,17 @@ export const moviesSlice = createSlice({
         poster: (state => state.poster),
     },
     reducers: {
+        setMovies: (state, action) => {
+            state.movies = action.payload;
+        },
+        setLoadingMovies: (state, action) => {
+            state.loadingMovies = action.payload;
+        }
     },
     extraReducers:
         builder => {
             // get all movies
-            builder.addCase(fetchMovies.pending, (state, action) => {
+           /* builder.addCase(fetchMovies.pending, (state, action) => {
                 state.loadingMovies = true;
             });
             builder.addCase(fetchMovies.fulfilled, (state, action) => {
@@ -93,10 +99,10 @@ export const moviesSlice = createSlice({
                 state.loadingMovies = false;
                 state.error = "Проблема на стороне сервера";
                 console.log("fetchMovies rejected action", action.payload);
-            });
+            });*/
 
             // create new movie
-            builder.addCase(fetchNewMovie.pending, (state, action) => {
+            /*builder.addCase(fetchNewMovie.pending, (state, action) => {
                 state.loadingMovies = true;
             });
             builder.addCase(fetchNewMovie.fulfilled, (state, action) => {
@@ -107,9 +113,9 @@ export const moviesSlice = createSlice({
                 state.loadingMovies = false;
                 state.error = "Проблема на стороне сервера";
                 console.log("fetchNewMovie rejected action", action.payload);
-            });
+            });*/
 
-            // remove movie from list
+         /*   // remove movie from list
             builder.addCase(removeMovieFromList.pending, (state, action) => {
                 state.loadingMovies = true;
             });
@@ -121,12 +127,14 @@ export const moviesSlice = createSlice({
                 state.loadingMovies = false;
                 state.error = "Проблема на стороне сервера";
                 console.log("removeMovieFromList rejected action", action.payload);
-            });
+            });*/
 
         },
 });
 
 export const {
+    setLoadingMovies,
+    setMovies,
     //fetchUpdatesSeances,
     //addMovieToSeancesHall, resetUpdatesSeances,
     //removeMovie, removeMovieFromSeanceHall, resetUpdateSeancesByDate, getMoviesByDate

@@ -10,8 +10,9 @@ import {useEffect} from "react";
 import {//fetchHallConfig,
     setConfig, setHalls, setLoadingHalls} from "../redux/slices/halls.js";
 import {useDispatch} from "react-redux";
-import {fetchMovies} from "../redux/slices/movies.js";
-import {getHallConfig, getHalls} from "../js/api.js";
+//import {fetchMovies} from "../redux/slices/movies.js";
+import {getHallConfig, getHalls, getMovies} from "../js/api.js";
+import {setLoadingMovies, setMovies} from "../redux/slices/movies.js";
 
 export default function AdminPage() {
 
@@ -41,6 +42,28 @@ export default function AdminPage() {
         dispatch(setLoadingHalls(false));
     };
 
+    const getMoviesFromServer = async () => {
+        dispatch(setLoadingMovies(true));
+        const response = await getMovies();
+        if (response.status === "success") {
+            dispatch(setMovies(response.data));
+        }
+        else {
+            //TODO ERROR
+        }
+        dispatch(setLoadingMovies(false));
+    };
+
+    const canUpdate = async () => {
+        const response = await getMovies();
+        if (response.status === "success") {
+            //dispatch(setMovies(response.data));
+        }
+        else {
+            //TODO ERROR
+        }
+    };
+
 
     useEffect(() => {
         //console.log("adminPage useEffect");
@@ -50,9 +73,10 @@ export default function AdminPage() {
         async function toStart() {
             await getHallConfigFromServer();
             await getHallsFromServer();
+            await getMoviesFromServer();
         }
         toStart();
-        dispatch(fetchMovies());
+        //dispatch(fetchMovies());
         //const chosenDate = toISOStringNoMs(today);
         //dispatch(getSeancesByDate(chosenDate))
     }, []);
