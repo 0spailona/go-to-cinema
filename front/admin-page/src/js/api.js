@@ -3,32 +3,30 @@ import {toISOStringNoMs} from "./utils.js";
 
 const basedUrl = "admin/";
 
+//get token;
 export async function fetchToken() {
     const response = await fetch(`${basedUrl}api/csrf`);
-    return response.text();
+    return response.text()
 }
 
 const token = await fetchToken();
 
 //Global
 
-export async function canIUpdate() {
+/*export async function fetchToken() {
+    const response = await fetch(`${basedUrl}api/csrf`);
 
-    const response = await fetch(`${basedUrl}api/canUpdate`, {
-        headers: {
-            Accept: "application/json",
-        },
-        credentials: "same-origin",
-    });
+    //console.log("fetchToken", response);
 
-    const json = await response.json();
-
-    if (Math.floor(response.status / 100) === 2) {
-        return {status: "success", data: json.data};
+    if (response.ok) {
+        console.log("fetchToken", response.json());
+        token = response.text();
+        return {status:"success"};
     }
-
-    return {status: "error"};
-}
+    else{
+        return {status:"error"};
+    }
+}*/
 
 export async function openSails() {
     const response = await fetch(`${basedUrl}api/openSails`, {
@@ -54,6 +52,8 @@ export async function openSails() {
 }
 
 export async function closeSails() {
+
+    //console.log("token", token);
     const response = await fetch(`${basedUrl}api/closeSails`, {
         headers: {
             Accept: "application/json",
@@ -63,11 +63,12 @@ export async function closeSails() {
         credentials: "same-origin",
     });
 
-    // const json = await response.json();
+     const json = await response.json();
 
-    //console.log("createHall response.json()", json);
+    console.log("closeSails response.json()", json);
 
     if (Math.floor(response.status / 100) === 2) {
+
         return {status: "success"};
     }
     else {

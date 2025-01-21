@@ -7,7 +7,7 @@ export  default function SeancesHall({seances,hallId}) {
 
     //console.log("ClientPage filmId",filmId);
     //console.log("SeancesHall hallId",hallId);
-    const {halls,films} = useSelector(state => state.cinema);
+    const {halls} = useSelector(state => state.cinema);
     //const day = getWeekdayNumber(chosenDate)
     const hall = halls[hallId];
 

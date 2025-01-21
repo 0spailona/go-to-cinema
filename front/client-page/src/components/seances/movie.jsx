@@ -4,10 +4,10 @@ import {useSelector} from "react-redux";
 import {getWeekdayNumber} from "../../js/utils.js";
 
 
-export default function Movie({filmId,movieSeancesByHallId}) {
+export default function Movie({movieId,movieSeancesByHallId}) {
 
-    const {films,seances} = useSelector(state => state.cinema);
-    const film = films[filmId];
+    const {movies,seances} = useSelector(state => state.cinema);
+    const movie = movies[movieId];
     //const movieSeancesByHalls = seances[filmId];
     //const day = getWeekdayNumber(chosenDate)
     //console.log("Movie film",film);
@@ -16,14 +16,14 @@ export default function Movie({filmId,movieSeancesByHallId}) {
         <section className="movie">
             <div className="movie__info">
                 <div className="movie__poster">
-                    <img className="movie__poster-image" alt="Звёздные войны постер" src={`api/posterByMovieId/${film.id}`}/>
+                    <img className="movie__poster-image" alt="Звёздные войны постер" src={`api/posterByMovieId/${movie.id}`}/>
                 </div>
                 <div className="movie__description">
-                    <h2 className="movie__title">{film.title}</h2>
-                    <p className="movie__synopsis">{film.description}</p>
+                    <h2 className="movie__title">{movie.title}</h2>
+                    <p className="movie__synopsis">{movie.description}</p>
                     <p className="movie__data">
-                        <span className="movie__data-duration">{film.duration} минут</span>{"\u00A0"}
-                        <span className="movie__data-origin">{film.country}</span>
+                        <span className="movie__data-duration">{movie.duration} минут</span>{"\u00A0"}
+                        <span className="movie__data-origin">{movie.country}</span>
                     </p>
                 </div>
             </div>

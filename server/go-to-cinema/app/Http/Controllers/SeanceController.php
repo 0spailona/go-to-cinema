@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Hall;
 use App\Models\Movie;
 use App\Models\Seance;
-use App\Models\viewModals\SeanceAdminData;
 use DateInterval;
 use DateTime;
 use Illuminate\Http\Request;
@@ -60,7 +59,7 @@ class SeanceController
         //Log::debug($request->getContent());
 
         if (!$this->checkSeances($data->seances)) {
-            return response()->json(["status" => "error", "message" => "Неверные данные"], 404);
+            return response()->json(["status" => "error", "message" => "Неверные данные"], 404,[],JSON_UNESCAPED_UNICODE);
         }
         $date = DateTime::createFromFormat(DATE_FORMAT, $data->date);
 
@@ -143,7 +142,7 @@ class SeanceController
         $seances = $this->getListByDate($dateStart)->toArray();
         $debug2 = json_encode($seances);
         Log::debug("getSeancesByDateToAdmin dateStart: $debug2");
-        $halls = HallController::getHallNamesAndIds();
+        //$halls = HallController::getHallNamesAndIds();
 
         return response()->json([
             "status" => "ok",

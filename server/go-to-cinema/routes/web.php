@@ -63,6 +63,8 @@ Route::prefix('api')->group(function () {
     Route::get('posterByMovieId/{movieId}', [\App\Http\Controllers\MovieController::class, 'getPosterByMovieId']);
     Route::get('seance/{id}', [\App\Http\Controllers\SeanceController::class, 'getSeanceById']);
 
+    Route::get('isOpenSails', [\App\Http\Controllers\SailsController::class, 'isOpenSails']);
+
     Route::get('{api_method}', function ($api_method) {
         return response()->json(["status" => "ok", "method"=> $api_method], 200);
     });

@@ -11,6 +11,7 @@ class Sails extends Model
 
     protected $table = 'sails';
     protected $isOpen;
+    protected $sessionId;
 
-    protected $fillable = ['isOpen'];
+    protected $fillable = ['isOpen', 'sessionId'];
 }

@@ -21,6 +21,7 @@ export default function Movie({
         movies, //seances//,chosenDate
     } = useSelector(state => state.movies);
     const {seances} = useSelector(state => state.seances);
+    const {canUpdate} = useSelector(state => state.halls);
     const movie = movies[movieId];
     //console.log("movie movie", movie);
     const id = hallId ? `${draggableIdsBase.movieInSeance}${seanceId}-${hallId}-${movieId}`
@@ -54,7 +55,7 @@ export default function Movie({
     useEffect(() => {
         let rect = document.getElementById(id).getBoundingClientRect();
         setContainerHeight(rect.height);
-    }, []);
+    }, [canUpdate]);
 
     const getItemStyle = (snapshot, draggableStyle) => {
         draggableStyle = {...draggableStyle};

@@ -17,6 +17,7 @@ class CreateSailsTable extends Migration
             $table->id();
             $table->timestamps();
             $table->boolean('isOpen')->default(false);
+            $table->string('sessionId')->default(null);
         });
     }
 

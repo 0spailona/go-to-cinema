@@ -21,7 +21,7 @@ export const getSeancesByDate = createAsyncThunk(
     }
 );
 
-export const fetchMovies = createAsyncThunk(
+/*export const fetchMovies = createAsyncThunk(
     "fetchMovies",
     async () => {
         const response = await fetch(`${basedUrl}api/moviesList`, {
@@ -32,9 +32,9 @@ export const fetchMovies = createAsyncThunk(
         });
         return response.json();
     }
-);
+);*/
 
-export const fetchHalls = createAsyncThunk(
+/*export const fetchHalls = createAsyncThunk(
     "fetchHalls",
     async () => {
         // console.log("fetchHalls");
@@ -46,7 +46,7 @@ export const fetchHalls = createAsyncThunk(
         });
         return response.json();
     }
-);
+);*/
 
 export const fetchSeanceById = createAsyncThunk(
     "fetchSeanceById",
@@ -67,9 +67,9 @@ const initialDate = new Date();
 initialDate.setHours(0, 0, 0, 0);
 
 const initialState = {
-    loadingFilms: true,
+    loading: true,
     error: "",
-    films: {},
+    movies: {},
     halls: {},
     seances: [],
     chosenDate: toISOStringNoMs(initialDate),
@@ -91,9 +91,9 @@ export const cinemaSlice = createSlice({
     name: "films",
     initialState,
     selectors: {
-        films: (state => state.films),
+        movies: (state => state.movies),
         halls: (state) => state.halls,
-        loadingFilms: (state => state.loadingFilms),
+        loading: (state => state.loading),
         chosenDate: state => state.chosenDate,
         chosenSeance: state => state.chosenSeance,
         chosenPlaces: state => state.chosenPlaces,
@@ -101,6 +101,15 @@ export const cinemaSlice = createSlice({
         qr: state => state.qr,
     },
     reducers: {
+        setHalls: (state, action) => {
+            state.halls = action.payload;
+        },
+        setMovies: (state, action) => {
+            state.movies = action.payload;
+        },
+        setLoading(state, action) {
+            state.loading = action.payload;
+        },
         getFilmsByDate: (state, action) => {
 
             console.log("getFilmsByDate weekday", action.payload);
@@ -159,7 +168,7 @@ export const cinemaSlice = createSlice({
             });
 
             //get movies
-            builder.addCase(fetchMovies.pending, (state, action) => {
+          /*  builder.addCase(fetchMovies.pending, (state, action) => {
                 state.loadingFilms = true;
             });
             builder.addCase(fetchMovies.fulfilled, (state, action) => {
@@ -171,9 +180,9 @@ export const cinemaSlice = createSlice({
                 state.loadingFilms = false;
                 state.error = "Проблема на стороне сервера";
                 console.log("fetchMovies rejected action", action.payload);
-            });
+            });*/
             //get halls
-            builder.addCase(fetchHalls.pending, (state, action) => {
+           /* builder.addCase(fetchHalls.pending, (state, action) => {
                 state.loadingFilms = true;
             });
             builder.addCase(fetchHalls.fulfilled, (state, action) => {
@@ -186,7 +195,7 @@ export const cinemaSlice = createSlice({
                 state.loadingFilms = false;
                 state.error = "Проблема на стороне сервера";
                 console.log("fetchMovies rejected action", action.payload);
-            });
+            });*/
 
             //get seance by id
             builder.addCase(fetchSeanceById.pending, (state, action) => {
@@ -208,7 +217,9 @@ export const cinemaSlice = createSlice({
         },
 });
 
-export const {
+export const {setHalls,
+    setMovies,
+    setLoading,
     getFilmsByDate,
     changePlaceStatus,
     changeChosenDate,
@@ -217,8 +228,8 @@ export const {
     getQR
 } = cinemaSlice.actions;
 export const {
-    films,
-    loadingFilms, halls,
+    movies,
+    loading, halls,
     chosenDate, chosenSeance,
     chosenPlaces,
     prices, qr

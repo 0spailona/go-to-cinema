@@ -53,7 +53,7 @@ class MovieController
         if (!ValidationUtils::checkString($title, 0, 50) || !ValidationUtils::checkString($country, 2, 130)
             || !ValidationUtils::checkString($description, 0, 200) || !ValidationUtils::checkInt($duration, 0, 1255)
             || !ValidationUtils::checkInt($release_year, 1895, $nowYear)) {
-            return response()->json($wrong, 404);
+            return response()->json($wrong, 404,[],JSON_UNESCAPED_UNICODE);
         }
 
         $movieId = uniqid();
@@ -87,7 +87,7 @@ class MovieController
         $movie = Movie::getMovie($id);
 
         if (Movie::getMovie($id) === null) {
-            return response()->json(["status" => "error", "message" => "Фильма с таким названием нет в базе"], 404);
+            return response()->json(["status" => "error", "message" => "Фильма с таким названием нет в базе"], 404,[],JSON_UNESCAPED_UNICODE);
         }
         Movie::deleteMovie($id);
 
@@ -99,11 +99,7 @@ class MovieController
     {
         $movies = Movie::all();
 
-        $moviesData = $movies->map(function ($movie) {
-            return MovieData::MakeMovieDataFromDb($movie);
-        });
-
-        return response()->json(["status" => "ok", "movies" => $moviesData]);
+        return response()->json(["status" => "ok", "movies" => $movies]);
     }
 
     public function getPoster(): \Symfony\Component\HttpFoundation\StreamedResponse

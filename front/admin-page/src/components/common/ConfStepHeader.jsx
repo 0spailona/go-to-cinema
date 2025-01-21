@@ -4,13 +4,13 @@ import {useSelector} from "react-redux";
 export default function ConfStepHeader({title}) {
 
     const {canUpdate} = useSelector(state => state.halls);
-    console.log("ConfStepHeader, canUpdate", canUpdate);
+    //console.log("ConfStepHeader, canUpdate", canUpdate);
 
 
     const toggleClassName = (e) => {
 
         if (!canUpdate) {
-            console.log("canceled");
+            //console.log("canceled");
             return;
         }
         const target = e.target.classList.contains("conf-step__header") ? e.target : e.target.closest(".conf-step__header");

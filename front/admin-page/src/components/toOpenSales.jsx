@@ -11,7 +11,7 @@ export default function ToOpenSales() {
     const dispatch = useDispatch();
     //const [isOpenSails, setIsOpenSails] = useState(canUpdate);
 
-    console.log("ToOpenSales, canUpdate", canUpdate);
+    //console.log("ToOpenSales, canUpdate", canUpdate);
 
     /*useEffect(() => {
         console.log("useEffect ToOpenSales")
@@ -19,7 +19,7 @@ export default function ToOpenSales() {
     }, [canUpdate]);
 */
     const closeTicketSails = async () => {
-        console.log("closeTicketSails");
+        //console.log("closeTicketSails");
         const response = await closeSails();
 
         if (response.status !== "success") {
@@ -37,7 +37,7 @@ export default function ToOpenSales() {
             //TODO ERROR
         }
         else {
-            console.log("openTicketSails success");
+            //console.log("openTicketSails success");
             dispatch(setCanUpdate(false));
         }
     };
