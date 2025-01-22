@@ -8,10 +8,10 @@ import {getSeancesObj} from "../js/utils.js";
 /*import {fetchHalls,
     //fetchMovies,
 getSeancesByDate, setLoading} from "../redux/slices/cinema.js";*/
-import {isOpenSails,getMovies} from "../js/api.js";
-import {setHalls, setLoading, setMovies} from "../redux/slices/cinema.js";
+import {isOpenSails, getMovies, getHalls, getSeancesByDate} from "../js/api.js";
+import {setHalls, setLoading, setMovies, setSeances} from "../redux/slices/cinema.js";
 //import {setHalls, setLoadingHalls} from "../../../admin-page/src/redux/slices/halls.js";
-import {getHalls} from "../../../admin-page/src/js/api.js";
+//import {getHalls} from "../../../admin-page/src/js/api.js";
 //import {getMovies} from "../js/api.js;
 
 export default function ClientPage() {
@@ -20,7 +20,7 @@ export default function ClientPage() {
 
     const {seances, chosenDate, loading, films, halls} = useSelector(state => state.cinema);
 
-    const [seanceObj, setSeanceObj] = useState({});
+    //const [seanceObj, setSeanceObj] = useState({});
     const [drawMovies, setDrawMovies] = useState(false);
 
     const isDrawFilms = async () => {
@@ -62,6 +62,18 @@ export default function ClientPage() {
         dispatch(setLoading(false));
     };
 
+    const getSeances = async (date) => {
+        dispatch(setLoading(true));
+        const response = await getSeancesByDate(date);
+        if (response.status === "success") {
+            dispatch(setSeances(response.data));
+        }
+        else {
+            //TODO ERROR
+        }
+        dispatch(setLoading(false));
+    };
+
     useEffect(() => {
         //console.log("useeffect called");
         async function toStart() {
@@ -71,6 +83,7 @@ export default function ClientPage() {
                ///dispatch(fetchHalls());
                await getHallsFromServer();
                await getMoviesFromServer();
+               await getSeances(chosenDate);
            }
 
         }
@@ -79,22 +92,25 @@ export default function ClientPage() {
 
     }, []);
 
-    useEffect(() => {
+   /* useEffect(() => {
         console.log("useEffect chosenDate", chosenDate);
+        async function getNewSeances() {
+            await getSeances();
+        }
 
         //dispatch(getSeancesByDate(chosenDate));
-    }, [chosenDate]);
+    }, [chosenDate]);*/
 
-    useEffect(() => {
+    /*useEffect(() => {
         //console.log("useeffect called");
         setSeanceObj(getSeancesObj(seances));
-    }, [seances]);
+    }, [seances]);*/
 
     const renderMovie = (movieId) => {
         //console.log("renderMovie seanceObj",seanceObj);
         //console.log("renderMovie movieId",movieId);
         // console.log("renderMovie seanceObj[movieId]",seanceObj[movieId]);
-        const movieSeancesByHallId = seanceObj[movieId];
+        const movieSeancesByHallId = seances[movieId];
         if (movieSeancesByHallId && Object.keys(movieSeancesByHallId).length > 0) {
             return <Movie key={`movie-/${movieId}`} movieId={movieId} movieSeancesByHallId={movieSeancesByHallId}/>;
         }
@@ -105,11 +121,11 @@ export default function ClientPage() {
     console.log("drawMovies",drawMovies);
     return (<>
 
-        <NavDays/>
+        <NavDays onChange={getSeances}/>
         <main>
             {drawMovies ?
                 <>
-                    {seanceObj && Object.keys(seanceObj).length > 0 ? Object.keys(seanceObj).map(movieId => renderMovie(movieId)) :
+                    {seances && Object.keys(seances).length > 0 ? Object.keys(seances).map(movieId => renderMovie(movieId)) :
                 <p>На выбранный день нет сеансов</p>}
                 </> :
                 <p>Продажа билетов временно приостановлена</p>}

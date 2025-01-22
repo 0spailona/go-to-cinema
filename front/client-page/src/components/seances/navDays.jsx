@@ -1,10 +1,10 @@
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {weekday} from "../../js/info.js";
 import {useDispatch, useSelector} from "react-redux";
 import {changeChosenDate} from "../../redux/slices/cinema.js";
 import {getDateStringFromDate, toISOStringNoMs} from "../../js/utils.js";
 
-export default function NavDays() {
+export default function NavDays({onChange}) {
     const maxDays = 6;
 
     const dispatch = useDispatch();
@@ -42,18 +42,18 @@ export default function NavDays() {
         date.setHours(0, 0, 0, 0);
         const string = toISOStringNoMs(date);
         dispatch(changeChosenDate(string));
-
+        onChange(string);
     };
 
-    const isEqual = (a,b)=>{
+    const isEqual = (a, b) => {
         return getDateStringFromDate(a) === getDateStringFromDate(b);
-    }
+    };
 
     return (
         <nav className="page-nav">
             {navDays.map((day, index) => <a key={index}
                                             className={`page-nav__day ${day === now ? "page-nav__day_today" : ""} 
-                                            ${isEqual(day,new Date(chosenDate)) ? "page-nav__day_chosen" : ""}`}
+                                            ${isEqual(day, new Date(chosenDate)) ? "page-nav__day_chosen" : ""}`}
                                             href="#" onClick={() => changeChooseDay(index, day)}>
                 <span className="page-nav__day-week">{weekday[day.getDay()]}</span><span
                 className="page-nav__day-number">{day.getDate()}</span>

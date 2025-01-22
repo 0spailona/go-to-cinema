@@ -8,7 +8,7 @@ import {toISOStringNoMs} from "../../js/utils.js";
 const basedUrl = "";
 const token = await fetchToken();
 
-export const getSeancesByDate = createAsyncThunk(
+/*export const getSeancesByDate = createAsyncThunk(
     "getSeancesByDate",
     async (date) => {
         const response = await fetch(`${basedUrl}api/seancesListByDate?date=${date}`, {
@@ -20,7 +20,7 @@ export const getSeancesByDate = createAsyncThunk(
         return response.json();
     }
 );
-
+*/
 /*export const fetchMovies = createAsyncThunk(
     "fetchMovies",
     async () => {
@@ -71,7 +71,7 @@ const initialState = {
     error: "",
     movies: {},
     halls: {},
-    seances: [],
+    seances: {},
     chosenDate: toISOStringNoMs(initialDate),
     chosenSeance: {seanceData:null,takenPlaces:[],selectedPlaces:[]},
     chosenPlaces: [],
@@ -101,6 +101,9 @@ export const cinemaSlice = createSlice({
         qr: state => state.qr,
     },
     reducers: {
+        setSeances: (state, action) => {
+            state.seances = action.payload;
+        },
         setHalls: (state, action) => {
             state.halls = action.payload;
         },
@@ -153,7 +156,7 @@ export const cinemaSlice = createSlice({
     extraReducers:
         builder => {
             // get seances by date
-            builder.addCase(getSeancesByDate.pending, (state, action) => {
+          /*  builder.addCase(getSeancesByDate.pending, (state, action) => {
                 state.loadingFilms = true;
             });
             builder.addCase(getSeancesByDate.fulfilled, (state, action) => {
@@ -165,7 +168,7 @@ export const cinemaSlice = createSlice({
                 state.loadingFilms = false;
                 state.error = "Проблема на стороне сервера";
                 console.log("getSeancesByDate rejected action", action.payload);
-            });
+            });*/
 
             //get movies
           /*  builder.addCase(fetchMovies.pending, (state, action) => {
@@ -217,7 +220,8 @@ export const cinemaSlice = createSlice({
         },
 });
 
-export const {setHalls,
+export const {setSeances,
+    setHalls,
     setMovies,
     setLoading,
     getFilmsByDate,

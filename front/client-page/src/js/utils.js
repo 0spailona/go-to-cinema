@@ -1,3 +1,6 @@
+import {placesType} from "../../../admin-page/src/js/info.js";
+import {fillPlacesByStandard} from "./modelUtils.js";
+
 export function getDateStringFromDate(date) {
     return `${date.getDate()} ${date.getMonth()} ${date.getFullYear()}`;
 }
@@ -48,6 +51,34 @@ export function getObjMovies(arr) {
         //console.log("getHallsObj hall",hall)
         obj[movie.id] = {...movie, releaseYear: movie.release_year, release_year: undefined};
         //console.log("getObjMovies obj", obj[movie.id]);
+    }
+    //console.log("getHallsObj obj",obj);
+    return obj;
+}
+
+export function getHallsObj(arr) {
+
+    //console.log("getHallsObj",arr);
+
+    const obj = {};
+    for (let hall of arr) {
+        obj[hall.id] = {name:hall.name,id:hall.id,rowsCount:hall.rowsCount,placesInRow: hall.placesInRow};
+        const places = fillPlacesByStandard([], hall.rowsCount, hall.placesInRow);
+        const hallPlaces = JSON.parse(hall.places)
+        //console.log("getHallsObj hallPlaces",hallPlaces);
+        for (let p of hallPlaces.vip) {
+            places[p.row][p.place] = placesType.vip;
+        }
+
+        for (let p of hallPlaces.disabled) {
+            places[p.row][p.place] = placesType.disabled;
+        }
+        obj[hall.id].places = places;
+        obj[hall.id].prices = {
+            vip: hall.vipPrice,
+            standard: hall.standardPrice,
+        };
+        //console.log("getHallsObj obj",obj[hall.name])
     }
     //console.log("getHallsObj obj",obj);
     return obj;
