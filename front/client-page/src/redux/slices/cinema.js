@@ -48,7 +48,7 @@ const token = await fetchToken();
     }
 );*/
 
-export const fetchSeanceById = createAsyncThunk(
+/*export const fetchSeanceById = createAsyncThunk(
     "fetchSeanceById",
     async (id) => {
         console.log("fetchSeanceById id", id);
@@ -60,7 +60,7 @@ export const fetchSeanceById = createAsyncThunk(
         });
         return response.json();
     }
-);
+);*/
 
 
 const initialDate = new Date();
@@ -74,9 +74,11 @@ const initialState = {
     seances: {},
     chosenDate: toISOStringNoMs(initialDate),
     chosenSeance: {seanceData:null,takenPlaces:[],selectedPlaces:[]},
-    chosenPlaces: [],
+    //chosenPlaces: [],
     prices: {standard: 250, vip: 350},
-    qr: false
+    qr: null,
+    ticket: null,
+    drawPage:false,
 };
 
 /*for (let film of startFilms) {
@@ -96,11 +98,17 @@ export const cinemaSlice = createSlice({
         loading: (state => state.loading),
         chosenDate: state => state.chosenDate,
         chosenSeance: state => state.chosenSeance,
-        chosenPlaces: state => state.chosenPlaces,
+        //chosenPlaces: state => state.chosenPlaces,
         prices: state => state.prices,
         qr: state => state.qr,
     },
     reducers: {
+        setDrawPage: (state, action) => {
+           state.drawPage = action.payload;
+        },
+        setChosenSeance: (state, action) => {
+            state.chosenSeance.seanceData = action.payload;
+        },
         setSeances: (state, action) => {
             state.seances = action.payload;
         },
@@ -137,21 +145,23 @@ export const cinemaSlice = createSlice({
 
             //state.chosenSeance.hall.places[rowIndex][placeIndex] = action.payload.newStatus;
         },
-        changeChosenPlaces: (state, action) => {
+        changeSelectedPlaces: (state, action) => {
             const rowIndex = action.payload.rowIndex;
             const placeIndex = action.payload.placeIndex;
+            const lastStatus = action.payload.lastStatus;
 
             if (action.payload.isSelected) {
-                state.chosenPlaces.push({rowIndex, placeIndex});
+                state.chosenSeance.selectedPlaces.push({rowIndex, placeIndex,lastStatus})
+                //state.chosenPlaces.push({rowIndex, placeIndex});
             }
             else {
-                state.chosenPlaces = state.chosenPlaces.filter(place => place.rowIndex !== rowIndex && place.placeIndex !== placeIndex);
+                state.chosenSeance.selectedPlaces = state.chosenSeance.selectedPlaces.filter(place => place.rowIndex !== rowIndex && place.placeIndex !== placeIndex);
             }
         },
-        getQR: (state, action) => {
+      /*  getQR: (state, action) => {
             console.log("getQR state", action.payload);
             state.qr = true;
-        }
+        }*/
     },
     extraReducers:
         builder => {
@@ -201,7 +211,7 @@ export const cinemaSlice = createSlice({
             });*/
 
             //get seance by id
-            builder.addCase(fetchSeanceById.pending, (state, action) => {
+          /*  builder.addCase(fetchSeanceById.pending, (state, action) => {
                 state.loadingFilms = true;
             });
             builder.addCase(fetchSeanceById.fulfilled, (state, action) => {
@@ -216,11 +226,14 @@ export const cinemaSlice = createSlice({
                 state.loadingFilms = false;
                 state.error = "Проблема на стороне сервера";
                 console.log("fetchSeanceById rejected action", action.payload);
-            });
+            });*/
         },
 });
 
-export const {setSeances,
+export const {
+    setDrawPage,
+    setChosenSeance,
+    setSeances,
     setHalls,
     setMovies,
     setLoading,
@@ -228,14 +241,15 @@ export const {setSeances,
     changePlaceStatus,
     changeChosenDate,
     //changeChosenSeance,
-    changeChosenPlaces,
-    getQR
+    changeSelectedPlaces,
+    //getQR
 } = cinemaSlice.actions;
 export const {
+    drawPage,
     movies,
     loading, halls,
     chosenDate, chosenSeance,
-    chosenPlaces,
+    //chosenPlaces,
     prices, qr
 } = cinemaSlice.selectors;
 const cinemaReducer = cinemaSlice.reducer;

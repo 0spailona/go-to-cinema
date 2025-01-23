@@ -64,7 +64,7 @@ Route::prefix('api')->group(function () {
     Route::get('seance/{id}', [\App\Http\Controllers\SeanceController::class, 'getSeanceById']);
 
     Route::get('isOpenSails', [\App\Http\Controllers\SailsController::class, 'isOpenSails']);
-
+    Route::post('getQR', [\App\Http\Controllers\BookingController::class, 'getQR']);
     Route::get('{api_method}', function ($api_method) {
         return response()->json(["status" => "ok", "method"=> $api_method], 200);
     });

@@ -6,18 +6,19 @@ use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Ticket extends Model
+class Booking extends Model
 {
 use HasFactory;
 
 protected $table = 'tickets';
     protected string $id;
     protected string $seanceId;
-    protected int $row;
-    protected int $place;
-    protected DateTime $startTime;
+    protected array $places;
+   // protected int $row;
+    //protected int $place;
+    //protected DateTime $startTime;
 
-protected $fillable = ['row','place','seanceId','startTime'];
+protected $fillable = ['places','seanceId'];
 
     protected $hidden = [
         'created_at', 'updated_at'
