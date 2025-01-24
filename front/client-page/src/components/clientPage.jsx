@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import Movie from "./seances/movie.jsx";
 import {useEffect, useState} from "react";
 import {getHalls, getMovies, getSeancesByDate, isOpenSails} from "../js/api.js";
-import {setChosenSeance, setIsDrawPage, setHalls, setLoading, setMovies, setSeances} from "../redux/slices/cinema.js";
+import {setChosenSeance, setHalls, setIsDrawPage, setLoading, setMovies, setSeances} from "../redux/slices/cinema.js";
 import Loader from "react-js-loader";
 
 let timerId = null;
@@ -14,7 +14,7 @@ export default function ClientPage() {
 
     const dispatch = useDispatch();
 
-    const {seances, chosenDate, isDrawPage, loading,lastIsDrawPage} = useSelector(state => state.cinema);
+    const {seances, chosenDate, isDrawPage, loading, lastIsDrawPage} = useSelector(state => state.cinema);
     const [drawCount, setDrawCount] = useState(0);
     //const [lastDrawPage, setLastDrawPage] = useState(isDrawPage);
 
@@ -22,7 +22,7 @@ export default function ClientPage() {
     //const [drawMovies, setDrawMovies] = useState(false);
 
     const isDrawFilms = async () => {
-       // console.log("isDrawFilms isDrawPage", isDrawPage);
+        // console.log("isDrawFilms isDrawPage", isDrawPage);
 
         const response = await isOpenSails();
         //console.log("response",response);
@@ -52,7 +52,7 @@ export default function ClientPage() {
 
     const getHallsFromServer = async () => {
         dispatch(setLoading(true));
-       // console.log("getHallsFromServer");
+        // console.log("getHallsFromServer");
         const response = await getHalls();
         if (response.status === "success") {
             dispatch(setHalls(response.data));
@@ -65,7 +65,7 @@ export default function ClientPage() {
 
     const getSeances = async (date) => {
         dispatch(setLoading(true));
-        console.log("getSeances");
+        //console.log("getSeances");
         const response = await getSeancesByDate(date);
         if (response.status === "success") {
             dispatch(setSeances(response.data));
@@ -81,18 +81,19 @@ export default function ClientPage() {
         await getHallsFromServer();
         await getMoviesFromServer();
         await getSeances(chosenDate);
-    }
+    };
 
-    useEffect(()=>{
-        console.log("useEffect isDrawPage",isDrawPage);
-        console.log("useEffect last",lastIsDrawPage);
-        if(isDrawPage && !lastIsDrawPage){
-            async function toGetNewData(){
-               await updateData()
+    useEffect(() => {
+       // console.log("useEffect isDrawPage", isDrawPage);
+        //console.log("useEffect last", lastIsDrawPage);
+        if (isDrawPage && !lastIsDrawPage) {
+            async function toGetNewData() {
+                await updateData();
             }
+
             toGetNewData();
         }
-    },[isDrawPage])
+    }, [isDrawPage]);
 
     useEffect(() => {
         //console.log("useeffect called count",drawCount);
@@ -108,7 +109,7 @@ export default function ClientPage() {
                 await getSeances(chosenDate);
             }*/
 
-            await isDrawFilms()
+            await isDrawFilms();
             const interval = setInterval(isDrawFilms, 5000);
         }
 
@@ -133,19 +134,19 @@ export default function ClientPage() {
     return (<>
 
         <NavDays onChange={getSeances}/>
-        {loading ?
-            <div className="loader">
-                <Loader type="bubble-scale" bgColor="#63536C" color="#FFFFFF"
-                        size={50}/>
-            </div> :
-            <main>
-                {isDrawPage ?
+        <main>
+            {isDrawPage ?
+                loading ?
+                    <div className="loader">
+                        <Loader type="bubble-scale" bgColor="rgba(241, 235, 230, 0.95)" color="#FFFFFF"
+                                size={50}/>
+                    </div> :
                     <>
                         {seances && Object.keys(seances).length > 0 ? Object.keys(seances).map(movieId => renderMovie(movieId)) :
                             <p>На выбранный день нет сеансов</p>}
                     </> :
-                    <p>Продажа билетов временно приостановлена</p>}
-            </main>}
+                <p>Продажа билетов временно приостановлена</p>}
+        </main>
     </>);
 }
 /*

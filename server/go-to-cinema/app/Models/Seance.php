@@ -8,6 +8,10 @@ use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use const DATE_FORMAT;
+use const DATE_FORMAT as DATE_FORMAT1;
+
+define('DATE_FORMAT', "Y-m-d\TH:i:sp");
 
 class Seance extends Model
 {
@@ -44,7 +48,7 @@ class Seance extends Model
         return $date->format(DATE_FORMAT);
     }
 
-    static function byId(string $id) : Seance
+    static function byId(string $id) : ?Seance
     {
         return self::where('id', $id)->first();
     }

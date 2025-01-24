@@ -160,6 +160,7 @@ a {
 .movie .movie-seances__hall .movie-seances__time-block {
   display: inline-block;
   margin-bottom: 4px;
+  cursor: pointer;
 }
 .movie .movie-seances__hall .movie-seances__time-block:nth-last-of-type(n + 1) {
   margin-right: 4px;
@@ -465,3 +466,75 @@ a {
     display: none;
   }
 }
+
+
+.loader{
+  height: 70px;
+  margin: 150px auto;
+}
+
+.popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+}
+
+.popup__title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.popup.active {
+  display: block;
+  background: rgba(0, 0, 0, 0.7);
+  animation: 0.5s ease-out 0s 1 darken;
+}
+
+.popup.active .popup__content {
+  top: 100px;
+  animation: 0.5s ease-out 0s 1 slideFromTop;
+}
+
+.popup__container {
+  position: relative;
+  width: 100%;
+}
+
+.popup__content {
+  position: relative;
+  top: -50vh;
+  background-color: rgba(234, 233, 235, 0.95);
+  width: 960px;
+  margin: 0 auto;
+}
+
+.popup__header {
+  box-sizing: border-box;
+  padding: 16px 42px;
+  background-color: #C76F00;
+  color: #FFFFFF;
+}
+
+.popup__wrapper {
+  padding: 35px 104px;
+}
+
+.popup__dismiss {
+  float: right;
+}
+
+.popup__dismiss img {
+  height: 1em;
+  transition: .3s all ease;
+}
+
+.popup__dismiss img:hover {
+  transform: scale(1.2);
+  transition: .3s all ease;
+}
+

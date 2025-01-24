@@ -14,7 +14,7 @@ class CreateBookingsTable extends Migration
     public function up()
     {
         Schema::create('bookings', function (Blueprint $table) {
-            $table->id();
+            $table->string('id')->unique();
             $table->timestamps();
             $table->string('seanceId');
             $table->json('places')->default('[]');

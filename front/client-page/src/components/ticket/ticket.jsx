@@ -2,20 +2,60 @@ import MyButton from "../common/MyButton.jsx";
 import {useDispatch, useSelector} from "react-redux";
 import TicketInfo from "./ticketInfo.jsx";
 import Hint from "./hint.jsx";
-import {setLoading} from "../../redux/slices/cinema.js";
+import {setChosenSeance, setLoading} from "../../redux/slices/cinema.js";
 import {useEffect, useState} from "react";
 import {validate} from "react-email-validator";
 import {getStartTimeStringFromMinutes} from "../../js/utils.js";
-import {getQR} from "../../js/api.js";
+import {getQR, getSeanceById} from "../../js/api.js";
+import Loader from "react-js-loader";
+import {Navigate} from "react-router-dom";
+import Popup from "../common/popup.jsx";
 
 export default function Ticket() {
 
     const dispatch = useDispatch();
 
-    const {chosenSeance, halls, movies, prices, qr, chosenDate, drawPage,seances} = useSelector(state => state.cinema);
+    const {
+        chosenSeance,
+        halls,
+        movies,
+        prices,
+        qr,
+        chosenDate,
+        isDrawPage,
+        loading,
+        lastIsDrawPage
+    } = useSelector(state => state.cinema);
 
 
+    const [emailInputValue, setEmailInputValue] = useState("");
+    const [error, setError] = useState({isError: false, message: ""});
     let hall, time, movie, places, cost, seance, selectedPlaces;
+
+    useEffect(() => {
+        if (isDrawPage && !lastIsDrawPage) {
+            async function toGetUpdateSeance() {
+                await getUpdateSeance(chosenSeance.seanceData.id);
+            }
+
+            toGetUpdateSeance();
+        }
+    }, [isDrawPage]);
+
+
+    const getUpdateSeance = async (id) => {
+        dispatch(setLoading(true));
+        const response = await getSeanceById(id);
+        if (response.status === "success") {
+            dispatch(setChosenSeance(response.data));
+        }
+        else {
+            dispatch(setChosenSeance(null));
+            //TODO ERROR
+        }
+        dispatch(setLoading(false));
+    };
+
     const getPlacesForView = () => {
         let view = "";
         for (let i = 0; i < selectedPlaces.length; i++) {
@@ -26,8 +66,8 @@ export default function Ticket() {
     };
 
 
-    if (!chosenSeance) {
-        console.log("no seances selected");
+    if (!chosenSeance.seanceData || chosenSeance.selectedPlaces.length === 0) {
+        setError({isError: true, message: "Что-то пошло не так"});
     }
     else {
         seance = chosenSeance.seanceData;
@@ -40,7 +80,6 @@ export default function Ticket() {
 
     }
 
-    const [emailInputValue, setEmailInputValue] = useState("");
 
     const toBook = async () => {
         dispatch(setLoading(true));
@@ -68,40 +107,49 @@ export default function Ticket() {
 
 
     return (
-        <>{drawPage ?
-            <main>
-                <section className="ticket">
-                    <header className="tichet__check">
-                        <h2 className="ticket__check-title">Вы выбрали билеты:</h2>
-                    </header>
-                    <div className="ticket__info-wrapper">
-                        <TicketInfo info="На фильм" data={movie.title}/>
-                        <TicketInfo info="Места" data={places}/>
-                        <TicketInfo info="В зале" data={hall.name}/>
-                        <TicketInfo info="На дату" data={chosenDate}/>
-                        <TicketInfo info="Начало сеанса" data={`${time.hours}:${time.min}`}/>
-                        <TicketInfo info="Стоимость" data={`${cost}`} add=" рублей"/>
-                        {qr ? <img className="ticket__info-qr" src="" alt="Здесь должен быть ваш qr"/> : <>
-                            <div className="ticket__info-email">
-                                <label className="ticket__info-label" htmlFor="email">Введите ваш e-mail</label>
-                                <input type="email" className="ticket__info-input"
-                                       placeholder="n-d-p@mail.ru" value={emailInputValue}
-                                       name="email"
-                                       id="email"
-                                       onChange={e => setEmailInputValue(e.target.value)}
-                                       required/>
+        <>
+            <Popup isVisible={error.isError} message={error.message}
+                   onClose={() => setError({isError: false, message: ""})}/>
 
-                            </div>
-                            <MyButton text="Получить код бронирования" onClick={onGetQR}/>
-                            <MyButton text="Получить код бронирования без копии на email" onClick={toBook}/>
-                        </>
-                        }
-                        <Hint text="После бронирования билет будет доступен в этом окне, а также придёт вам
+            {isDrawPage ?
+            loading ?
+                <div className="loader">
+                    <Loader type="bubble-scale" bgColor="rgba(241, 235, 230, 0.95)" color="#FFFFFF"
+                            size={50}/>
+                </div> :
+                <main>
+                    <section className="ticket">
+                        <header className="tichet__check">
+                            <h2 className="ticket__check-title">Вы выбрали билеты:</h2>
+                        </header>
+                        <div className="ticket__info-wrapper">
+                            <TicketInfo info="На фильм" data={movie.title}/>
+                            <TicketInfo info="Места" data={places}/>
+                            <TicketInfo info="В зале" data={hall.name}/>
+                            <TicketInfo info="На дату" data={chosenDate}/>
+                            <TicketInfo info="Начало сеанса" data={`${time.hours}:${time.min}`}/>
+                            <TicketInfo info="Стоимость" data={`${cost}`} add=" рублей"/>
+                            {qr ? <img className="ticket__info-qr" src="" alt="Здесь должен быть ваш qr"/> : <>
+                                <div className="ticket__info-email">
+                                    <label className="ticket__info-label" htmlFor="email">Введите ваш e-mail</label>
+                                    <input type="email" className="ticket__info-input"
+                                           placeholder="n-d-p@mail.ru" value={emailInputValue}
+                                           name="email"
+                                           id="email"
+                                           onChange={e => setEmailInputValue(e.target.value)}
+                                           required/>
+
+                                </div>
+                                <MyButton text="Получить код бронирования" onClick={onGetQR}/>
+                                <MyButton text="Получить код бронирования без копии на email" onClick={toBook}/>
+                            </>
+                            }
+                            <Hint text="После бронирования билет будет доступен в этом окне, а также придёт вам
                         на почту. Покажите QR-код кассиру."/>
-                        <Hint text="Приятного просмотра!"/>
-                    </div>
-                </section>
-            </main>
+                            <Hint text="Приятного просмотра!"/>
+                        </div>
+                    </section>
+                </main>
             :
             <p>Продажа билетов временно приостановлена</p>}
         </>

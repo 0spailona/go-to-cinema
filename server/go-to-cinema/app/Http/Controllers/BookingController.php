@@ -12,11 +12,13 @@ class BookingController
     {
         $data = json_decode($request->getContent());
 
-        if(!Seance::byId($data->id)){
+        if(!Seance::byId($data->seanceId)){
             return response()->json(["status" => "error", "message" => "Сеанс не обнаружен"], 404,[],JSON_UNESCAPED_UNICODE);
         }
         else {
             $places = $data->places;
+            //TODO validation places
+            Booking::create(["seanceId" => $data->seanceId, "places" => json_encode($places), 'id'=>uniqid()]);
         }
         return response()->json(["status" => "ok", "data" => "getQR"]);
     }

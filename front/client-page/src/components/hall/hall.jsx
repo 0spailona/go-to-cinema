@@ -4,89 +4,84 @@ import HallScheme from "./hallScheme.jsx";
 import PriceLegend from "./priceLegend.jsx";
 import {placesType} from "../../js/info.js";
 import MyButton from "../common/MyButton.jsx";
-import {Link} from "react-router-dom";
+import {Link, Navigate, useParams} from "react-router-dom";
 import {getStartTimeStringFromMinutes} from "../../js/utils.js";
 import {setChosenSeance, setLoading} from "../../redux/slices/cinema.js";
 import {getSeanceById} from "../../js/api.js";
+import Loader from "react-js-loader";
+import Popup from "../common/popup.jsx";
 
 
 export default function Hall() {
 
     const dispatch = useDispatch();
-    const {chosenSeance, halls, movies, drawPage, seances} = useSelector(state => state.cinema);
-    const[lastDrawPage, setLastDrawPage] = useState(drawPage);
-
+    const {chosenSeance, halls, movies, isDrawPage, loading, lastIsDrawPage} = useSelector(state => state.cinema);
+    const [isToDoBig, setToDoBig] = useState(false);
+    const [error, setError] = useState({isError: false, message: ""});
+    const params = useParams();
     let hall, time, movie;
+    //console.log("hall params", params);
     //console.log("hall chosenSeance.seanceData", chosenSeance.seanceData);
-    if (!chosenSeance.seanceData) {
-        console.log("no seances selected");
-    }
-    else {
-        //console.log("hall chosenSeance",chosenSeance)
-        hall = halls[chosenSeance.seanceData.hallId];
-        //console.log("Hall hall",hall);
 
-        time = getStartTimeStringFromMinutes(chosenSeance.seanceData.startTime);
-        //time = chosenSeance.time;
-        movie = movies[chosenSeance.seanceData.movieId];
-    }
-
-    const getUpdateSeance = async (id) => {
+    const getSeance = async (id) => {
         dispatch(setLoading(true));
         const response = await getSeanceById(id);
         if (response.status === "success") {
             dispatch(setChosenSeance(response.data));
+            dispatch(setLoading(false));
+            return true;
         }
         else {
-            //TODO ERROR
+            //console.log("hall getSeance",response.status);
+            dispatch(setChosenSeance(null));
+            dispatch(setLoading(false));
+            return false;
         }
-        dispatch(setLoading(false));
-        //dispatch(fetchSeanceById(id))
     };
 
+
     useEffect(() => {
-        //console.log("new drawPage seances", seances);
-        if(!drawPage){
-            setLastDrawPage(drawPage);
+        async function startDraw() {
+            if (!chosenSeance.seanceData && !params.id) {
+                setError({isError: true, message: "Что-то пошло не так"});
+                console.log("no seances selected");
+                return <Navigate to="/"/>;
+            }
+            else {
+                if (!await getSeance(params.id)) {
+                    setError({isError: true, message: "Что-то пошло не так"});
+                    console.log("seance was not found");
+                }
+
+                //console.log("hall chosenSeance",chosenSeance)
+            }
         }
-        else if (drawPage && !lastDrawPage) {
+
+        startDraw();
+    }, []);
+
+    if (chosenSeance.seanceData) {
+        hall = halls[chosenSeance.seanceData.hallId];
+        time = getStartTimeStringFromMinutes(chosenSeance.seanceData.startTime);
+        movie = movies[chosenSeance.seanceData.movieId];
+    }
+
+
+    useEffect(() => {
+        if (isDrawPage && !lastIsDrawPage) {
             async function toGetUpdateSeance() {
-                await getUpdateSeance(chosenSeance.seanceData.id);
+                if (chosenSeance.seanceData) {
+                    if (!await getSeance(chosenSeance.seanceData.id)) {
+                        setError({isError: true, message: "Что-то пошло не так"});
+                        console.log("seance was not found");
+                    }
+                }
             }
 
             toGetUpdateSeance();
         }
-    }, [drawPage]);
-    /* const isDrawFilms = async () => {
-         dispatch(setLoading(true));
-         const response = await isOpenSails();
-         if (response.status === "success" && response.data) {
-             setDrawMovies(true);
-             return true
-         }
-         else {
+    }, [isDrawPage]);
 
-             //TODO ERROR
-         }
-         dispatch(setLoading(false));
-         return false;
-     };*/
-
-    const [isToDoBig, setToDoBig] = useState(false);
-    const [drawMovies, setDrawMovies] = useState(false);
-    // console.log("Hall chosenSeance", chosenSeance);
-    /*useEffect(() => {
-        //console.log("useeffect called");
-        async function toStart() {
-            //await fetchToken()
-            if(await isDrawFilms()) {
-            }
-
-        }
-
-        toStart();
-
-    }, []);*/
 
     const toggleBig = (e) => {
         if (e.target.classList.contains("toBig")) {
@@ -102,38 +97,47 @@ export default function Hall() {
     };
 
     return (
-        <>{drawPage ?
-            <main onClick={toggleBig}>
-                {chosenSeance.seanceData ? <section className="buying">
-                    <div className="buying__info">
-                        <div className="buying__info-description">
-                            <h2 className="buying__info-title">{movie.title}</h2>
-                            <p className="buying__info-start">Начало сеанса: {time.hours}:{time.min}</p>
-                            <p className="buying__info-hall">{hall.name}</p>
-                        </div>
-                        <div className="buying__info-hint toBig" onDoubleClick={toggleBig}>
-                            <p className="toBig">Тапните дважды,<br/>чтобы увеличить</p>
-                        </div>
-                    </div>
-                    <div className={`buying-scheme toBig ${isToDoBig ? "buying-scheme__chair_selected" : ""}`}>
-                        <HallScheme/>
+        <>
+            <Popup isVisible={error.isError} message={error.message}
+                   onClose={() => setError({isError: false, message: ""})}/>
 
-                        <div className="buying-scheme__legend">
-                            <div className="col">
-                                <PriceLegend status={placesType.standard}/>
-                                <PriceLegend status={placesType.vip}/>
+            {isDrawPage ?
+                loading ?
+                    <div className="loader">
+                        <Loader type="bubble-scale" bgColor="rgba(241, 235, 230, 0.95)" color="#FFFFFF"
+                                size={50}/>
+                    </div> :
+                    <main onClick={toggleBig}>
+                        {chosenSeance.seanceData ? <section className="buying">
+                            <div className="buying__info">
+                                <div className="buying__info-description">
+                                    <h2 className="buying__info-title">{movie?.title}</h2>
+                                    <p className="buying__info-start">Начало сеанса: {time.hours}:{time.min}</p>
+                                    <p className="buying__info-hall">{hall?.name}</p>
+                                </div>
+                                <div className="buying__info-hint toBig" onDoubleClick={toggleBig}>
+                                    <p className="toBig">Тапните дважды,<br/>чтобы увеличить</p>
+                                </div>
                             </div>
-                            <div className="col">
-                                <PriceLegend status={placesType.taken}/>
-                                <PriceLegend status={placesType.selected}/>
+                            <div className={`buying-scheme toBig ${isToDoBig ? "buying-scheme__chair_selected" : ""}`}>
+                                <HallScheme/>
+
+                                <div className="buying-scheme__legend">
+                                    <div className="col">
+                                        <PriceLegend status={placesType.standard}/>
+                                        <PriceLegend status={placesType.vip}/>
+                                    </div>
+                                    <div className="col">
+                                        <PriceLegend status={placesType.taken}/>
+                                        <PriceLegend status={placesType.selected}/>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <Link to={"/ticket"}><MyButton text="Забронировать" onClick={toDo}/></Link>
-                </section> : ""}
-            </main>
-            :
-            <p>Продажа билетов временно приостановлена</p>}
+                            <Link to={"/ticket"}><MyButton text="Забронировать" onClick={toDo}/></Link>
+                        </section> : ""}
+                    </main>
+                :
+                <p>Продажа билетов временно приостановлена</p>}
         </>
     );
 }

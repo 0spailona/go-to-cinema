@@ -10,7 +10,7 @@ class Booking extends Model
 {
 use HasFactory;
 
-protected $table = 'tickets';
+protected $table = 'bookings';
     protected string $id;
     protected string $seanceId;
     protected array $places;
@@ -18,14 +18,12 @@ protected $table = 'tickets';
     //protected int $place;
     //protected DateTime $startTime;
 
-protected $fillable = ['places','seanceId'];
+protected $fillable = ['places','seanceId','id'];
 
     protected $hidden = [
         'created_at', 'updated_at'
     ];
 
-    protected $dateFormat = DATE_FORMAT;
-    protected $dates = ['startTime'];
 
     public $incrementing = false;
 

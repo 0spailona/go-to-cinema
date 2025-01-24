@@ -12,7 +12,7 @@ function App() {
             </header>
             <Routes>
                 <Route path="/" element={<ClientPage/>}/>
-                <Route path="/seance" element={<Hall/>}/>
+                <Route path="/hall/:id" element={<Hall/>}/>
                 <Route path="/ticket" element={<Ticket/>}/>
             </Routes>
         </>

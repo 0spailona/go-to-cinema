@@ -159,8 +159,8 @@ class SeanceController
         //$id = $request->query('id');
         Log::debug("getSeanceById: id: $id");
         $seance = Seance::byId($id);
-        if($seance == null) {
-            return response()->json(["status" => "error"]);
+        if($seance === null) {
+            return response()->json(["status" => "error"],404);
         }
         return response()->json(["status" => "ok", "seance" => $seance]);
     }

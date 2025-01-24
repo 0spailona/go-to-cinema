@@ -28,8 +28,9 @@ export default function TimeBlock({seance}) {
 
     return (
         <li className="movie-seances__time-block">
-        <NavLink className="movie-seances__time" to="/seance"
-                 onClick={() => chooseSeance(seance.id)}>{startTime.hours}:{startTime.min}
+        <NavLink className="movie-seances__time" to={`/hall/${seance.id}`}
+                 //onClick={() => chooseSeance(seance.id)}
+        >{startTime.hours}:{startTime.min}
             </NavLink>
     </li>
     );
