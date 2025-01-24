@@ -14,9 +14,10 @@ export default function Hall() {
 
     const dispatch = useDispatch();
     const {chosenSeance, halls, movies, drawPage, seances} = useSelector(state => state.cinema);
+    const[lastDrawPage, setLastDrawPage] = useState(drawPage);
 
     let hall, time, movie;
-    console.log("hall chosenSeance.seanceData", chosenSeance.seanceData);
+    //console.log("hall chosenSeance.seanceData", chosenSeance.seanceData);
     if (!chosenSeance.seanceData) {
         console.log("no seances selected");
     }
@@ -44,11 +45,13 @@ export default function Hall() {
     };
 
     useEffect(() => {
-        console.log("new drawPage seances", seances);
-        if (drawPage) {
+        //console.log("new drawPage seances", seances);
+        if(!drawPage){
+            setLastDrawPage(drawPage);
+        }
+        else if (drawPage && !lastDrawPage) {
             async function toGetUpdateSeance() {
                 await getUpdateSeance(chosenSeance.seanceData.id);
-
             }
 
             toGetUpdateSeance();

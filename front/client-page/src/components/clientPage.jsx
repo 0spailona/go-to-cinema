@@ -4,8 +4,9 @@ import NavDays from "./seances/navDays.jsx";
 import {useDispatch, useSelector} from "react-redux";
 import Movie from "./seances/movie.jsx";
 import {useEffect, useState} from "react";
-import {isOpenSails, getMovies, getHalls, getSeancesByDate} from "../js/api.js";
-import {setDrawPage, setHalls, setLoading, setMovies, setSeances} from "../redux/slices/cinema.js";
+import {getHalls, getMovies, getSeancesByDate, isOpenSails} from "../js/api.js";
+import {setChosenSeance, setIsDrawPage, setHalls, setLoading, setMovies, setSeances} from "../redux/slices/cinema.js";
+import Loader from "react-js-loader";
 
 let timerId = null;
 
@@ -13,30 +14,32 @@ export default function ClientPage() {
 
     const dispatch = useDispatch();
 
-    const {seances, chosenDate, drawPage,loading} = useSelector(state => state.cinema);
+    const {seances, chosenDate, isDrawPage, loading,lastIsDrawPage} = useSelector(state => state.cinema);
+    const [drawCount, setDrawCount] = useState(0);
+    //const [lastDrawPage, setLastDrawPage] = useState(isDrawPage);
 
     //const [seanceObj, setSeanceObj] = useState({});
     //const [drawMovies, setDrawMovies] = useState(false);
 
     const isDrawFilms = async () => {
-        dispatch(setLoading(true));
+       // console.log("isDrawFilms isDrawPage", isDrawPage);
+
         const response = await isOpenSails();
         //console.log("response",response);
         if (response.status === "success") {
-            dispatch(setDrawPage(response.data))
-
-            return true
+            dispatch(setIsDrawPage(response.data));
+            return true;
         }
         else {
 
             //TODO ERROR
         }
-        dispatch(setLoading(false));
         return false;
     };
 
     const getMoviesFromServer = async () => {
         dispatch(setLoading(true));
+        //console.log("getMoviesFromServer");
         const response = await getMovies();
         if (response.status === "success") {
             dispatch(setMovies(response.data));
@@ -49,6 +52,7 @@ export default function ClientPage() {
 
     const getHallsFromServer = async () => {
         dispatch(setLoading(true));
+       // console.log("getHallsFromServer");
         const response = await getHalls();
         if (response.status === "success") {
             dispatch(setHalls(response.data));
@@ -61,6 +65,7 @@ export default function ClientPage() {
 
     const getSeances = async (date) => {
         dispatch(setLoading(true));
+        console.log("getSeances");
         const response = await getSeancesByDate(date);
         if (response.status === "success") {
             dispatch(setSeances(response.data));
@@ -71,50 +76,46 @@ export default function ClientPage() {
         dispatch(setLoading(false));
     };
 
-    const onTimer = async () => {
-        if(await isDrawFilms()){
-            //dispatch(fetchMovies());
-            ///dispatch(fetchHalls());
-            await getHallsFromServer();
-            await getMoviesFromServer();
-            await getSeances(chosenDate);
-        }
 
+    const updateData = async () => {
+        await getHallsFromServer();
+        await getMoviesFromServer();
+        await getSeances(chosenDate);
     }
 
+    useEffect(()=>{
+        console.log("useEffect isDrawPage",isDrawPage);
+        console.log("useEffect last",lastIsDrawPage);
+        if(isDrawPage && !lastIsDrawPage){
+            async function toGetNewData(){
+               await updateData()
+            }
+            toGetNewData();
+        }
+    },[isDrawPage])
+
     useEffect(() => {
-        //console.log("useeffect called");
+        //console.log("useeffect called count",drawCount);
+        dispatch(setChosenSeance(null));
 
         async function toStart() {
             //await fetchToken()
-            if(await isDrawFilms()){
+            /*if(await isDrawFilms()){
                 //dispatch(fetchMovies());
                 ///dispatch(fetchHalls());
                 await getHallsFromServer();
                 await getMoviesFromServer();
                 await getSeances(chosenDate);
-            }
-            //const interval = setInterval(onTimer,5000)
+            }*/
 
+            await isDrawFilms()
+            const interval = setInterval(isDrawFilms, 5000);
         }
 
         toStart();
 
     }, []);
 
-   /* useEffect(() => {
-        console.log("useEffect chosenDate", chosenDate);
-        async function getNewSeances() {
-            await getSeances();
-        }
-
-        //dispatch(getSeancesByDate(chosenDate));
-    }, [chosenDate]);*/
-
-    /*useEffect(() => {
-        //console.log("useeffect called");
-        setSeanceObj(getSeancesObj(seances));
-    }, [seances]);*/
 
     const renderMovie = (movieId) => {
         //console.log("renderMovie seanceObj",seanceObj);
@@ -128,18 +129,23 @@ export default function ClientPage() {
 
 
 //console.log("films",films);
-    //console.log("drawMovies",drawPage);
+    //console.log("loading",loading);
     return (<>
 
         <NavDays onChange={getSeances}/>
-        <main>
-            {drawPage ?
-                <>
-                    {seances && Object.keys(seances).length > 0 ? Object.keys(seances).map(movieId => renderMovie(movieId)) :
-                <p>На выбранный день нет сеансов</p>}
-                </> :
-                <p>Продажа билетов временно приостановлена</p>}
-        </main>
+        {loading ?
+            <div className="loader">
+                <Loader type="bubble-scale" bgColor="#63536C" color="#FFFFFF"
+                        size={50}/>
+            </div> :
+            <main>
+                {isDrawPage ?
+                    <>
+                        {seances && Object.keys(seances).length > 0 ? Object.keys(seances).map(movieId => renderMovie(movieId)) :
+                            <p>На выбранный день нет сеансов</p>}
+                    </> :
+                    <p>Продажа билетов временно приостановлена</p>}
+            </main>}
     </>);
 }
 /*
