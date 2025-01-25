@@ -83,3 +83,7 @@ export function getHallsObj(arr) {
     //console.log("getHallsObj obj",obj);
     return obj;
 }
+
+export function getPlacesForAPI(places){
+    return places.map(place => {return {row:place.rowIndex,place:place.placeIndex,status:place.lastStatus}})
+}

@@ -9,9 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use const DATE_FORMAT;
-use const DATE_FORMAT as DATE_FORMAT1;
 
-define('DATE_FORMAT', "Y-m-d\TH:i:sp");
+//define('DATE_FORMAT', "Y-m-d\TH:i:sp");
 
 class Seance extends Model
 {
@@ -34,8 +33,8 @@ class Seance extends Model
     protected $hidden = [
         'created_at', 'updated_at'
     ];
-
-    protected $dateFormat = DATE_FORMAT;
+//protected $dateFormat = env('DATE_FORMAT');
+    //protected $dateFormat = DATE_FORMAT;
     protected $dates = ['startTime'];
 
     public $incrementing = false;
@@ -45,7 +44,7 @@ class Seance extends Model
 
     protected function serializeDate(DateTimeInterface $date) : string
     {
-        return $date->format(DATE_FORMAT);
+        return $date->format(env('DATE_FORMAT'));
     }
 
     static function byId(string $id) : ?Seance

@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\ErrorHandler\Debug;
 use const DATE_FORMAT;
-use const DATE_FORMAT as DATE_FORMAT1;
 
 define('DATE_FORMAT', "Y-m-d\TH:i:sp");
 

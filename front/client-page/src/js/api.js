@@ -119,10 +119,11 @@ export async function getSeanceById(id) {
 
 export async function getQR(data) {
     console.log("getQR data ", data);
+
     //try {
     const body = {
         seanceId: data.seanceId,
-        places: data.places
+        places: data.places.map(place => {return {row:place.rowIndex,place:place.placeIndex,status:place.lastStatus}})
     };
     //console.log("getQR body", body);
     const response = await fetch(`${basedUrl}api/getQR`, {

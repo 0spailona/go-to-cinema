@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Sails;
 use Illuminate\Support\Facades\Log;
+use function Psy\debug;
 
 class SailsController
 {
@@ -29,7 +30,10 @@ class SailsController
         if ($sails->isEmpty()) {
             Sails::create(['sessionId' => $sessionId, 'isOpen' => false]);
         } else if (!$sails[0]->isOpen && $sails[0]->sessionId !== $sessionId) {
-            return response()->json(["status" => "error", "message" => "Продажи закрыты другим администратором. Попробуйте позже"], 400, [], JSON_UNESCAPED_UNICODE);
+            Log::debug($sessionId);
+            Log::debug($sails[0]->sessionId);
+
+            //return response()->json(["status" => "error", "message" => "Продажи закрыты другим администратором. Попробуйте позже"], 400, [], JSON_UNESCAPED_UNICODE);
         } else if ($sails[0]->isOpen || $sails[0]->sessionId === $sessionId) {
             $sails[0]->update(['isOpen' => false]);
         } else {
