@@ -6,28 +6,31 @@ import ToUpdateHall from "./updateHall/toUpdateHall.jsx";
 import ToUpdatePrice from "./toUpdatePrice.jsx";
 import ToUpdateTimeTable from "./updateTimeTable/toUpdateTimeTable.jsx";
 import ToOpenSales from "./toOpenSales.jsx";
-import {useEffect} from "react";
-import {//fetchHallConfig,
-    setConfig, setHalls, setLoadingHalls} from "../redux/slices/halls.js";
+import {useEffect, useState} from "react";
+import {setConfig, setHalls, setLoadingHalls} from "../redux/slices/halls.js";
 import {useDispatch} from "react-redux";
 //import {fetchMovies} from "../redux/slices/movies.js";
-import {fetchToken, getHallConfig, getHalls, getMovies} from "../js/api.js";
+import {getHallConfig, getHalls, getMovies} from "../js/api.js";
 import {setLoadingMovies, setMovies} from "../redux/slices/movies.js";
+import PopupError from "./common/popupError.jsx";
 
 export default function AdminPage() {
 
     const dispatch = useDispatch();
+    const [error, setError] = useState({isError: false, message: ""});
 
     const getHallsFromServer = async () => {
         dispatch(setLoadingHalls(true));
         const response = await getHalls();
         if (response.status === "success") {
             dispatch(setHalls(response.data));
+            dispatch(setLoadingHalls(false));
+            return true;
         }
         else {
-            //TODO ERROR
+            dispatch(setLoadingHalls(false));
+            return false;
         }
-        dispatch(setLoadingHalls(false));
     };
 
     const getHallConfigFromServer = async () => {
@@ -35,11 +38,13 @@ export default function AdminPage() {
         const response = await getHallConfig();
         if (response.status === "success") {
             dispatch(setConfig(response.data));
+            dispatch(setLoadingHalls(false));
+            return true;
         }
         else {
-            //TODO ERROR
+            dispatch(setLoadingHalls(false));
+            return false;
         }
-        dispatch(setLoadingHalls(false));
     };
 
     const getMoviesFromServer = async () => {
@@ -47,11 +52,13 @@ export default function AdminPage() {
         const response = await getMovies();
         if (response.status === "success") {
             dispatch(setMovies(response.data));
+            dispatch(setLoadingMovies(false));
+            return true;
         }
         else {
-            //TODO ERROR
+            dispatch(setLoadingMovies(false));
+            return false;
         }
-        dispatch(setLoadingMovies(false));
     };
 
 
@@ -59,27 +66,28 @@ export default function AdminPage() {
 
         async function toStart() {
             //await fetchToken()
-            await getHallConfigFromServer();
-            await getHallsFromServer();
-            await getMoviesFromServer();
+            if (!await getHallConfigFromServer() ||
+                !await getHallsFromServer() ||
+                !await getMoviesFromServer()) {
+                setError({isError: true, message: "Проблемы с сервером. Попробуйте позже"});
+            }
         }
+
         toStart();
 
     }, []);
 
-    return (
-        <main className="conf-steps">
-            <ToCreateHall/>
-            <ToUpdateHall/>
-            <ToUpdatePrice/>
-            <ToUpdateTimeTable/>
-            <ToOpenSales/>
-        </main>
+    return (<>
+            <PopupError showPopup={error.isError} text={error.message}
+                        onClose={()=>setError({isError: false, message: ""})}/>.
+            <main className="conf-steps">
+                <ToCreateHall/>
+                <ToUpdateHall/>
+                <ToUpdatePrice/>
+                <ToUpdateTimeTable/>
+                <ToOpenSales/>
+            </main>
+        </>
     );
 }
 
-/*
-
-
-
-            */

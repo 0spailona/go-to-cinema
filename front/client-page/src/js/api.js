@@ -117,8 +117,8 @@ export async function getSeanceById(id) {
     return {status: "error"};
 }
 
-export async function getQR(data) {
-    console.log("getQR data ", data);
+export async function toBook(data) {
+    console.log("toBook data ", data);
 
     //try {
     const body = {
@@ -126,7 +126,7 @@ export async function getQR(data) {
         places: data.places.map(place => {return {row:place.rowIndex,place:place.placeIndex,status:place.lastStatus}})
     };
     //console.log("getQR body", body);
-    const response = await fetch(`${basedUrl}api/getQR`, {
+    const response = await fetch(`${basedUrl}api/toBook`, {
         headers: {
             Accept: "application/json",
             "Content-Type": "text/plain",
@@ -141,7 +141,7 @@ export async function getQR(data) {
     console.log("getQR response.json()", json);
     if (Math.floor(response.status / 100) === 2) {
         console.log("getQR success");
-        return {status: "success"};
+        return {status: "success",data: json.data};
     }
     else {
         console.log("getGR error");

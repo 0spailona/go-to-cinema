@@ -47,6 +47,11 @@ function serveFile($file, $folder)
     }
 }
 
+
+Route::get('showBooking/{bookingId}', [\App\Http\Controllers\BookingController::class, 'showBooking']);
+Route::get('getQR/{bookingId}', [\App\Http\Controllers\BookingController::class, 'getQR']);
+
+
 Route::prefix('api')->group(function () {
     Route::get('', function () {
          abort(404, 'API not found');
@@ -64,7 +69,9 @@ Route::prefix('api')->group(function () {
     Route::get('seance/{id}', [\App\Http\Controllers\SeanceController::class, 'getSeanceById']);
 
     Route::get('isOpenSails', [\App\Http\Controllers\SailsController::class, 'isOpenSails']);
-    Route::post('getQR', [\App\Http\Controllers\BookingController::class, 'getQR']);
+    Route::post('toBook', [\App\Http\Controllers\BookingController::class, 'toBook']);
+
+
     Route::get('{api_method}', function ($api_method) {
         return response()->json(["status" => "ok", "method"=> $api_method], 200);
     });

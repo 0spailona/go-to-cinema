@@ -35,11 +35,11 @@ class Movie extends Model
 
     static function getMovie($id)
     {
-        return DB::table('movies')->where('id', $id)->first();
+        return self::where('id', $id)->first();
     }
 
     static function deleteMovie($id)
     {
-        DB::table('movies')->where('id', $id)->delete();
+        self::where('id', $id)->delete();
     }
 }

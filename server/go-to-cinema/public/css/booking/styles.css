@@ -1,0 +1,259 @@
+@charset "UTF-8";
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: "Roboto", sans-serif;
+  font-size: 62.5%;
+}
+
+body {
+    background-image: url("../../image/booking/background.jpg");
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: right;
+}
+
+a {
+  text-decoration: none;
+}
+
+.page-header {
+  padding: 1.4rem;
+}
+
+.page-header__title {
+  margin: 0;
+  font-weight: 900;
+  font-size: 3.4rem;
+  color: #FFFFFF;
+  text-transform: uppercase;
+}
+.page-header__title span {
+  font-weight: 100;
+}
+
+
+/* ~~~~~~~~~~~~ Билет ~~~~~~~~~~~~ */
+.tichet__check, .ticket__info-wrapper {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  background-color: rgba(241, 235, 230, 0.95);
+}
+
+.tichet__check {
+  position: relative;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+.tichet__check::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+    background-image: url("../../image/booking/border-top.png");
+  background-size: 10px 3px;
+}
+.tichet__check::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-image: url("../../image/booking/border-bottom.png");
+  background-size: 10px 3px;
+}
+
+.ticket__info-wrapper {
+  position: relative;
+  margin-top: 6px;
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+.ticket__info-wrapper::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-image: url("../../image/booking/border-top.png");
+  background-size: 10px 3px;
+}
+.ticket__info-wrapper::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-image: url("../../image/booking/border-bottom.png");
+  background-size: 10px 3px;
+}
+
+.ticket__check-title {
+  font-weight: 700;
+  font-size: 2.2rem;
+  text-transform: uppercase;
+  color: #C76F00;
+}
+
+.ticket__info {
+  font-size: 1.6rem;
+  color: #000000;
+}
+.ticket__info + .ticket__info {
+  margin-top: 1rem;
+}
+
+.ticket__details {
+  font-weight: 700;
+}
+
+.ticket__info-email{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+ }
+
+.ticket__info-label {
+  display: block;
+
+  margin-top: 1rem;
+  font-size: 1.6rem;
+  color: #000000;
+}
+
+.ticket__info-input {
+  display: block;
+  width: 200px;
+  margin-top: 1rem;
+  padding: 8px;
+  font-size: 1.6rem;
+  color: #000000;
+  border: 1px solid #b7b7b7;
+}
+
+.ticket__info-input:focus {
+  outline: 1px #CF87FF solid;
+  outline-offset: -1px; }
+
+
+.ticket__hint {
+  font-weight: 300;
+  font-size: 1.4rem;
+  margin-top: 3rem;
+}
+.ticket__hint + .ticket__hint {
+  margin-top: 1rem;
+}
+
+.ticket__info-qr {
+  display: block;
+  margin: 3rem auto 0;
+  width: 20rem;
+  height: 20rem;
+}
+
+@media screen and (min-width: 479px) {
+  .page-nav .page-nav__day {
+    padding: 1rem 2rem;
+  }
+}
+@media screen and (min-width: 990px) {
+  .page-header, nav, main {
+    width: 990px;
+    margin: auto;
+  }
+
+  .movie, .buying {
+    border-radius: 2px;
+  }
+
+  .buying__info-hint {
+    display: none;
+  }
+}
+
+
+.loader{
+  height: 70px;
+  margin: 150px auto;
+}
+
+.popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+}
+
+.popup__title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.popup.active {
+  display: block;
+  background: rgba(0, 0, 0, 0.7);
+  animation: 0.5s ease-out 0s 1 darken;
+}
+
+.popup.active .popup__content {
+  top: 100px;
+  animation: 0.5s ease-out 0s 1 slideFromTop;
+}
+
+.popup__container {
+  position: relative;
+  width: 100%;
+}
+
+.popup__content {
+  position: relative;
+  top: -50vh;
+  background-color: rgba(234, 233, 235, 0.95);
+  width: 960px;
+  margin: 0 auto;
+}
+
+.popup__header {
+  box-sizing: border-box;
+  padding: 16px 42px;
+  background-color: #C76F00;
+  color: #FFFFFF;
+}
+
+.popup__wrapper {
+  padding: 35px 104px;
+}
+
+.popup__dismiss {
+  float: right;
+}
+
+.popup__dismiss img {
+  height: 1em;
+  transition: .3s all ease;
+}
+
+.popup__dismiss img:hover {
+  transform: scale(1.2);
+  transition: .3s all ease;
+}
+

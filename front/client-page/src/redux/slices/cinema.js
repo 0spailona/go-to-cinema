@@ -18,6 +18,7 @@ const initialState = {
     ticket: null,
     isDrawPage: false,
     lastIsDrawPage: null,
+    bookingId: null,
 };
 
 
@@ -35,8 +36,12 @@ export const cinemaSlice = createSlice({
         qr: state => state.qr,
         isDrawPage: state => state.isDrawPage,
         lastIsDrawPage: state => state.lastIsDrawPage,
+        isBooking: state => state.isBooking,
     },
     reducers: {
+        setBookingId(state, action) {
+            state.bookingId = action.payload;
+        },
         setIsDrawPage: (state, action) => {
             state.lastIsDrawPage = state.isDrawPage;
             state.isDrawPage = action.payload;
@@ -97,7 +102,7 @@ export const cinemaSlice = createSlice({
     },
 });
 
-export const {
+export const {setBookingId,
     setIsDrawPage,
     setChosenSeance,
     setSeances,
@@ -108,7 +113,7 @@ export const {
     changeChosenDate,
     changeSelectedPlaces,
 } = cinemaSlice.actions;
-export const {
+export const {bookingId,
     lastIsDrawPage,
     isDrawPage,
     movies,
