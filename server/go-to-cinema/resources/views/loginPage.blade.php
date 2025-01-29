@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/x-icon" href={{asset("/image/favicon.ico")}}>
+    <link rel="icon" type="image/x-icon" href={{asset("favicon.ico")}}>
     <title>Авторизация | ИдёмВКино</title>
 
     <!-- Styles -->
-    <link rel="stylesheet" type="text/css" href={{asset("/css/login/normalize.css")}}>
-    <link rel="stylesheet" type="text/css" href={{asset("/css/login/styles.css")}}>
+    <link rel="stylesheet" type="text/css" href={{asset("normalize.css")}}>
+    <link rel="stylesheet" type="text/css" href={{asset("styles.css")}}>
     <!-- Fonts -->
     <link
         href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&amp;subset=cyrillic,cyrillic-ext,latin-ext"

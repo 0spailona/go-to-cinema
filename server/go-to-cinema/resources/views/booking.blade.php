@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/x-icon" href={{asset("/image/favicon.ico")}}>
+    <link rel="icon" type="image/x-icon" href={{asset("favicon.ico")}}>
     <title>ИдёмВКино</title>
 
     <!-- Styles -->
-    <link rel="stylesheet" type="text/css" href={{asset("/css/booking/normalize.css")}}>
-    <link rel="stylesheet" type="text/css" href={{asset("/css/booking/styles.css")}}>
+    <link rel="stylesheet" type="text/css" href={{asset("normalize.css")}}>
+    <link rel="stylesheet" type="text/css" href={{asset("styles.css")}}>
     <!-- Fonts -->
     <link
         href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&amp;subset=cyrillic,cyrillic-ext,latin-ext"
@@ -19,7 +19,6 @@
 <header class="page-header">
     <h1 class="page-header__title">Идём<span>в</span>кино</h1>
 </header>
-
 <main>
     <section class="ticket">
 
@@ -33,7 +32,9 @@
             <p class="ticket__info">В зале: <span class="ticket__details ticket__hall">{{$hallName}}</span></p>
             <p class="ticket__info">Начало сеанса: <span class="ticket__details ticket__start">{{$startTime}}</span></p>
 
-            <img class="ticket__info-qr" src="{{asset("getQR/" . $bookingId)}}" alt="Упс! Здесь должен быть ваш QR.">
+            <a href="{{env('PUBLIC_URL') . "showBooking/" . $bookingId}}">
+                <img class="ticket__info-qr" src="{{env('PUBLIC_URL') . "getQR/" . $bookingId}}" alt="Упс! Здесь должен быть ваш QR.">
+            </a>
 
             <p class="ticket__hint">Покажите QR-код нашему контроллеру для подтверждения бронирования.</p>
             <p class="ticket__hint">Приятного просмотра!</p>
