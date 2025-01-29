@@ -1,0 +1,163 @@
+@charset "UTF-8";
+@keyframes slideFromTop {
+    0% {
+        top: -50vh;
+    }
+    100% {
+        top: 100px;
+    }
+}
+
+@keyframes darken {
+    0% {
+        background: 0;
+    }
+    100% {
+        background: rgba(0, 0, 0, 0.7);
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-family: "Roboto", sans-serif;
+    font-size: 62.5%;
+}
+
+body {
+    background-image: url("../../image/login/background.jpg");
+    background-color: rgba(0, 0, 0, 0.5);
+    background-blend-mode: multiply;
+    background-size: cover;
+    background-attachment: fixed;
+    counter-reset: num;
+}
+
+input[type='radio'], input[type='submit'], button, select {
+    cursor: pointer;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.page-header {
+    width: 972px;
+    margin: 0 auto;
+}
+
+.page-header {
+    padding: 35px 42px 35px 104px;
+}
+
+.page-header {
+    color: #FFFFFF;
+    text-transform: uppercase;
+}
+
+.page-header .page-header__title {
+    margin: 0;
+    font-weight: 900;
+    font-size: 3.4rem;
+}
+
+.page-header .page-header__title span {
+    font-weight: 100;
+}
+
+.page-header .page-header__subtitle {
+    font-size: 1rem;
+    letter-spacing: 0.46em;
+}
+
+.login__button {
+    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.24), 0px 0px 3px rgba(0, 0, 0, 0.12);
+    border-radius: 3px;
+    border: none;
+    background-color: #16A6AF;
+    padding: 12px 32px;
+    margin-top: 17px;
+    text-transform: uppercase;
+    font-weight: 500;
+    font-size: 1.4rem;
+    color: #FFFFFF;
+    transition-property: background-color;
+    transition-duration: .5s;
+    transition-timing-function: ease;
+}
+
+.login__button:hover, .login__button:focus {
+    background-color: #2FC9D2;
+    outline: none;
+}
+
+.login__button:active {
+    position: relative;
+    top: 2px;
+    background-color: #146C72;
+    color: #FFFFFF;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
+}
+
+.login__button + .conf-step__button, .conf-step__button + .login__button, .login__button + .login__button {
+    margin-left: 12px;
+}
+
+
+.login__label {
+    display: inline-block;
+    font-size: 1.2rem;
+    color: #848484;
+    width: 100%;
+    margin-bottom: 0.8rem;
+}
+
+.login__input {
+    display: block;
+    width: 100%;
+    margin-top: 1px;
+    padding: 8px;
+    font-size: 1.6rem;
+    color: #000000;
+    border: 1px solid #b7b7b7;
+}
+
+.login__input:focus {
+    outline: 1px #CF87FF solid;
+    outline-offset: -1px;
+}
+
+
+.login {
+    width: 480px;
+    margin: 0 auto;
+    position: relative;
+    background-color: rgba(234, 233, 235, 0.95);
+}
+
+.login__wrapper {
+    padding: 35px 104px;
+}
+
+.login__header {
+    position: relative;
+    box-sizing: border-box;
+    padding: 16px 104px;
+    background-color: #63536C;
+    color: #FFFFFF;
+}
+
+.login__title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.login__label:last-of-type {
+    margin-bottom: 0;
+}
+

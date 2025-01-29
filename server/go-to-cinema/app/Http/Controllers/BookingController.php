@@ -109,7 +109,8 @@ class BookingController
             new ImagickImageBackEnd()
         );
         $writer = new Writer($renderer);
-        $qr = $writer->writeString('Hello World!');
+        $url = env('PUBLIC_URL') . "showBooking/" . $bookingId;
+        $qr = $writer->writeString($url);
         return response($qr)->header('Content-Type', 'image/png');
     }
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/svg+xml" href={{asset("/image/favicon.svg")}}/>
+    <link rel="icon" type="image/x-icon" href={{asset("/image/favicon.ico")}}>
     <title>ИдёмВКино</title>
 
     <!-- Styles -->

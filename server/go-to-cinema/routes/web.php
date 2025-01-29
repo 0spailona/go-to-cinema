@@ -83,9 +83,11 @@ Route::prefix('admin')->group(function () {
         return "Here goes admin login handler";
     });
 
-    Route::any('login', function () {
+    Route::get('login',  [\App\Http\Controllers\AdminController::class, 'showLoginPage']);
+
+    /*Route::any('login', function () {
         abort(404, 'File not found');
-    });
+    });*/
 
     Route::get('{file?}', function ($file = "index.html") {
         return serveFile($file, "admin");
