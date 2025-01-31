@@ -691,6 +691,12 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     width: 100%;
 }
 
+.logout-wrp{
+    display: flex;
+    justify-content: end;
+    padding: 16px;
+}
+
 .popup {
     display: none;
     position: fixed;

@@ -119,22 +119,27 @@ class BookingController
         Log::debug("showBooking $id");
 
         $booking = Booking::byId($id);
-        if ($booking == null) {
+        $seance = Seance::byId($booking->seanceId);
+        Log::debug(json_encode($booking));
+        if ($booking == null || $seance == null) {
             return view('booking', ['bookingId' => $id, 'error' => true]);
+        } else {
+            //$seance = Seance::byId($booking->seanceId);
+            Log::debug(json_encode($seance));
+            $hall = Hall::byId($seance->hallId);
+            $movie = Movie::getMovie($seance->movieId);
+            $startTime = date('H:i', strtotime($seance->startTime));
+            Log::debug($startTime);
+            $placesString = $this->getPlacesForView(json_decode($booking->places));
+
+            return view('booking', ['bookingId' => $id,
+                'hallName' => $hall->name,
+                'title' => $movie->title,
+                'places' => $placesString,
+                'startTime' => $startTime,
+                'error' => false]);
         }
 
-        $seance = Seance::byId($booking->seanceId);
-        $hall = Hall::byId($seance->hallId);
-        $movie = Movie::getMovie($seance->movieId);
-        $startTime = date('H:i',strtotime($seance->startTime));
-        Log::debug($startTime);
-        $placesString = $this->getPlacesForView(json_decode($booking->places));
-
-        return view('booking', ['bookingId' => $id,
-            'hallName' => $hall->name,
-            'title' => $movie->title,
-            'places' => $placesString,
-            'startTime'=>$startTime]);
     }
 
     private function getPlacesForView($places): string
@@ -153,4 +158,5 @@ class BookingController
         //Log::debug($view);
         return $view;
     }
+
 }

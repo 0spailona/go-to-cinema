@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\Sails;
+use Illuminate\Support\Facades\Log;
+
 class ValidationUtils
 {
     public static function checkString($value, int $minLen, int $maxLen): bool
@@ -21,4 +24,21 @@ class ValidationUtils
         }
         return true;
     }
+
+    public static function checkAdminRights(): bool
+    {
+        $sessionId = session()->getId();
+        $sails = Sails::all();
+        Log::debug("checkAdminRights");
+        Log::debug($sessionId);
+        //Log::debug($sails[0]->sessionId);
+        if ($sails->isEmpty() || $sails[0]->sessionId !== $sessionId) {
+            Log::debug("to login");
+           return false;
+        }
+          return true;
+
+    }
+
+
 }

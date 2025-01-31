@@ -10,9 +10,10 @@ import {useEffect, useState} from "react";
 import {setConfig, setHalls, setLoadingHalls} from "../redux/slices/halls.js";
 import {useDispatch} from "react-redux";
 //import {fetchMovies} from "../redux/slices/movies.js";
-import {getHallConfig, getHalls, getMovies} from "../js/api.js";
+import {getHallConfig, getHalls, getMovies, logOut} from "../js/api.js";
 import {setLoadingMovies, setMovies} from "../redux/slices/movies.js";
 import PopupError from "./common/popupError.jsx";
+import MyButton from "./common/myButton.jsx";
 
 export default function AdminPage() {
 
@@ -77,6 +78,16 @@ export default function AdminPage() {
 
     }, []);
 
+    const onLogOut = async () => {
+        const response = await logOut();
+        if (response.status === "success") {
+            window.location = "admin/login";
+        }
+        else {
+
+        }
+    }
+
     return (<>
             <PopupError showPopup={error.isError} text={error.message}
                         onClose={()=>setError({isError: false, message: ""})}/>.
@@ -87,6 +98,10 @@ export default function AdminPage() {
                 <ToUpdateTimeTable/>
                 <ToOpenSales/>
             </main>
+            <div className="logout-wrp">
+                <MyButton text="Выйти" type="submit" onclick={onLogOut}/>
+            </div>
+
         </>
     );
 }

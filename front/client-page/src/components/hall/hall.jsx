@@ -40,6 +40,7 @@ export default function Hall() {
     };
 
 
+
     useEffect(() => {
         async function startDraw() {
             if (!chosenSeance.seanceData && !params.id) {
@@ -52,6 +53,7 @@ export default function Hall() {
                     setError({isError: true, message: "Что-то пошло не так"});
                     console.log("seance was not found");
                 }
+
 
                 //console.log("hall chosenSeance",chosenSeance)
             }
@@ -137,7 +139,7 @@ export default function Hall() {
                         </section> : ""}
                     </main>
                 :
-                <p>Продажа билетов временно приостановлена</p>}
+                <p className="info">Продажа билетов временно приостановлена</p>}
         </>
     );
 }

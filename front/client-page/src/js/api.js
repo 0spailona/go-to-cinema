@@ -111,11 +111,12 @@ export async function getSeanceById(id) {
     console.log("getSeanceById json", json);
     if (Math.floor(response.status / 100) === 2) {
         //const seances = getSeancesObj(json.seance)
-        return {status: "success", data: json.seance};
+        return {status: "success", data:{seance: json.seance, selectedPlaces:json.places}};
     }
 
     return {status: "error"};
 }
+
 
 export async function toBook(data) {
     console.log("toBook data ", data);

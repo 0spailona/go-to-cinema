@@ -27,17 +27,24 @@
         </header>
 
         <div class="ticket__info-wrapper">
-            <p class="ticket__info">На фильм: <span class="ticket__details ticket__title">{{$title}}</span></p>
-            <p class="ticket__info">Места: <span class="ticket__details ticket__chairs">{{$places}}</span></p>
-            <p class="ticket__info">В зале: <span class="ticket__details ticket__hall">{{$hallName}}</span></p>
-            <p class="ticket__info">Начало сеанса: <span class="ticket__details ticket__start">{{$startTime}}</span></p>
 
-            <a href="{{env('PUBLIC_URL') . "showBooking/" . $bookingId}}">
-                <img class="ticket__info-qr" src="{{env('PUBLIC_URL') . "getQR/" . $bookingId}}" alt="Упс! Здесь должен быть ваш QR.">
-            </a>
+            @if($error)
+        <p class="ticket__details ticket__title">Что-то пошло не так</p>
+            @endif
+            @if(!$error)
+                    <p class="ticket__info">На фильм: <span class="ticket__details ticket__title">{{$title}}</span></p>
+                    <p class="ticket__info">Места: <span class="ticket__details ticket__chairs">{{$places}}</span></p>
+                    <p class="ticket__info">В зале: <span class="ticket__details ticket__hall">{{$hallName}}</span></p>
+                    <p class="ticket__info">Начало сеанса: <span class="ticket__details ticket__start">{{$startTime}}</span></p>
 
-            <p class="ticket__hint">Покажите QR-код нашему контроллеру для подтверждения бронирования.</p>
-            <p class="ticket__hint">Приятного просмотра!</p>
+                    <a href="{{env('PUBLIC_URL') . "showBooking/" . $bookingId}}">
+                        <img class="ticket__info-qr" src="{{env('PUBLIC_URL') . "getQR/" . $bookingId}}" alt="Упс! Здесь должен быть ваш QR.">
+                    </a>
+
+                    <p class="ticket__hint">Покажите QR-код нашему контроллеру для подтверждения бронирования.</p>
+                    <p class="ticket__hint">Приятного просмотра!</p>
+            @endif
+
         </div>
     </section>
 </main>

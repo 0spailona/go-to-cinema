@@ -538,3 +538,9 @@ a {
   transition: .3s all ease;
 }
 
+.info{
+  display: block;
+  margin: 20px;
+  font-size: 2rem;
+  color: #FFFFFF;
+}

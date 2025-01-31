@@ -6,27 +6,62 @@ const basedUrl = "admin/";
 //get token;
 export async function fetchToken() {
     const response = await fetch(`${basedUrl}api/csrf`);
-    return response.text()
+    return response.text();
 }
 
 const token = await fetchToken();
 
 //Global
 
-/*export async function fetchToken() {
-    const response = await fetch(`${basedUrl}api/csrf`);
+export async function isAdmin() {
+    const response = await fetch(`${basedUrl}isAdmin`);
 
     //console.log("fetchToken", response);
 
-    if (response.ok) {
-        console.log("fetchToken", response.json());
-        token = response.text();
-        return {status:"success"};
+    const json = await response.json();
+
+    console.log("closeSails response.json()", json);
+
+    if (Math.floor(response.status / 100) === 2) {
+        if (json.isAdmin) {
+            return {status: "success"};
+        }
+        else {
+            window.location = "admin/login";
+        }
+
     }
-    else{
-        return {status:"error"};
+    else {
+        // console.log("createHall error");
+        return {status: "error"};
     }
-}*/
+}
+
+export async function logOut() {
+    const response = await fetch(`${basedUrl}api/logout`,{
+        headers: {
+            Accept: "application/json",
+            "X-CSRF-TOKEN": token,
+        },
+        method: "POST",
+        credentials: "same-origin",
+    });
+
+    //console.log("fetchToken", response);
+
+    const json = await response.json();
+
+    console.log("closeSails logout.json()", json);
+
+    if (Math.floor(response.status / 100) === 2) {
+        return {status: "success"};
+    }
+    else {
+        // console.log("createHall error");
+        return {status: "error"};
+    }
+}
+
 
 export async function openSails() {
     const response = await fetch(`${basedUrl}api/openSails`, {
@@ -38,7 +73,7 @@ export async function openSails() {
         credentials: "same-origin",
     });
 
-   // const json = await response.json();
+    // const json = await response.json();
 
     //console.log("createHall response.json()", json);
 
@@ -63,7 +98,7 @@ export async function closeSails() {
         credentials: "same-origin",
     });
 
-     const json = await response.json();
+    const json = await response.json();
 
     console.log("closeSails response.json()", json);
 
@@ -76,7 +111,6 @@ export async function closeSails() {
         return {status: "error"};
     }
 }
-
 
 
 // API for seances

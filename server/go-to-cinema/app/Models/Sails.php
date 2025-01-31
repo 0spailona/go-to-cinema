@@ -10,8 +10,8 @@ class Sails extends Model
     use HasFactory;
 
     protected $table = 'sails';
-    protected $isOpen;
+    protected $isOpenSails;
     protected $sessionId;
 
-    protected $fillable = ['isOpen', 'sessionId'];
+    protected $fillable = ['isOpenSails', 'sessionId'];
 }

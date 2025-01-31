@@ -132,6 +132,7 @@ export default function ToUpdateTimeTable() {
         if (curDroppableId?.includes(droppableIdsBase.seanceHall)) {
             const width = document.getElementById(curDraggableId).getBoundingClientRect().width;
             const hallWidth = getSeanceHallWidth();
+            //console.log("is can drop hallId",hallId)
             const seancesInHall = seances[hallId].seances;
 
             //console.log("isCanDrop movies[movieId]", movies[movieId]);

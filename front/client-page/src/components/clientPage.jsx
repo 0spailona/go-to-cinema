@@ -97,7 +97,7 @@ export default function ClientPage() {
 
     useEffect(() => {
         //console.log("useeffect called count",drawCount);
-        dispatch(setChosenSeance(null));
+        dispatch(setChosenSeance({seance: null, selectedPlaces:[]}));
 
         async function toStart() {
             //await fetchToken()
@@ -143,9 +143,9 @@ export default function ClientPage() {
                     </div> :
                     <>
                         {seances && Object.keys(seances).length > 0 ? Object.keys(seances).map(movieId => renderMovie(movieId)) :
-                            <p>На выбранный день нет сеансов</p>}
+                            <p className="info">На выбранный день нет сеансов</p>}
                     </> :
-                <p>Продажа билетов временно приостановлена</p>}
+                <p className="info">Продажа билетов временно приостановлена</p>}
         </main>
     </>);
 }

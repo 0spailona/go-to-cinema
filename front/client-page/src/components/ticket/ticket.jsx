@@ -3,7 +3,8 @@ import {useDispatch, useSelector} from "react-redux";
 import TicketInfo from "./ticketInfo.jsx";
 import Hint from "./hint.jsx";
 import {
-    setBookingId, setChosenSeance, setLoading} from "../../redux/slices/cinema.js";
+    //setBookingId,
+    setChosenSeance, setLoading} from "../../redux/slices/cinema.js";
 import {useEffect, useState} from "react";
 import {validate} from "react-email-validator";
 import {getStartTimeStringFromMinutes} from "../../js/utils.js";
@@ -24,12 +25,25 @@ export default function Ticket() {
         isDrawPage,
         loading,
         lastIsDrawPage,
-        bookingId,
+        //bookingId,
     } = useSelector(state => state.cinema);
 
+console.log("ticket");
+
+    if (!chosenSeance.seanceData || chosenSeance.selectedPlaces.length === 0) {
+        return <Popup isVisible={true} message="Что-то пошло не так"
+                      onClose={() => {
+                          //setError({isError: false, message: ""});
+                          window.location = '/';
+                      }}/>
+        //setError({isError: true, message: "Что-то пошло не так"});
+    }
 
     const [emailInputValue, setEmailInputValue] = useState("");
     const [error, setError] = useState({isError: false, message: ""});
+
+
+
     let hall, time, movie, places, cost, seance, selectedPlaces;
 
     useEffect(() => {
@@ -42,11 +56,6 @@ export default function Ticket() {
         }
     }, [isDrawPage]);
 
-    useEffect(() => {
-        if (bookingId) {
-           console.log("bookingId",bookingId)
-        }
-    }, [bookingId]);
 
     const getUpdateSeance = async (id) => {
         dispatch(setLoading(true));
@@ -56,7 +65,6 @@ export default function Ticket() {
         }
         else {
             dispatch(setChosenSeance(null));
-            //TODO ERROR
         }
         dispatch(setLoading(false));
     };
@@ -71,10 +79,10 @@ export default function Ticket() {
     };
 
 
-    if (!chosenSeance.seanceData || chosenSeance.selectedPlaces.length === 0) {
+    /*if (!chosenSeance.seanceData || chosenSeance.selectedPlaces.length === 0) {
         setError({isError: true, message: "Что-то пошло не так"});
     }
-    else {
+    else {*/
         seance = chosenSeance.seanceData;
         selectedPlaces = chosenSeance.selectedPlaces;
         hall = halls[seance.hallId];
@@ -83,11 +91,12 @@ export default function Ticket() {
         places = getPlacesForView();
         cost = selectedPlaces.reduce((acc, place) => acc + prices[place.lastStatus], 0);
 
-    }
+   // }
+
 
 
     const toBookPlaces = async () => {
-        dispatch(setLoading(true));
+       // dispatch(setLoading(true));
 //console.log("toBook seance",seance)
         const data = {seanceId: seance.id, places: selectedPlaces};
         const response = await toBook(data);
@@ -99,7 +108,7 @@ export default function Ticket() {
             //TODO ERROR
         }
 
-        dispatch(setLoading(false));
+        //dispatch(setLoading(false));
     };
 
     const onGetQR = () => {
@@ -115,7 +124,10 @@ export default function Ticket() {
     return (
         <>
             <Popup isVisible={error.isError} message={error.message}
-                   onClose={() => setError({isError: false, message: ""})}/>
+                   onClose={() => {
+                       setError({isError: false, message: ""});
+                       window.location = '/';
+                   }}/>
 
             {isDrawPage ?
                 loading ?
@@ -134,8 +146,7 @@ export default function Ticket() {
                                 <TicketInfo info="В зале" data={hall.name}/>
                                 <TicketInfo info="На дату" data={chosenDate}/>
                                 <TicketInfo info="Начало сеанса" data={`${time.hours}:${time.min}`}/>
-                                {bookingId ? <TicketInfo info="Стоимость" data={`${cost}`} add=" рублей"/> : null}
-                                {bookingId ? <img className="ticket__info-qr" src={`admin/api/getQr/${bookingId}`} alt="Здесь должен быть ваш qr"/> : <>
+                                <TicketInfo info="Стоимость" data={`${cost}`} add=" рублей"/>
                                     <div className="ticket__info-email">
                                         <label className="ticket__info-label" htmlFor="email">Введите ваш e-mail</label>
                                         <input type="email" className="ticket__info-input"
@@ -148,8 +159,6 @@ export default function Ticket() {
                                     </div>
                                     <MyButton text="Получить код бронирования" onClick={onGetQR}/>
                                     <MyButton text="Получить код бронирования без копии на email" onClick={toBookPlaces}/>
-                                </>
-                                }
                                 <Hint text="После бронирования билет будет доступен в этом окне, а также придёт вам
                         на почту. Покажите QR-код кассиру."/>
                                 <Hint text="Приятного просмотра!"/>
@@ -157,7 +166,7 @@ export default function Ticket() {
                         </section>
                     </main>
                 :
-                <p>Продажа билетов временно приостановлена</p>}
+                <p className="info">Продажа билетов временно приостановлена</p>}
         </>
     )
         ;

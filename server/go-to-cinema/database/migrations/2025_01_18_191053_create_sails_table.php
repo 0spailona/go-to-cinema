@@ -16,8 +16,8 @@ class CreateSailsTable extends Migration
         Schema::create('sails', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->boolean('isOpen')->default(false);
-            $table->string('sessionId')->default(null);
+            $table->boolean('isOpenSails')->default(false);
+            $table->string('sessionId')->default(null)->nullable();
         });
     }
 

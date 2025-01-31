@@ -26,10 +26,12 @@
                 <h2 class="login__title">Авторизация</h2>
             </header>
             <div class="login__wrapper">
-                <form class="login__form" action="/authorization.php" method="POST" accept-charset="utf-8">
+                <form class="login__form" action="/admin/authorization/" method="POST" accept-charset="utf-8">
+                    @csrf
+                    @method('POST')
                     <label class="login__label" for="email">
                         E-mail
-                        <input class="login__input" type="email" placeholder="example@domain.xyz" name="email"
+                        <input class="login__input" type="email" placeholder="example@domain.xyzy" name="email"
                                id="email" required>
                     </label>
                     <label class="login__label" for="pwd">

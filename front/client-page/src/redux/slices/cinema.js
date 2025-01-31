@@ -12,13 +12,13 @@ const initialState = {
     halls: {},
     seances: {},
     chosenDate: toISOStringNoMs(initialDate),
-    chosenSeance: {seanceData: null, selectedPlaces: []},
+    chosenSeance: {seanceData: null, selectedPlaces: [], takenPlaces: []},
     prices: {standard: 250, vip: 350},
     qr: null,
     ticket: null,
     isDrawPage: false,
     lastIsDrawPage: null,
-    bookingId: null,
+    //bookingId: null,
 };
 
 
@@ -36,12 +36,16 @@ export const cinemaSlice = createSlice({
         qr: state => state.qr,
         isDrawPage: state => state.isDrawPage,
         lastIsDrawPage: state => state.lastIsDrawPage,
-        isBooking: state => state.isBooking,
+        //isBooking: state => state.isBooking,
     },
     reducers: {
-        setBookingId(state, action) {
-            state.bookingId = action.payload;
+        setInitialState: (state, action) => {
+            state.chosenDate= toISOStringNoMs(initialDate);
+            state.chosenSeance = {seanceData: null, selectedPlaces: []};
         },
+        /*setBookingId(state, action) {
+            state.bookingId = action.payload;
+        },*/
         setIsDrawPage: (state, action) => {
             state.lastIsDrawPage = state.isDrawPage;
             state.isDrawPage = action.payload;
@@ -49,9 +53,12 @@ export const cinemaSlice = createSlice({
         setChosenSeance: (state, action) => {
             if (!action.payload) {
                 state.chosenSeance.selectedPlaces = [];
+            } else {
+                state.chosenSeance.selectedPlaces = action.payload.selectedPlaces;
             }
-            state.chosenSeance.seanceData = action.payload;
+            state.chosenSeance.seanceData = action.payload.seance;
         },
+
         setSeances: (state, action) => {
             state.seances = action.payload;
         },
@@ -64,12 +71,7 @@ export const cinemaSlice = createSlice({
         setLoading(state, action) {
             state.loading = action.payload;
         },
-        getFilmsByDate: (state, action) => {
 
-            console.log("getFilmsByDate weekday", action.payload);
-            //const date = JSON.parse(action.payload);
-            //console.log("getFilmsByDate date", date);
-        },
         changeChosenDate: (state, action) => {
             state.chosenDate = action.payload;
         },
@@ -102,7 +104,7 @@ export const cinemaSlice = createSlice({
     },
 });
 
-export const {setBookingId,
+export const {//setBookingId,
     setIsDrawPage,
     setChosenSeance,
     setSeances,
@@ -113,7 +115,7 @@ export const {setBookingId,
     changeChosenDate,
     changeSelectedPlaces,
 } = cinemaSlice.actions;
-export const {bookingId,
+export const {//bookingId,
     lastIsDrawPage,
     isDrawPage,
     movies,

@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-function getMimeType($file) {
+function getMimeType($file)
+{
     $mimeTypes = [
         '/\.html$/' => 'text/html',
         '/\.css$/' => 'text/css',
@@ -40,8 +41,7 @@ function serveFile($file, $folder)
 
     if (!file_exists($filePath)) {
         abort(404, 'File not found');
-    }
-    else {
+    } else {
         return response()->file($filePath,
             ['Content-Type' => getMimeType($filePath)]);
     }
@@ -54,7 +54,7 @@ Route::get('getQR/{bookingId}', [\App\Http\Controllers\BookingController::class,
 
 Route::prefix('api')->group(function () {
     Route::get('', function () {
-         abort(404, 'API not found');
+        abort(404, 'API not found');
     });
 
     Route::get('csrf', function (Request $request) {
@@ -68,12 +68,12 @@ Route::prefix('api')->group(function () {
     Route::get('posterByMovieId/{movieId}', [\App\Http\Controllers\MovieController::class, 'getPosterByMovieId']);
     Route::get('seance/{id}', [\App\Http\Controllers\SeanceController::class, 'getSeanceById']);
 
-    Route::get('isOpenSails', [\App\Http\Controllers\SailsController::class, 'isOpenSails']);
+    Route::get('isOpenSails', [\App\Http\Controllers\AdminController::class, 'isOpenSails']);
     Route::post('toBook', [\App\Http\Controllers\BookingController::class, 'toBook']);
 
 
     Route::get('{api_method}', function ($api_method) {
-        return response()->json(["status" => "ok", "method"=> $api_method], 200);
+        return response()->json(["status" => "ok", "method" => $api_method], 200);
     });
 
 });
@@ -83,7 +83,9 @@ Route::prefix('admin')->group(function () {
         return "Here goes admin login handler";
     });
 
-    Route::get('login',  [\App\Http\Controllers\AdminController::class, 'showLoginPage']);
+    Route::get('login', [\App\Http\Controllers\AdminController::class, 'showLoginPage']);
+    Route::get('isAdmin', [\App\Http\Controllers\AdminController::class, 'isAdmin']);
+    Route::post('authorization', [\App\Http\Controllers\AdminController::class, 'authorization']);
 
     /*Route::any('login', function () {
         abort(404, 'File not found');
@@ -102,17 +104,17 @@ Route::prefix('admin')->group(function () {
         });
 
         Route::get('csrf', function (Request $request) {
-           // $token =
+            // $token =
             return $request->session()->token();
         });
 
-
-       /* Route::get('hallsList', function () {
-            return response
-            ()->json(["status" => "ok", "method"=> "hallsList", "admin" => true], 200);
-        });*/
-        Route::get('hallConfig',function () {
-            $data=new stdClass();
+        Route::post('logout', [\App\Http\Controllers\AdminController::class, 'logout']);
+        /* Route::get('hallsList', function () {
+             return response
+             ()->json(["status" => "ok", "method"=> "hallsList", "admin" => true], 200);
+         });*/
+        Route::get('hallConfig', function () {
+            $data = new stdClass();
             $data->hallNameLength = new stdClass();
             $data->rowsCount = new stdClass();
             $data->placesInRow = new stdClass();
@@ -127,7 +129,7 @@ Route::prefix('admin')->group(function () {
             $data->minStandardPrice = intval(env('MIN_STANDARD_PRICE'));
 
             return response
-            ()->json(["status" => "ok", "method"=> "hallConfig", "hallConfig" => $data], 200);
+            ()->json(["status" => "ok", "method" => "hallConfig", "hallConfig" => $data], 200);
         });
         Route::get('hallsList', [\App\Http\Controllers\HallController::class, 'getHallsList']);
         Route::get('hall/{id}', [\App\Http\Controllers\HallController::class, 'getHallById']);
@@ -144,8 +146,8 @@ Route::prefix('admin')->group(function () {
         Route::get('posterByMovieId/{movieId}', [\App\Http\Controllers\MovieController::class, 'getPosterByMovieId']);
         Route::post('poster', [\App\Http\Controllers\MovieController::class, 'uploadPoster']);
 
-        Route::post('openSails', [\App\Http\Controllers\SailsController::class, 'toOpenSails']);
-        Route::post('closeSails', [\App\Http\Controllers\SailsController::class, 'toCloseSails']);
+        Route::post('openSails', [\App\Http\Controllers\AdminController::class, 'toOpenSails']);
+        Route::post('closeSails', [\App\Http\Controllers\AdminController::class, 'toCloseSails']);
     });
 });
 
