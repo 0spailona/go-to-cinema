@@ -111,7 +111,12 @@ export async function getSeanceById(id) {
     console.log("getSeanceById json", json);
     if (Math.floor(response.status / 100) === 2) {
         //const seances = getSeancesObj(json.seance)
-        return {status: "success", data:{seance: json.seance, selectedPlaces:json.places}};
+        let arr=[]
+        for (let place of json.places) {
+            arr.push({rowIndex:place.row,placeIndex:place.place})
+        }
+
+        return {status: "success", data:{seance: json.seance, takenPlaces:arr}};
     }
 
     return {status: "error"};

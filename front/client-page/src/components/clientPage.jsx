@@ -5,7 +5,15 @@ import {useDispatch, useSelector} from "react-redux";
 import Movie from "./seances/movie.jsx";
 import {useEffect, useState} from "react";
 import {getHalls, getMovies, getSeancesByDate, isOpenSails} from "../js/api.js";
-import {setChosenSeance, setHalls, setIsDrawPage, setLoading, setMovies, setSeances} from "../redux/slices/cinema.js";
+import {
+    setChosenSeance,
+    setHalls,
+    setInitialChosenSeance,
+    setIsDrawPage,
+    setLoading,
+    setMovies,
+    setSeances
+} from "../redux/slices/cinema.js";
 import Loader from "react-js-loader";
 
 let timerId = null;
@@ -15,11 +23,6 @@ export default function ClientPage() {
     const dispatch = useDispatch();
 
     const {seances, chosenDate, isDrawPage, loading, lastIsDrawPage} = useSelector(state => state.cinema);
-    const [drawCount, setDrawCount] = useState(0);
-    //const [lastDrawPage, setLastDrawPage] = useState(isDrawPage);
-
-    //const [seanceObj, setSeanceObj] = useState({});
-    //const [drawMovies, setDrawMovies] = useState(false);
 
     const isDrawFilms = async () => {
         // console.log("isDrawFilms isDrawPage", isDrawPage);
@@ -97,7 +100,8 @@ export default function ClientPage() {
 
     useEffect(() => {
         //console.log("useeffect called count",drawCount);
-        dispatch(setChosenSeance({seance: null, selectedPlaces:[]}));
+        //dispatch(setChosenSeance({seance: null, selectedPlaces:[],takenPlaces:[]}));
+        dispatch(setInitialChosenSeance())
 
         async function toStart() {
             //await fetchToken()
@@ -119,9 +123,6 @@ export default function ClientPage() {
 
 
     const renderMovie = (movieId) => {
-        //console.log("renderMovie seanceObj",seanceObj);
-        //console.log("renderMovie movieId",movieId);
-        // console.log("renderMovie seanceObj[movieId]",seanceObj[movieId]);
         const movieSeancesByHallId = seances[movieId];
         if (movieSeancesByHallId && Object.keys(movieSeancesByHallId).length > 0) {
             return <Movie key={`movie-/${movieId}`} movieId={movieId} movieSeancesByHallId={movieSeancesByHallId}/>;
@@ -129,7 +130,7 @@ export default function ClientPage() {
     };
 
 
-//console.log("films",films);
+console.log("isDrawPage",isDrawPage);
     //console.log("loading",loading);
     return (<>
 

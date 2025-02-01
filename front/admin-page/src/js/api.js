@@ -40,7 +40,7 @@ export async function isAdmin() {
 export async function logOut() {
     const response = await fetch(`${basedUrl}api/logout`,{
         headers: {
-            Accept: "application/json",
+            //Accept: "application/json",
             "X-CSRF-TOKEN": token,
         },
         method: "POST",
@@ -49,9 +49,9 @@ export async function logOut() {
 
     //console.log("fetchToken", response);
 
-    const json = await response.json();
+    //const json = await response.json();
 
-    console.log("closeSails logout.json()", json);
+    //console.log("closeSails logout.json()", json);
 
     if (Math.floor(response.status / 100) === 2) {
         return {status: "success"};

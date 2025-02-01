@@ -152,7 +152,9 @@ class BookingController
                 $separator = ", ";
             }
             $count++;
-            $view = $view . " ряд " . $place->row . " место " . $place->place . $separator;
+            $rowView = $place->row + 1;
+            $placeView = $place->place + 1;
+            $view = $view . " ряд " . $rowView . " место " . $placeView . $separator;
         }
         //Log::debug("view");
         //Log::debug($view);

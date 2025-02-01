@@ -13,7 +13,7 @@ export default function TimeBlock({seance}) {
     //const start = date.getHours() * 60 + date.getMinutes();
     const startTime = getStartTimeStringFromMinutes(seance.startTime)
 
-    const chooseSeance = async (id) =>{
+   /* const chooseSeance = async (id) =>{
         dispatch(setLoading(true));
         const response = await getSeanceById(id);
         if (response.status === "success") {
@@ -24,7 +24,7 @@ export default function TimeBlock({seance}) {
         }
         dispatch(setLoading(false));
         //dispatch(fetchSeanceById(id))
-    }
+    }*/
 
     return (
         <li className="movie-seances__time-block">

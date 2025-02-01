@@ -14,7 +14,6 @@ class HallController extends Controller
         redirect()->action([AdminController::class, 'showLoginPage']);
     }
 
-
     public function createHall(Request $request): ?\Illuminate\Http\JsonResponse
     {
         if (!ValidationUtils::checkAdminRights()) {

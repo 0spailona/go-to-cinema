@@ -73,7 +73,7 @@ console.log("ticket");
         let view = "";
         for (let i = 0; i < selectedPlaces.length; i++) {
             const separator = i === selectedPlaces.length - 1 ? "" : ", ";
-            view = `${view}ряд ${selectedPlaces[i].rowIndex} место ${selectedPlaces[i].placeIndex}${separator}`;
+            view = `${view}ряд ${selectedPlaces[i].rowIndex + 1} место ${selectedPlaces[i].placeIndex + 1}${separator}`;
         }
         return view;
     };
@@ -104,20 +104,6 @@ console.log("ticket");
             window.location = `/showBooking/${response.data}`
             //dispatch(setBookingId(response.data));
         }
-        else {
-            //TODO ERROR
-        }
-
-        //dispatch(setLoading(false));
-    };
-
-    const onGetQR = () => {
-        if (validate(emailInputValue)) {
-            //dispatch(getQR(emailInputValue));
-        }
-        else {
-            console.log("email is not valid");
-        }
     };
 
 
@@ -147,18 +133,7 @@ console.log("ticket");
                                 <TicketInfo info="На дату" data={chosenDate}/>
                                 <TicketInfo info="Начало сеанса" data={`${time.hours}:${time.min}`}/>
                                 <TicketInfo info="Стоимость" data={`${cost}`} add=" рублей"/>
-                                    <div className="ticket__info-email">
-                                        <label className="ticket__info-label" htmlFor="email">Введите ваш e-mail</label>
-                                        <input type="email" className="ticket__info-input"
-                                               placeholder="n-d-p@mail.ru" value={emailInputValue}
-                                               name="email"
-                                               id="email"
-                                               onChange={e => setEmailInputValue(e.target.value)}
-                                               required/>
-
-                                    </div>
-                                    <MyButton text="Получить код бронирования" onClick={onGetQR}/>
-                                    <MyButton text="Получить код бронирования без копии на email" onClick={toBookPlaces}/>
+                                    <MyButton text="Получить код бронирования" onClick={toBookPlaces}/>
                                 <Hint text="После бронирования билет будет доступен в этом окне, а также придёт вам
                         на почту. Покажите QR-код кассиру."/>
                                 <Hint text="Приятного просмотра!"/>

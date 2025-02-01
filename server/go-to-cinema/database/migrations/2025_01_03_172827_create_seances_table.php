@@ -18,6 +18,8 @@ class CreateSeancesTable extends Migration
             $table->timestampsTz();
             $table->string('hallId');
             $table->string('movieId');
+            $table->foreign('hallId')->references('id')->on('halls')->onDelete('cascade');
+            $table->foreign('movieId')->references('id')->on('movies')->onDelete('cascade');
             $table->dateTimeTz('startTime');
         });
     }

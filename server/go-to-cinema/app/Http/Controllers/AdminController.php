@@ -37,13 +37,12 @@ class AdminController
 
     public function logout(Request $request)
     {
-        if (!ValidationUtils::checkAdminRights()) {
-            $this->toLogin();
-        } else {
+        if (ValidationUtils::checkAdminRights()) {
             $sails = Sails::all();
             $sails[0]->update(['sessionId' => null]);
+
         }
-        return null;
+        $this->toLogin();
     }
 
     public function showLoginPage()

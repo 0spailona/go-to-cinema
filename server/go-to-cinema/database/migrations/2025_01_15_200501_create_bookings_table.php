@@ -17,6 +17,7 @@ class CreateBookingsTable extends Migration
             $table->string('id')->unique();
             $table->timestamps();
             $table->string('seanceId');
+            $table->foreign('seanceId')->references('id')->on('seances')->onDelete('cascade');
             $table->json('places')->default('[]');
         });
     }

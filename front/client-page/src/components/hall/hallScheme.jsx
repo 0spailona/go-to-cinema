@@ -15,15 +15,15 @@ export default function HallScheme() {
 
 
 
-    const selectedPlaces = chosenSeance.selectedPlaces;
-    const places = [...hall.places]
-    for (let place of selectedPlaces) {
-        console.log(place)
-        console.log("places[place.row][place.place]",places[place.row][place.place])
-        dispatch(changePlaceStatus({rowIndex:place.row, placeIndex:place.place, newStatus:placesType.taken}));
+    //const selectedPlaces = chosenSeance.selectedPlaces;
+    //const places = [...hall.places]
+    for (let place of chosenSeance.takenPlaces) {
+        //console.log(place)
+        //console.log("places[place.row][place.place]",places[place.row][place.place])
+        dispatch(changePlaceStatus({rowIndex:place.rowIndex, placeIndex:place.placeIndex, newStatus:placesType.taken}));
         //places[place.row][place.place] = placesType.taken;
     }
-    console.log("HallScheme places", places);
+    //console.log("HallScheme places", places);
 
     const onPlaceChange = (rowIndex, placeIndex, newStatus, isSelected, lastStatus) => {
         dispatch(changeSelectedPlaces({rowIndex, placeIndex, isSelected, lastStatus}));

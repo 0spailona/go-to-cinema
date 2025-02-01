@@ -39,9 +39,9 @@ export const cinemaSlice = createSlice({
         //isBooking: state => state.isBooking,
     },
     reducers: {
-        setInitialState: (state, action) => {
-            state.chosenDate= toISOStringNoMs(initialDate);
-            state.chosenSeance = {seanceData: null, selectedPlaces: []};
+        setInitialChosenSeance: (state, action) => {
+            state.chosenDate = toISOStringNoMs(initialDate);
+            state.chosenSeance = {seanceData: null, selectedPlaces: [], takenPlaces: []};
         },
         /*setBookingId(state, action) {
             state.bookingId = action.payload;
@@ -51,11 +51,7 @@ export const cinemaSlice = createSlice({
             state.isDrawPage = action.payload;
         },
         setChosenSeance: (state, action) => {
-            if (!action.payload) {
-                state.chosenSeance.selectedPlaces = [];
-            } else {
-                state.chosenSeance.selectedPlaces = action.payload.selectedPlaces;
-            }
+            state.chosenSeance.takenPlaces = action.payload.takenPlaces;
             state.chosenSeance.seanceData = action.payload.seance;
         },
 
@@ -105,6 +101,7 @@ export const cinemaSlice = createSlice({
 });
 
 export const {//setBookingId,
+    setInitialChosenSeance,
     setIsDrawPage,
     setChosenSeance,
     setSeances,
