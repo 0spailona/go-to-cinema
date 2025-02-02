@@ -44,14 +44,10 @@ export const seancesSlice = createSlice({
         setSeances: (state, action) => {
             state.seances = action.payload;
         },
-        setIsUpdateSeancesFalse: (state, action) => {
+        setIsUpdateSeancesFalse: (state) => {
             state.isUpdatedSeances = false;
         }
     },
-    extraReducers:
-        builder => {
-
-        },
 });
 
 export const {
@@ -62,7 +58,6 @@ export const {
     setIsUpdateSeancesFalse
 } = seancesSlice.actions;
 export const {
-    loadingMovies,
     seances,
     isUpdatedSeances,
 } = seancesSlice.selectors;

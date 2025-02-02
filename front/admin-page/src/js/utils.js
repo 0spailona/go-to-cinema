@@ -41,13 +41,10 @@ export const getItemOnDragX = (itemId) => {
 };
 
 export function toISOStringNoMs(date) {
-     //console.log("date",date)
     return date.toISOString().replace(/\.\d+/, "");
 }
 
 export function checkDropInHall(itemOnDragX, width, hallWidth, dragMovie, seances, movies) {
-
-    //console.log("checkDropInHall itemOnDragX", itemOnDragX, "width",width,"hallWidth",hallWidth);
 
     if (itemOnDragX < -10 || itemOnDragX + width > hallWidth + 10) {
         return false;
@@ -56,36 +53,31 @@ export function checkDropInHall(itemOnDragX, width, hallWidth, dragMovie, seance
     const endTime = startTime + dragMovie.duration;
 
     for (let seance of seances) {
-        //console.log("checkDropInHall seance", seance);
-            const endSeance = seance.start + movies[seance.movieId].duration;
+        const endSeance = seance.start + movies[seance.movieId].duration;
 
-            if((startTime > seance.start && startTime < endSeance) ||
-                (endTime > seance.start && endTime < endSeance)) {
-                //console.log("checkDropInHall ", false);
-                return false;
-            }
+        if ((startTime > seance.start && startTime < endSeance) ||
+            (endTime > seance.start && endTime < endSeance)) {
+            return false;
+        }
     }
 
     return true;
 }
 
-export function getSeancesObj(halls,seances) {
+export function getSeancesObj(halls, seances) {
     const hallsIds = Object.keys(halls);
-    //console.log("getSeancesObj seances",seances);
     const result = {};
 
-    for(let hallId of hallsIds){
+    for (let hallId of hallsIds) {
         const seancesForHall = seances.filter(x => x.hallId === hallId);
-        seancesForHall.map(x=>{
-            const date = new Date(x.startTime)
-            x.startTime = date.getHours() * 60 + date.getMinutes()
-            return x
-        })
+        seancesForHall.map(x => {
+            const date = new Date(x.startTime);
+            x.startTime = date.getHours() * 60 + date.getMinutes();
+            return x;
+        });
 
-        result[hallId] = {seances:seancesForHall};
+        result[hallId] = {seances: seancesForHall};
     }
-
-    //console.log("getSeancesObj", result);
 
     return result;
 }

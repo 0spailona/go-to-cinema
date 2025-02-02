@@ -1,7 +1,8 @@
 import {placesType} from "./info.js";
+import {toISOStringNoMs} from "./utils.js";
 
 const templates = {
-    'standard': {
+    "standard": {
         rowCount: 10,
         placeInRowCount: 8,
         disabled: [
@@ -31,8 +32,8 @@ const templates = {
 
 let nextCountHall = 0;
 
-export function fillPlacesByStandard(places,rowCount,placeInRowCount){
-    for (let i = 0; i < rowCount; i++){
+export function fillPlacesByStandard(places, rowCount, placeInRowCount) {
+    for (let i = 0; i < rowCount; i++) {
         const row = [];
         for (let j = 0; j < placeInRowCount; j++) {
             row.push(placesType.standard);
@@ -51,7 +52,7 @@ export function createHall(name, templateId) {
         throw new Error("Unknown template " + templateId);
     }
 
-    const places = fillPlacesByStandard([],template.rowCount,template.placeInRowCount);
+    const places = fillPlacesByStandard([], template.rowCount, template.placeInRowCount);
 
     for (let p of template.vip) {
         places[p.row][p.place] = placesType.vip;
@@ -71,22 +72,76 @@ export function createHall(name, templateId) {
     };
 }
 
-let nextCountMovies = 0;
+export function getArrFromSeances(seances, date) {
+    const arr = [];
 
-export function createMovie(title, duration, description, country,poster,seances ) {
-    nextCountMovies++;
-    const id = `movie-${nextCountMovies}`;
-    return {
-        id,title,duration,description,country,poster,seances
+    for (let hallId of Object.keys(seances)) {
+        for (let seance of seances[hallId].seances) {
+
+            const startTime = new Date(date.getTime());
+            startTime.setHours(Math.trunc(seance.startTime / 60), seance.startTime % 60);
+
+            const id = seance.id.includes("seance-") ? null : seance.id;
+
+            let obj = {hallId, movieId: seance.movieId, startTime: toISOStringNoMs(startTime)};
+            if (id) {
+                obj.id = id;
+            }
+            arr.push(obj);
+        }
     }
+
+    return arr;
 }
 
-/*let nextCountSeances = 0;
+export function getPlacesObj(arr) {
 
-export function createSeance(movieId,start){
-    nextCountSeances++;
-    const id = `seance-${nextCountSeances}`;
-    return{
-        id,movieId,start
+    const places = {vip: [], disabled: []};
+
+    for (let rowIndex = 0; rowIndex < arr.length; rowIndex++) {
+        for (let placeIndex = 0; placeIndex < arr[rowIndex].length; placeIndex++) {
+            if (arr[rowIndex][placeIndex] === placesType.vip) {
+                places.vip.push({row: rowIndex, place: placeIndex});
+            }
+            else if (arr[rowIndex][placeIndex] === placesType.disabled) {
+                places.disabled.push({row: rowIndex, place: placeIndex});
+            }
+        }
     }
-}*/
+
+    return places;
+}
+
+export function getObjMovies(arr) {
+    const obj = {};
+    for (let movie of arr) {
+        obj[movie.id] = {...movie, releaseYear: movie.release_year, release_year: undefined};
+    }
+    return obj;
+}
+
+
+export function getHallsObj(arr) {
+
+    const obj = {};
+    for (let hall of arr) {
+        obj[hall.id] = {name: hall.name, id: hall.id, rowsCount: hall.rowsCount, placesInRow: hall.placesInRow};
+        const places = fillPlacesByStandard([], hall.rowsCount, hall.placesInRow);
+        const hallPlaces = JSON.parse(hall.places);
+
+        for (let p of hallPlaces.vip) {
+            places[p.row][p.place] = placesType.vip;
+        }
+
+        for (let p of hallPlaces.disabled) {
+            places[p.row][p.place] = placesType.disabled;
+        }
+        obj[hall.id].places = places;
+        obj[hall.id].prices = {
+            vip: hall.vipPrice,
+            standard: hall.standardPrice,
+        };
+    }
+
+    return obj;
+}

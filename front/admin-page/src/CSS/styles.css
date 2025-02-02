@@ -229,7 +229,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
 }
 
 .conf-step__button, .login__button {
-    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.24), 0px 0px 3px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.24), 0 0 3px rgba(0, 0, 0, 0.12);
     border-radius: 3px;
     border: none;
     background-color: #FFFFFF;
@@ -251,7 +251,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     top: 2px;
     background-color: #63536C;
     color: #FFFFFF;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
 }
 
 .conf-step__button + .conf-step__button, .login__button + .conf-step__button, .conf-step__button + .login__button, .login__button + .login__button {
@@ -285,7 +285,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     top: 2px;
     background-color: #146C72;
     color: #FFFFFF;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
 }
 
 .conf-step__button-trash {
@@ -429,7 +429,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     position: relative;
     display: block;
     padding: 13px 21px;
-    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.24), 0px 0px 3px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.24), 0 0 3px rgba(0, 0, 0, 0.12);
     border-radius: 3px;
     border: none;
     background-color: rgba(255, 255, 255, 0.45);
@@ -444,7 +444,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
 
 .conf-step__selectors-box .conf-step__radio:checked + .conf-step__selector {
     background-color: #FFFFFF;
-    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.24), 0px 2px 2px rgba(0, 0, 0, 0.24), 0px 0px 2px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.24), 0 2px 2px rgba(0, 0, 0, 0.24), 0 0 2px rgba(0, 0, 0, 0.12);
     transform: scale(1.1);
     font-weight: 900;
     font-size: 1.4rem;
@@ -518,7 +518,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     cursor: pointer;
 }
 
-.conf-step__movie-wrp{
+.conf-step__movie-wrp {
     height: fit-content;
 }
 
@@ -691,7 +691,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     width: 100%;
 }
 
-.logout-wrp{
+.logout-wrp {
     display: flex;
     justify-content: end;
     padding: 16px;
@@ -829,8 +829,8 @@ textarea.conf-step__input {
 
 /*drop container for removing*/
 
-.drop-for-remove-wrp{
-  position: relative;
+.drop-for-remove-wrp {
+    position: relative;
     top: 50px;
     width: 65px;
     height: 65px;
@@ -852,7 +852,7 @@ textarea.conf-step__input {
     background-color: rgba(99, 83, 108, 0.3);
 }
 
-.d-flex{
+.d-flex {
     display: flex;
 }
 

@@ -1,4 +1,4 @@
-import {getArrFromSeances, getHallsObj, getObjMovies, getPlacesObj} from "../redux/utils.js";
+import {getArrFromSeances,getPlacesObj,getObjMovies,getHallsObj} from './modelUtils.js'
 import {toISOStringNoMs} from "./utils.js";
 
 const basedUrl = "admin/";
@@ -16,11 +16,7 @@ const token = await fetchToken();
 export async function isAdmin() {
     const response = await fetch(`${basedUrl}isAdmin`);
 
-    //console.log("fetchToken", response);
-
     const json = await response.json();
-
-    console.log("closeSails response.json()", json);
 
     if (Math.floor(response.status / 100) === 2) {
         if (json.isAdmin) {
@@ -32,32 +28,23 @@ export async function isAdmin() {
 
     }
     else {
-        // console.log("createHall error");
         return {status: "error"};
     }
 }
 
 export async function logOut() {
-    const response = await fetch(`${basedUrl}api/logout`,{
+    const response = await fetch(`${basedUrl}api/logout`, {
         headers: {
-            //Accept: "application/json",
             "X-CSRF-TOKEN": token,
         },
         method: "POST",
         credentials: "same-origin",
     });
 
-    //console.log("fetchToken", response);
-
-    //const json = await response.json();
-
-    //console.log("closeSails logout.json()", json);
-
     if (Math.floor(response.status / 100) === 2) {
         return {status: "success"};
     }
     else {
-        // console.log("createHall error");
         return {status: "error"};
     }
 }
@@ -73,22 +60,16 @@ export async function openSails() {
         credentials: "same-origin",
     });
 
-    // const json = await response.json();
-
-    //console.log("createHall response.json()", json);
-
     if (Math.floor(response.status / 100) === 2) {
         return {status: "success"};
     }
     else {
-        // console.log("createHall error");
         return {status: "error"};
     }
 }
 
 export async function closeSails() {
 
-    //console.log("token", token);
     const response = await fetch(`${basedUrl}api/closeSails`, {
         headers: {
             Accept: "application/json",
@@ -98,16 +79,11 @@ export async function closeSails() {
         credentials: "same-origin",
     });
 
-    const json = await response.json();
-
-    console.log("closeSails response.json()", json);
 
     if (Math.floor(response.status / 100) === 2) {
-
         return {status: "success"};
     }
     else {
-        // console.log("createHall error");
         return {status: "error"};
     }
 }
@@ -126,6 +102,7 @@ export async function getSeancesByDate(date) {
     const json = await response.json();
 
     if (Math.floor(response.status / 100) === 2) {
+
         return {status: "success", data: json.seances};
     }
 
@@ -133,13 +110,12 @@ export async function getSeancesByDate(date) {
 }
 
 export async function updateSeances(data) {
-    console.log("updateSeances data.date ", data.date);
-    //try {
+
     const body = {
         seances: getArrFromSeances(data.seances, data.date
         ), date: toISOStringNoMs(data.date)
     };
-    console.log("updateSeances body", body);
+
     const response = await fetch(`${basedUrl}api/updateSeances`, {
         headers: {
             Accept: "application/json",
@@ -150,19 +126,13 @@ export async function updateSeances(data) {
         credentials: "same-origin",
         body: JSON.stringify(body),
     });
-    const json = await response.json();
-    console.log("updateSeances response.json()", json);
+
     if (Math.floor(response.status / 100) === 2) {
-        console.log("updateSeances success");
         return {status: "success"};
     }
     else {
-        console.log("updateSeances error");
         return {status: "error"};
     }
-    //console.log("updateSeances response.json()",response);
-    //return response.json();
-    //}catch (e){ console.error(e); throw e;}
 }
 
 //API for halls
@@ -176,14 +146,11 @@ export async function getHalls() {
     });
 
     const json = await response.json();
-    //console.log("getHalls response.json()", json);
     if (Math.floor(response.status / 100) === 2) {
-        //console.log("getHalls success",json.halls);
         const halls = getHallsObj(json.halls);
         return {status: "success", data: halls};
     }
     else {
-        console.log("getHalls error");
         return {status: "error"};
     }
 }
@@ -198,14 +165,10 @@ export async function getHallConfig() {
 
     const json = await response.json();
 
-
-    //console.log("getHallConfig response.json()", json);
-
     if (Math.floor(response.status / 100) === 2) {
         return {status: "success", data: json.hallConfig};
     }
     else {
-        console.log("getHallConfig error");
         return {status: "error"};
     }
 
@@ -225,14 +188,16 @@ export async function createHall(name) {
 
     const json = await response.json();
 
-    //console.log("createHall response.json()", json);
-
     if (Math.floor(response.status / 100) === 2) {
         return {status: "success"};
     }
     else {
-        // console.log("createHall error");
-        return {status: "error"};
+        if (response.status === 400) {
+            return {status: "error", message: json.message};
+        }
+        else {
+            return {status: "error"};
+        }
     }
 }
 
@@ -249,21 +214,20 @@ export async function removeHall(id) {
     });
     const json = await response.json();
 
-    //console.log("removeHall response.json()", json);
-
     if (Math.floor(response.status / 100) === 2) {
         return {status: "success"};
     }
-    else {
-        console.log("removeHall error");
+    else if (response.status === 400) {
         return {status: "error", message: json.message};
     }
-    // return response.json();
+    else {
+        return {status: "error"};
+    }
 }
 
 
 export async function updatePlacesInHall(hall) {
-    console.log("updatePlacesInHall request hall", hall);
+
     const places = getPlacesObj(hall.places);
     const body = JSON.stringify({
         id: hall.id,
@@ -284,8 +248,6 @@ export async function updatePlacesInHall(hall) {
     });
     const json = await response.json();
 
-    //console.log("removeHall response.json()", json);
-
     if (Math.floor(response.status / 100) === 2) {
         return {status: "success"};
     }
@@ -293,11 +255,11 @@ export async function updatePlacesInHall(hall) {
         console.log("removeHall error");
         return {status: "error", message: json.message};
     }
-    //return response.json();
+
 }
 
 export async function updatePricesInHall(hall) {
-    //console.log("updatePricesInHall request hall", hall);
+
     const body = JSON.stringify({
         id: hall.id,
         vipPrice: hall.prices.vip,
@@ -317,16 +279,18 @@ export async function updatePricesInHall(hall) {
 
     const json = await response.json();
 
-    //console.log("removeHall response.json()", json);
-
     if (Math.floor(response.status / 100) === 2) {
         return {status: "success"};
     }
     else {
-        console.log("removeHall error");
-        return {status: "error", message: json.message};
+        if (response.status === 400) {
+            return {status: "error", message: json.message};
+        }
+        else {
+            return {status: "error"};
+        }
     }
-    //return response.json();
+
 }
 
 //API for movies
@@ -338,10 +302,8 @@ export async function getMovies() {
         },
         credentials: "same-origin",
     });
-    //return response.json();
-    const json = await response.json();
 
-    //console.log("removeHall response.json()", json);
+    const json = await response.json();
 
     if (Math.floor(response.status / 100) === 2) {
 
@@ -349,7 +311,6 @@ export async function getMovies() {
         return {status: "success", data: movies};
     }
     else {
-        console.log("getMovies error");
         return {status: "error"};
     }
 }
@@ -365,23 +326,20 @@ export async function createMovie(data) {
         credentials: "same-origin",
         body: JSON.stringify(data),
     });
-    //return response.json();
-    const json = await response.json();
 
-    //console.log("createMovie response.json()", json);
+    const json = await response.json();
 
     if (Math.floor(response.status / 100) === 2) {
         return {status: "success"};
     }
     else {
-        console.log("createMovie error");
         return {status: "error", message: json.message};
     }
 }
 
 
 export async function removeMovieFromList(id) {
-    console.log("removeMovieFromList", id);
+
     const response = await fetch(`${basedUrl}api/removeMovie?id=${id}`, {
         headers: {
             Accept: "application/json",
@@ -390,17 +348,43 @@ export async function removeMovieFromList(id) {
         method: "POST",
         credentials: "same-origin",
     });
-    //return response.json();
+
     const json = await response.json();
 
-    //console.log("createMovie response.json()", json);
 
     if (Math.floor(response.status / 100) === 2) {
         return {status: "success"};
     }
     else {
-        console.log("removeMovieFromList error");
         return {status: "error", message: json.message};
+    }
+}
+
+export async function sendPosterToServer(formData) {
+
+    const response = await fetch(`${basedUrl}api/poster`, {
+        headers: {
+            Accept: "application/json",
+            "X-CSRF-TOKEN": token,
+        },
+        method: "POST",
+        credentials: "same-origin",
+        body: formData,
+    });
+
+    const json = await response.json();
+
+    if (Math.floor(response.status / 100) === 2) {
+        return {status: "success"};
+    }
+    else if (response.status === 413) {
+        return {status: "error", message: "Слишком большой файл"};
+    }
+    else if (response.status === 415) {
+        return {status: "error", message: `${json.mimeType} не подходит для постера`};
+    }
+    else {
+        return {status: "error", message: "Что-то пошло не так"};
     }
 }
 

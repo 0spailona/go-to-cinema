@@ -1,6 +1,5 @@
 export default function UploadButton({onChange,name,text}) {
 
-
     return (
         <label htmlFor="upload" className="conf-step__button" style={{cursor:"pointer"}}>
             <button type="button" className="conf-step__button conf-step__button-accent"

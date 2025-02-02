@@ -1,24 +1,26 @@
 import "../CSS/normalize.css";
 import "../CSS/styles.css";
 
-import ToCreateHall from "./toCreateHall.jsx";
-import ToUpdateHall from "./updateHall/toUpdateHall.jsx";
-import ToUpdatePrice from "./toUpdatePrice.jsx";
-import ToUpdateTimeTable from "./updateTimeTable/toUpdateTimeTable.jsx";
-import ToOpenSales from "./toOpenSales.jsx";
+import ConfigHall from "./configHall/configHall.jsx";
+import ConfigPrice from "./configPrice.jsx";
+import SeanceTable from "./seanceTable/seanceTable.jsx";
+import SailsControl from "./sailsControl.jsx";
 import {useEffect, useState} from "react";
 import {setConfig, setHalls, setLoadingHalls} from "../redux/slices/halls.js";
-import {useDispatch} from "react-redux";
-//import {fetchMovies} from "../redux/slices/movies.js";
+import {useDispatch, useSelector} from "react-redux";
 import {getHallConfig, getHalls, getMovies, logOut} from "../js/api.js";
 import {setLoadingMovies, setMovies} from "../redux/slices/movies.js";
 import PopupError from "./common/popupError.jsx";
 import MyButton from "./common/myButton.jsx";
+import HallControl from "./hallControl.jsx";
+import {setError} from "../redux/slices/common.js";
 
 export default function AdminPage() {
 
     const dispatch = useDispatch();
-    const [error, setError] = useState({isError: false, message: ""});
+    const {error} = useSelector(state => state.common);
+
+    const [errorView, setErrorView] = useState({isError: false, message: ""});
 
     const getHallsFromServer = async () => {
         dispatch(setLoadingHalls(true));
@@ -66,11 +68,10 @@ export default function AdminPage() {
     useEffect(() => {
 
         async function toStart() {
-            //await fetchToken()
             if (!await getHallConfigFromServer() ||
                 !await getHallsFromServer() ||
                 !await getMoviesFromServer()) {
-                setError({isError: true, message: "Проблемы с сервером. Попробуйте позже"});
+                setErrorView({isError: true, message: "Проблемы с сервером. Попробуйте позже"});
             }
         }
 
@@ -78,25 +79,35 @@ export default function AdminPage() {
 
     }, []);
 
+    useEffect(() => {
+        if(!error){
+            setErrorView({isError: false, message: ""})
+        }
+        if (error) {
+            setErrorView({isError: true, message: error});
+        }
+    }, [error]);
+
     const onLogOut = async () => {
         const response = await logOut();
         if (response.status === "success") {
             window.location = "admin/login";
         }
-        else {
+    };
 
-        }
+    const closePopupError = ()=>{
+        dispatch(setError(null))
     }
 
     return (<>
-            <PopupError showPopup={error.isError} text={error.message}
-                        onClose={()=>setError({isError: false, message: ""})}/>.
+            <PopupError showPopup={errorView.isError} text={errorView.message}
+                        closePopup={()=>closePopupError()}/>
             <main className="conf-steps">
-                <ToCreateHall/>
-                <ToUpdateHall/>
-                <ToUpdatePrice/>
-                <ToUpdateTimeTable/>
-                <ToOpenSales/>
+                <HallControl/>
+                <ConfigHall/>
+                <ConfigPrice/>
+                <SeanceTable/>
+                <SailsControl/>
             </main>
             <div className="logout-wrp">
                 <MyButton text="Выйти" type="submit" onclick={onLogOut}/>

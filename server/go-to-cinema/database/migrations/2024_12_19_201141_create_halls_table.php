@@ -17,8 +17,8 @@ class CreateHallsTable extends Migration
             $table->string('id')->primary();
             $table->string('name')->unique();
             $table->json('places')->default('{"disabled": [],"vip": []}');
-            $table->integer('vipPrice')->default(350);
-            $table->integer('standardPrice')->default(0);
+            $table->integer('vipPrice')->default(env('MIN_VIP_PRICE'));
+            $table->integer('standardPrice')->default(env('MIN_STANDARD_PRICE'));
             $table->integer('rowsCount')->default(10);
             $table->integer('placesInRow')->default(8);
             $table->timestampsTz();

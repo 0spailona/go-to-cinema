@@ -2,7 +2,6 @@ import CloseImg from "../../assets/i/close.png";
 import MyButton from "./myButton.jsx";
 import UploadButton from "./UploadButton.jsx";
 
-
 export default function MyPopup({
                                     isVisible,
                                     children,
@@ -17,12 +16,10 @@ export default function MyPopup({
 
     const getFile = (el) => {
         let file = el.files[0];
-        console.log("getFile", file.name);
 
-        uploadBtnData.uploadFile(file)
+        uploadBtnData.uploadFile(file);
     };
 
-    //console.log("MyPopup isVisible",isVisible)
 
     return (
         <div className={`popup ${isVisible ? "active" : ""}`}>
