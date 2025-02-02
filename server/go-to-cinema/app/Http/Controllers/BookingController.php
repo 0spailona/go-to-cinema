@@ -6,6 +6,7 @@ use App\Models\Hall;
 use App\Models\Movie;
 use App\Models\Seance;
 use App\Models\Booking;
+use BaconQrCode\Renderer\GDLibRenderer;
 use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
@@ -100,10 +101,7 @@ class BookingController
 
     public function getQR(string $bookingId)
     {
-        $renderer = new ImageRenderer(
-            new RendererStyle(400),
-            new ImagickImageBackEnd()
-        );
+        $renderer = new GDLibRenderer(400);
         $writer = new Writer($renderer);
         $url = env('PUBLIC_URL') . "showBooking/" . $bookingId;
         $qr = $writer->writeString($url);
@@ -113,6 +111,9 @@ class BookingController
     public function showBooking($id)
     {
         $booking = Booking::byId($id);
+        if($booking == null){
+            abort(404);
+        }
         $seance = Seance::byId($booking->seanceId);
 
         if ($booking == null || $seance == null) {
