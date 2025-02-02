@@ -1,11 +1,12 @@
 import {getHallsObj, getObjMovies, getSeancesObj} from "./modelUtils.js";
 
-const basedUrl = "";
+const baseUrl = "";
+const apiUrl = `${baseUrl}/api`;
 
 
 //get token;
 export async function fetchToken() {
-    const response = await fetch(`${basedUrl}api/csrf`);
+    const response = await fetch(`${apiUrl}/csrf`);
     return response.text();
 }
 
@@ -13,7 +14,7 @@ const token = await fetchToken();
 
 export async function isOpenSails() {
 
-    const response = await fetch(`${basedUrl}api/isOpenSails`, {
+    const response = await fetch(`${apiUrl}/isOpenSails`, {
         headers: {
             Accept: "application/json",
         },
@@ -30,7 +31,7 @@ export async function isOpenSails() {
 }
 
 export async function getMovies() {
-    const response = await fetch(`${basedUrl}api/moviesList`, {
+    const response = await fetch(`${apiUrl}/moviesList`, {
         headers: {
             Accept: "application/json",
         },
@@ -51,7 +52,7 @@ export async function getMovies() {
 }
 
 export async function getHalls() {
-    const response = await fetch(`${basedUrl}api/hallsList`, {
+    const response = await fetch(`${apiUrl}/hallsList`, {
         headers: {
             Accept: "application/json",
         },
@@ -72,7 +73,7 @@ export async function getHalls() {
 
 export async function getSeancesByDate(date) {
 
-    const response = await fetch(`${basedUrl}api/seancesListByDate?date=${date}`, {
+    const response = await fetch(`${apiUrl}/seancesListByDate?date=${date}`, {
         headers: {
             Accept: "application/json",
         },
@@ -91,7 +92,7 @@ export async function getSeancesByDate(date) {
 
 export async function getSeanceById(id) {
 
-    const response = await fetch(`${basedUrl}api/seance/${id}`, {
+    const response = await fetch(`${apiUrl}/seance/${id}`, {
         headers: {
             Accept: "application/json",
         },
@@ -122,7 +123,7 @@ export async function toBook(data) {
         })
     };
 
-    const response = await fetch(`${basedUrl}api/toBook`, {
+    const response = await fetch(`${apiUrl}/toBook`, {
         headers: {
             Accept: "application/json",
             "Content-Type": "text/plain",

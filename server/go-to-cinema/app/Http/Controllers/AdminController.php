@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class AdminController
 {
-    public function authorization(Request $request)
+    public function login(Request $request)
     {
         $data = $request->request->all();
 
@@ -23,7 +23,7 @@ class AdminController
                 $sails[0]->update(['sessionId' => $sessionId]);
             }
         }
-        return redirect('http://localhost:3002');
+        return redirect('/admin');
     }
 
     public function logout(Request $request)
@@ -31,9 +31,8 @@ class AdminController
         if (ValidationUtils::checkAdminRights()) {
             $sails = Sails::all();
             $sails[0]->update(['sessionId' => null]);
-
         }
-        redirect()->action([AdminController::class, 'showLoginPage']);
+        return redirect('/login');
     }
 
     public function showLoginPage()

@@ -11,6 +11,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use stdClass;
+
 use const DATE_FORMAT;
 
 define('DATE_FORMAT', "Y-m-d\TH:i:sp");
@@ -50,7 +51,7 @@ class SeanceController
 
         $seancesInDb = $this->getListByDate($date);
 
-        $seancesInDbById = toDictionary($seancesInDb, function ($x) {
+        $seancesInDbById = Utils::toDictionary($seancesInDb, function ($x) {
             return $x->id;
         });
 
@@ -62,7 +63,7 @@ class SeanceController
             return isset($x->id);
         });
 
-        $seancesToUpdateById = toDictionary($seancesToUpdate, function ($x) {
+        $seancesToUpdateById = Utils::toDictionary($seancesToUpdate, function ($x) {
             return $x->id;
         });
 

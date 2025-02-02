@@ -6,7 +6,7 @@ import Place from "../common/place.jsx";
 import MyButton from "../common/myButton.jsx";
 import {useEffect, useState} from "react";
 import {
-    setHalls, setLoadingHalls,
+    setHalls, setHallToUpdateConfig, setLoadingHalls,
     updateCustomPlaces,
     updateCustomRows,
 } from "../../redux/slices/halls.js";
@@ -22,7 +22,7 @@ export default function ConfigHall() {
     const dispatch = useDispatch();
 
     const {
-        halls, hallConfig,
+        halls, hallConfig,hallToUpdateConfig
     } = useSelector(state => state.halls);
 
     const [inputValueRows, setInputValueRows] = useState(0);
@@ -30,8 +30,6 @@ export default function ConfigHall() {
     const [hallToUpdate, setHallToUpdate] = useState({hallId: null, isUpdated: false});
     const [showPopup, setShowPopup] = useState(false);
     const [nextCheckedHallName, setNextCheckedHallName] = useState(null);
-    const [validateError, setValidateError] = useState(null);
-    const [showErrorPopup, setShowErrorPopup] = useState(false);
 
     const setInitialState = (hall) => {
         setInputValueRows(hall.rowsCount);
@@ -51,6 +49,11 @@ export default function ConfigHall() {
         }
     }, [halls]);
 
+    useEffect(()=>{
+        setHallToUpdate(hallToUpdateConfig)
+    },[hallToUpdateConfig])
+
+
     const getHallsFromServer = async () => {
         dispatch(setLoadingHalls(true));
         const response = await getHalls();
@@ -69,18 +72,16 @@ export default function ConfigHall() {
         const value = +e.target.value.trim();
         const error = getValidationError(value, hallConfig.placesInRow.min, hallConfig.placesInRow.max);
         if (error) {
-            setValidateError(`Ошибка в количестве мест. ${error}`);
-            setShowErrorPopup(true);
+            dispatch(setError(`Ошибка в количестве мест. ${error}`));
         }
         else {
             dispatch(updateCustomPlaces({
                 places: value,
                 hallId: hallToUpdate.hallId
             }));
-            setValidateError(null);
 
             if (value !== lastData) {
-                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
+                dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: true}))
             }
         }
     };
@@ -90,8 +91,7 @@ export default function ConfigHall() {
         const value = +e.target.value.trim();
         const error = getValidationError(value, hallConfig.rowsCount.min, hallConfig.rowsCount.max);
         if (error) {
-            setValidateError(`Ошибка в количестве рядов. ${error}`);
-            setShowErrorPopup(true);
+            dispatch(setError(`Ошибка в количестве рядов. ${error}`))
         }
         else {
             dispatch(updateCustomRows({
@@ -99,10 +99,8 @@ export default function ConfigHall() {
                 hallId: hallToUpdate.hallId
             }));
 
-            setValidateError(null);
-
             if (value !== lastData) {
-                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
+                dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: true}))
             }
         }
     };
@@ -142,13 +140,12 @@ export default function ConfigHall() {
         if (errorRow || errorPlacesInRow) {
             const rowErrorMsg = errorRow ? `Ошибка в количестве рядов. ${errorRow}` : "";
             const placesCountErrorMsg = errorPlacesInRow ? `Ошибка в количестве мест. ${errorPlacesInRow}` : "";
-            setValidateError(`${errorRow ? rowErrorMsg : ""} ${errorPlacesInRow ? placesCountErrorMsg : ""}`);
-            setShowErrorPopup(true);
+            const errorMsg = `${errorRow ? rowErrorMsg : ""} ${errorPlacesInRow ? placesCountErrorMsg : ""}`
+            dispatch(setError(errorMsg))
         }
         else {
             await updatePlacesInHallOnServer()
-            setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: false});
-            setValidateError(null);
+            dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: false}));
         }
     };
 
@@ -158,10 +155,6 @@ export default function ConfigHall() {
                 <ConfStepHeader title="Конфигурация залов"/>
                 <div className="conf-step__wrapper">
                     {halls && hallToUpdate.hallId ? <>
-                            <MyPopup isVisible={showErrorPopup} title="Неверно введенные данные"
-                                     onClose={() => setShowErrorPopup(false)}>
-                                <p className="conf-step__paragraph">{`${validateError}`}</p>
-                            </MyPopup>
                             <MyPopup isVisible={showPopup} title={`Сохранить изменения в зале "${halls[hallToUpdate.hallId]?.name}"`}
                                      onClose={() => setShowPopup(false)}
                                      onReset={async e => {

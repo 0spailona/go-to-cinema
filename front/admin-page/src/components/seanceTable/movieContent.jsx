@@ -26,7 +26,7 @@ export default function MovieContent({
     else {
         return <div className="conf-step__movie" style={{backgroundColor: backgroundColorForMovie[index]}}>
             <img className="conf-step__movie-poster" alt="poster"
-                 src={`admin/api/posterByMovieId/${movieId}`}/>
+                 src={`api/posterByMovieId/${movieId}`}/>
             <h3 className="conf-step__movie-title">{title}</h3>
             <p className="conf-step__movie-duration">{duration} минут</p>
         </div>;

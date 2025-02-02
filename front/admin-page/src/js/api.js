@@ -1,11 +1,12 @@
 import {getArrFromSeances,getPlacesObj,getObjMovies,getHallsObj} from './modelUtils.js'
 import {toISOStringNoMs} from "./utils.js";
 
-const basedUrl = "admin/";
+const baseUrl = "/admin";
+const apiUrl = `${baseUrl}/api`;
 
 //get token;
 export async function fetchToken() {
-    const response = await fetch(`${basedUrl}api/csrf`);
+    const response = await fetch(`${apiUrl}/csrf`);
     return response.text();
 }
 
@@ -14,7 +15,7 @@ const token = await fetchToken();
 //Global
 
 export async function isAdmin() {
-    const response = await fetch(`${basedUrl}isAdmin`);
+    const response = await fetch(`${apiUrl}/isAdmin`);
 
     const json = await response.json();
 
@@ -23,7 +24,7 @@ export async function isAdmin() {
             return {status: "success"};
         }
         else {
-            window.location = "admin/login";
+            window.location = `${baseUrl}/login`;
         }
 
     }
@@ -33,25 +34,12 @@ export async function isAdmin() {
 }
 
 export async function logOut() {
-    const response = await fetch(`${basedUrl}api/logout`, {
-        headers: {
-            "X-CSRF-TOKEN": token,
-        },
-        method: "POST",
-        credentials: "same-origin",
-    });
-
-    if (Math.floor(response.status / 100) === 2) {
-        return {status: "success"};
-    }
-    else {
-        return {status: "error"};
-    }
+    window.location = `${baseUrl}/logout`;
 }
 
 
 export async function openSails() {
-    const response = await fetch(`${basedUrl}api/openSails`, {
+    const response = await fetch(`${apiUrl}/openSails`, {
         headers: {
             Accept: "application/json",
             "X-CSRF-TOKEN": token,
@@ -70,7 +58,7 @@ export async function openSails() {
 
 export async function closeSails() {
 
-    const response = await fetch(`${basedUrl}api/closeSails`, {
+    const response = await fetch(`${apiUrl}/closeSails`, {
         headers: {
             Accept: "application/json",
             "X-CSRF-TOKEN": token,
@@ -92,7 +80,7 @@ export async function closeSails() {
 // API for seances
 export async function getSeancesByDate(date) {
 
-    const response = await fetch(`${basedUrl}api/seancesListByDate?date=${date}`, {
+    const response = await fetch(`${apiUrl}/seancesListByDate?date=${date}`, {
         headers: {
             Accept: "application/json",
         },
@@ -116,7 +104,7 @@ export async function updateSeances(data) {
         ), date: toISOStringNoMs(data.date)
     };
 
-    const response = await fetch(`${basedUrl}api/updateSeances`, {
+    const response = await fetch(`${apiUrl}/updateSeances`, {
         headers: {
             Accept: "application/json",
             "Content-Type": "text/plain",
@@ -138,7 +126,7 @@ export async function updateSeances(data) {
 //API for halls
 
 export async function getHalls() {
-    const response = await fetch(`${basedUrl}api/hallsList`, {
+    const response = await fetch(`${apiUrl}/hallsList`, {
         headers: {
             Accept: "application/json",
         },
@@ -156,7 +144,7 @@ export async function getHalls() {
 }
 
 export async function getHallConfig() {
-    const response = await fetch(`${basedUrl}api/hallConfig`, {
+    const response = await fetch(`${apiUrl}/hallConfig`, {
         headers: {
             Accept: "application/json",
         },
@@ -175,7 +163,7 @@ export async function getHallConfig() {
 }
 
 export async function createHall(name) {
-    const response = await fetch(`${basedUrl}api/newHall`, {
+    const response = await fetch(`${apiUrl}/newHall`, {
         headers: {
             Accept: "application/json",
             "Content-Type": "text/plain",
@@ -202,7 +190,7 @@ export async function createHall(name) {
 }
 
 export async function removeHall(id) {
-    const response = await fetch(`${basedUrl}api/removeHall`, {
+    const response = await fetch(`${apiUrl}/removeHall`, {
         headers: {
             Accept: "application/json",
             "X-CSRF-TOKEN": token,
@@ -236,7 +224,7 @@ export async function updatePlacesInHall(hall) {
         placesInRow: hall.placesInRow
     });
 
-    const response = await fetch(`${basedUrl}api/updatePlacesInHall`, {
+    const response = await fetch(`${apiUrl}/updatePlacesInHall`, {
         headers: {
             Accept: "application/json",
             "X-CSRF-TOKEN": token,
@@ -266,7 +254,7 @@ export async function updatePricesInHall(hall) {
         standardPrice: hall.prices.standard
     });
 
-    const response = await fetch(`${basedUrl}api/updatePricesInHall`, {
+    const response = await fetch(`${apiUrl}/updatePricesInHall`, {
         headers: {
             Accept: "application/json",
             "X-CSRF-TOKEN": token,
@@ -296,7 +284,7 @@ export async function updatePricesInHall(hall) {
 //API for movies
 
 export async function getMovies() {
-    const response = await fetch(`${basedUrl}api/moviesList`, {
+    const response = await fetch(`${apiUrl}/moviesList`, {
         headers: {
             Accept: "application/json",
         },
@@ -316,7 +304,7 @@ export async function getMovies() {
 }
 
 export async function createMovie(data) {
-    const response = await fetch(`${basedUrl}api/newMovie`, {
+    const response = await fetch(`${apiUrl}/newMovie`, {
         headers: {
             Accept: "application/json",
             "Content-Type": "text/plain",
@@ -340,7 +328,7 @@ export async function createMovie(data) {
 
 export async function removeMovieFromList(id) {
 
-    const response = await fetch(`${basedUrl}api/removeMovie?id=${id}`, {
+    const response = await fetch(`${apiUrl}/removeMovie?id=${id}`, {
         headers: {
             Accept: "application/json",
             "X-CSRF-TOKEN": token,
@@ -362,7 +350,7 @@ export async function removeMovieFromList(id) {
 
 export async function sendPosterToServer(formData) {
 
-    const response = await fetch(`${basedUrl}api/poster`, {
+    const response = await fetch(`${apiUrl}/poster`, {
         headers: {
             Accept: "application/json",
             "X-CSRF-TOKEN": token,

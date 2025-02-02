@@ -35,9 +35,13 @@ function getMimeType($file)
 }
 
 
-function serveFile($file, $folder)
+function serveFile($file, $folder, $defaultFile = null)
 {
     $filePath = storage_path('spa') . "/$folder/$file";
+
+    if (!file_exists($filePath)) {
+        $filePath = storage_path('spa') . "/$folder/$defaultFile";
+    }
 
     if (!file_exists($filePath)) {
         abort(404, 'File not found');
@@ -47,72 +51,46 @@ function serveFile($file, $folder)
     }
 }
 
-
-Route::get('showBooking/{bookingId}', [\App\Http\Controllers\BookingController::class, 'showBooking']);
-Route::get('getQR/{bookingId}', [\App\Http\Controllers\BookingController::class, 'getQR']);
-
-
-Route::prefix('api')->group(function () {
-    Route::get('', function () {
-        abort(404, 'API not found');
+// global
+Route::prefix('showBooking')->group(function () {
+    Route::get('{bookingId}', [\App\Http\Controllers\BookingController::class, 'showBooking']);
+    Route::get('assets/{file}', function ($file) {
+        return serveFile($file, "showBooking");
     });
-
-    Route::get('csrf', function (Request $request) {
-        // $token =
-        return $request->session()->token();
-    });
-
-    Route::get('seancesListByDate', [\App\Http\Controllers\SeanceController::class, 'getSeancesByDateToClient']);
-    Route::get('moviesList', [\App\Http\Controllers\MovieController::class, 'getMoviesList']);
-    Route::get('hallsList', [\App\Http\Controllers\HallController::class, 'getHallsList']);
-    Route::get('posterByMovieId/{movieId}', [\App\Http\Controllers\MovieController::class, 'getPosterByMovieId']);
-    Route::get('seance/{id}', [\App\Http\Controllers\SeanceController::class, 'getSeanceById']);
-
-    Route::get('isOpenSails', [\App\Http\Controllers\AdminController::class, 'isOpenSails']);
-    Route::post('toBook', [\App\Http\Controllers\BookingController::class, 'toBook']);
-
-
-    Route::get('{api_method}', function ($api_method) {
-        return response()->json(["status" => "ok", "method" => $api_method], 200);
-    });
-
 });
 
+Route::get('getQR/{bookingId}', [\App\Http\Controllers\BookingController::class, 'getQR']);
+
+//login
+Route::prefix('login')->group(function () {
+    Route::get('', function() {return redirect("/login/form");});
+    Route::get('form', [\App\Http\Controllers\AdminController::class, 'showLoginPage']);
+    Route::post('', [\App\Http\Controllers\AdminController::class, 'login']);
+
+    //admin SPA
+    Route::get('{file}', function ($file) {
+        return serveFile($file, "login");
+    });
+});
+
+
+// admin
 Route::prefix('admin')->group(function () {
-    Route::post('login', function () {
-        return "Here goes admin login handler";
-    });
-
-    Route::get('login', [\App\Http\Controllers\AdminController::class, 'showLoginPage']);
-    Route::get('isAdmin', [\App\Http\Controllers\AdminController::class, 'isAdmin']);
-    Route::post('authorization', [\App\Http\Controllers\AdminController::class, 'authorization']);
-
-    /*Route::any('login', function () {
-        abort(404, 'File not found');
-    });*/
-
-    Route::get('{file?}', function ($file = "index.html") {
-        return serveFile($file, "admin");
-    });
-    Route::get('assets/{file}', function ($file) {
-        return serveFile($file, "admin/assets");
-    });
+    Route::get('', function() {return redirect("/admin/index.html");});
+    Route::get('logout', [\App\Http\Controllers\AdminController::class, 'logout']);
 
     Route::prefix('api')->group(function () {
         Route::get('', function () {
             abort(404, 'API not found');
         });
 
+        Route::get('isAdmin', [\App\Http\Controllers\AdminController::class, 'isAdmin']);
+
         Route::get('csrf', function (Request $request) {
-            // $token =
             return $request->session()->token();
         });
 
-        Route::post('logout', [\App\Http\Controllers\AdminController::class, 'logout']);
-        /* Route::get('hallsList', function () {
-             return response
-             ()->json(["status" => "ok", "method"=> "hallsList", "admin" => true], 200);
-         });*/
+
         Route::get('hallConfig', function () {
             $data = new stdClass();
             $data->hallNameLength = new stdClass();
@@ -149,21 +127,71 @@ Route::prefix('admin')->group(function () {
         Route::post('openSails', [\App\Http\Controllers\AdminController::class, 'toOpenSails']);
         Route::post('closeSails', [\App\Http\Controllers\AdminController::class, 'toCloseSails']);
     });
+
+    //admin SPA
+    Route::get('{file?}', function ($file = "index.html") {
+        if (!\App\Http\Controllers\ValidationUtils::checkAdminRights())
+        {
+            return redirect("/login");
+        }
+        return serveFile($file, "admin", "index.html");
+    });
+    Route::get('assets/{file}', function ($file) {
+        if (!\App\Http\Controllers\ValidationUtils::checkAdminRights())
+        {
+            return abort(401, "Access Denied");
+        }
+        return serveFile($file, "admin/assets");
+    });
 });
 
-Route::get('/{file?}', function ($file = "index.html") {
-    return serveFile($file, "client");
+//client api
+Route::prefix('api')->group(function () {
+    Route::get('', function () {
+        abort(404, 'API not found');
+    });
+
+    Route::get('csrf', function (Request $request) {
+        return $request->session()->token();
+    });
+
+    Route::get('seancesListByDate', [\App\Http\Controllers\SeanceController::class, 'getSeancesByDateToClient']);
+    Route::get('moviesList', [\App\Http\Controllers\MovieController::class, 'getMoviesList']);
+    Route::get('hallsList', [\App\Http\Controllers\HallController::class, 'getHallsList']);
+    Route::get('posterByMovieId/{movieId}', [\App\Http\Controllers\MovieController::class, 'getPosterByMovieId']);
+    Route::get('seance/{id}', [\App\Http\Controllers\SeanceController::class, 'getSeanceById']);
+
+    Route::get('isOpenSails', [\App\Http\Controllers\AdminController::class, 'isOpenSails']);
+    Route::post('toBook', [\App\Http\Controllers\BookingController::class, 'toBook']);
+
+
+    Route::get('{api_method}', function ($api_method) {
+        return response()->json(["status" => "ok", "method" => $api_method], 200);
+    });
 });
-Route::get('/assets/{file}', function ($file) {
+
+//client SPA
+Route::get('{file?}', function ($file = "index.html") {
+    return serveFile($file, "client", "index.html");
+});
+
+Route::get('hall/{id}', function () {
+    return serveFile("index.html", "client");
+});
+
+Route::get('ticket/', function () {
+    return serveFile("index.html", "client");
+});
+
+Route::get('assets/{file}', function ($file) {
     return serveFile($file, "client/assets");
 });
 
-/*
- *
-    //Route::get('/hallsList', [\App\Http\Controllers\HallController::class, 'getHallsList']);
-    Route::get('hallsList', function () {
-        return "router halls list";
-        //return serveFile($file, "admin/assets");
-    });
+Route::get('hall/assets/{file}', function ($file) {
+    return serveFile($file, "client/assets");
+});
 
- */
+Route::get('ticket/assets/{file}', function ($file) {
+    return serveFile($file, "client/assets");
+});
+

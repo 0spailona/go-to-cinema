@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/x-icon" href={{asset("favicon.ico")}}>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <title>Авторизация | ИдёмВКино</title>
 
     <!-- Styles -->
-    <link rel="stylesheet" type="text/css" href={{asset("normalize.css")}}>
-    <link rel="stylesheet" type="text/css" href={{asset("styles.css")}}>
+    <link rel="stylesheet" type="text/css" href="normalize.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
     <!-- Fonts -->
     <link
         href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&amp;subset=cyrillic,cyrillic-ext,latin-ext"
@@ -26,7 +26,7 @@
                 <h2 class="login__title">Авторизация</h2>
             </header>
             <div class="login__wrapper">
-                <form class="login__form" action="/admin/authorization/" method="POST" accept-charset="utf-8">
+                <form class="login__form" action="/login" method="POST" accept-charset="utf-8">
                     @csrf
                     @method('POST')
                     <label class="login__label" for="email">

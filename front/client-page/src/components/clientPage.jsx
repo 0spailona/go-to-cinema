@@ -25,7 +25,7 @@ export default function ClientPage() {
     const {seances, chosenDate, isDrawPage, loading, lastIsDrawPage, error} = useSelector(state => state.cinema);
     const [errorView, setErrorView] = useState({isError: false, message: ""});
 
-    const isDrawFilms = async () => {
+    /*const isDrawFilms = async () => {
 
         const response = await isOpenSails();
 
@@ -35,7 +35,7 @@ export default function ClientPage() {
         else {
             dispatch(setIsDrawPage(false));
         }
-    };
+    };*/
 
     const getMoviesFromServer = async () => {
         dispatch(setLoading(true));
@@ -95,12 +95,12 @@ export default function ClientPage() {
     useEffect(() => {
         dispatch(setInitialChosenSeance());
 
-        async function toStart() {
+        /*async function toStart() {
             await isDrawFilms();
             const interval = setInterval(isDrawFilms, 5000);
         }
 
-        toStart();
+        toStart();*/
 
     }, []);
 

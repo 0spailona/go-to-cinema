@@ -89,10 +89,7 @@ export default function AdminPage() {
     }, [error]);
 
     const onLogOut = async () => {
-        const response = await logOut();
-        if (response.status === "success") {
-            window.location = "admin/login";
-        }
+         await logOut();
     };
 
 
