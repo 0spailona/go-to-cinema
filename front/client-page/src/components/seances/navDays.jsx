@@ -29,8 +29,6 @@ export default function NavDays({onChange}) {
     const [navDays, setNavDays] = useState(dates);
 
     const updateNavDays = () => {
-        // console.log("update nav");
-
         const lastDay = navDays[navDays.length - 1];
         const nextDay = getNextDate(lastDay);
         const newNavDays = [...navDays, nextDay];

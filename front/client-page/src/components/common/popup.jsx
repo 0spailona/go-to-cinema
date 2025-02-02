@@ -1,11 +1,6 @@
 import CloseImg from "../../assets/i/close.png";
-import MyButton from "./MyButton.jsx";
 
-export default function Popup({
-                                    message,isVisible,onClose
-                                }) {
-
-    //console.log("MyPopup isVisible",isVisible)
+export default function Popup({message, isVisible, onClose}) {
 
     return (
         <div className={`popup ${isVisible ? "active" : ""}`}>

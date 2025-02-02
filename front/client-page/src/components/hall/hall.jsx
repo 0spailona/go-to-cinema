@@ -20,8 +20,6 @@ export default function Hall() {
     const [error, setError] = useState({isError: false, message: ""});
     const params = useParams();
     let hall, time, movie;
-    //console.log("hall params", params);
-    //console.log("hall chosenSeance.seanceData", chosenSeance.seanceData);
 
     const getSeance = async (id) => {
         dispatch(setLoading(true));
@@ -32,30 +30,22 @@ export default function Hall() {
             return true;
         }
         else {
-            //console.log("hall getSeance",response.status);
             dispatch(setChosenSeance(null));
             dispatch(setLoading(false));
             return false;
         }
     };
 
-
-
     useEffect(() => {
         async function startDraw() {
             if (!chosenSeance.seanceData && !params.id) {
                 setError({isError: true, message: "Что-то пошло не так"});
-                console.log("no seances selected");
                 return <Navigate to="/"/>;
             }
             else {
                 if (!await getSeance(params.id)) {
                     setError({isError: true, message: "Что-то пошло не так"});
-                    console.log("seance was not found");
                 }
-
-
-                //console.log("hall chosenSeance",chosenSeance)
             }
         }
 
@@ -75,7 +65,6 @@ export default function Hall() {
                 if (chosenSeance.seanceData) {
                     if (!await getSeance(chosenSeance.seanceData.id)) {
                         setError({isError: true, message: "Что-то пошло не так"});
-                        console.log("seance was not found");
                     }
                 }
             }
@@ -83,7 +72,6 @@ export default function Hall() {
             toGetUpdateSeance();
         }
     }, [isDrawPage]);
-
 
     const toggleBig = (e) => {
         if (e.target.classList.contains("toBig")) {
@@ -94,9 +82,6 @@ export default function Hall() {
         }
     };
 
-    const toDo = () => {
-        console.log("toDo");
-    };
 
     return (
         <>
@@ -126,8 +111,8 @@ export default function Hall() {
 
                                 <div className="buying-scheme__legend">
                                     <div className="col">
-                                        <PriceLegend status={placesType.standard}/>
-                                        <PriceLegend status={placesType.vip}/>
+                                        <PriceLegend status={placesType.standard} prices={hall.prices} />
+                                        <PriceLegend status={placesType.vip} prices={hall.prices}/>
                                     </div>
                                     <div className="col">
                                         <PriceLegend status={placesType.taken}/>
@@ -135,7 +120,7 @@ export default function Hall() {
                                     </div>
                                 </div>
                             </div>
-                            <Link to={"/ticket"}><MyButton text="Забронировать" onClick={toDo}/></Link>
+                            <Link to={"/ticket"}><MyButton text="Забронировать"/></Link>
                         </section> : ""}
                     </main>
                 :

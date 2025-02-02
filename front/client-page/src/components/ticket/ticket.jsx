@@ -2,13 +2,10 @@ import MyButton from "../common/MyButton.jsx";
 import {useDispatch, useSelector} from "react-redux";
 import TicketInfo from "./ticketInfo.jsx";
 import Hint from "./hint.jsx";
-import {
-    //setBookingId,
-    setChosenSeance, setLoading} from "../../redux/slices/cinema.js";
+import {setChosenSeance, setLoading} from "../../redux/slices/cinema.js";
 import {useEffect, useState} from "react";
-import {validate} from "react-email-validator";
 import {getStartTimeStringFromMinutes} from "../../js/utils.js";
-import {toBook, getSeanceById} from "../../js/api.js";
+import {getSeanceById, toBook} from "../../js/api.js";
 import Loader from "react-js-loader";
 import Popup from "../common/popup.jsx";
 
@@ -20,31 +17,22 @@ export default function Ticket() {
         chosenSeance,
         halls,
         movies,
-        prices,
         chosenDate,
         isDrawPage,
         loading,
         lastIsDrawPage,
-        //bookingId,
     } = useSelector(state => state.cinema);
-
-console.log("ticket");
 
     if (!chosenSeance.seanceData || chosenSeance.selectedPlaces.length === 0) {
         return <Popup isVisible={true} message="Что-то пошло не так"
                       onClose={() => {
-                          //setError({isError: false, message: ""});
-                          window.location = '/';
-                      }}/>
-        //setError({isError: true, message: "Что-то пошло не так"});
+                          window.location = "/";
+                      }}/>;
     }
 
-    const [emailInputValue, setEmailInputValue] = useState("");
     const [error, setError] = useState({isError: false, message: ""});
 
-
-
-    let hall, time, movie, places, cost, seance, selectedPlaces;
+    let hall, time, movie, places, cost, seance, selectedPlaces,prices;
 
     useEffect(() => {
         if (isDrawPage && !lastIsDrawPage) {
@@ -78,41 +66,29 @@ console.log("ticket");
         return view;
     };
 
-
-    /*if (!chosenSeance.seanceData || chosenSeance.selectedPlaces.length === 0) {
-        setError({isError: true, message: "Что-то пошло не так"});
-    }
-    else {*/
-        seance = chosenSeance.seanceData;
-        selectedPlaces = chosenSeance.selectedPlaces;
-        hall = halls[seance.hallId];
-        time = getStartTimeStringFromMinutes(seance.startTime);
-        movie = movies[seance.movieId];
-        places = getPlacesForView();
-        cost = selectedPlaces.reduce((acc, place) => acc + prices[place.lastStatus], 0);
-
-   // }
-
-
+    seance = chosenSeance.seanceData;
+    selectedPlaces = chosenSeance.selectedPlaces;
+    hall = halls[seance.hallId];
+    time = getStartTimeStringFromMinutes(seance.startTime);
+    movie = movies[seance.movieId];
+    places = getPlacesForView();
+    prices = hall.prices;
+    cost = selectedPlaces.reduce((acc, place) => acc + prices[place.lastStatus], 0);
 
     const toBookPlaces = async () => {
-       // dispatch(setLoading(true));
-//console.log("toBook seance",seance)
         const data = {seanceId: seance.id, places: selectedPlaces};
         const response = await toBook(data);
         if (response.status === "success") {
-            window.location = `/showBooking/${response.data}`
-            //dispatch(setBookingId(response.data));
+            window.location = `/showBooking/${response.data}`;
         }
     };
-
 
     return (
         <>
             <Popup isVisible={error.isError} message={error.message}
                    onClose={() => {
                        setError({isError: false, message: ""});
-                       window.location = '/';
+                       window.location = "/";
                    }}/>
 
             {isDrawPage ?
@@ -133,7 +109,7 @@ console.log("ticket");
                                 <TicketInfo info="На дату" data={chosenDate}/>
                                 <TicketInfo info="Начало сеанса" data={`${time.hours}:${time.min}`}/>
                                 <TicketInfo info="Стоимость" data={`${cost}`} add=" рублей"/>
-                                    <MyButton text="Получить код бронирования" onClick={toBookPlaces}/>
+                                <MyButton text="Получить код бронирования" onClick={toBookPlaces}/>
                                 <Hint text="После бронирования билет будет доступен в этом окне, а также придёт вам
                         на почту. Покажите QR-код кассиру."/>
                                 <Hint text="Приятного просмотра!"/>

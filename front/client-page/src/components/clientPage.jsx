@@ -6,7 +6,7 @@ import Movie from "./seances/movie.jsx";
 import {useEffect, useState} from "react";
 import {getHalls, getMovies, getSeancesByDate, isOpenSails} from "../js/api.js";
 import {
-    setChosenSeance,
+    setError,
     setHalls,
     setInitialChosenSeance,
     setIsDrawPage,
@@ -15,66 +15,61 @@ import {
     setSeances
 } from "../redux/slices/cinema.js";
 import Loader from "react-js-loader";
+import Popup from "./common/popup.jsx";
 
-let timerId = null;
 
 export default function ClientPage() {
 
     const dispatch = useDispatch();
 
-    const {seances, chosenDate, isDrawPage, loading, lastIsDrawPage} = useSelector(state => state.cinema);
+    const {seances, chosenDate, isDrawPage, loading, lastIsDrawPage, error} = useSelector(state => state.cinema);
+    const [errorView, setErrorView] = useState({isError: false, message: ""});
 
     const isDrawFilms = async () => {
-        // console.log("isDrawFilms isDrawPage", isDrawPage);
 
         const response = await isOpenSails();
-        //console.log("response",response);
+
         if (response.status === "success") {
             dispatch(setIsDrawPage(response.data));
-            return true;
         }
         else {
-
-            //TODO ERROR
+            dispatch(setIsDrawPage(false));
         }
-        return false;
     };
 
     const getMoviesFromServer = async () => {
         dispatch(setLoading(true));
-        //console.log("getMoviesFromServer");
+
         const response = await getMovies();
         if (response.status === "success") {
             dispatch(setMovies(response.data));
         }
         else {
-            //TODO ERROR
+            dispatch(setError("Проблемы с сервером. Попробуйте позже"));
         }
         dispatch(setLoading(false));
     };
 
     const getHallsFromServer = async () => {
         dispatch(setLoading(true));
-        // console.log("getHallsFromServer");
         const response = await getHalls();
         if (response.status === "success") {
             dispatch(setHalls(response.data));
         }
         else {
-            //TODO ERROR
+            dispatch(setError("Проблемы с сервером. Попробуйте позже"));
         }
         dispatch(setLoading(false));
     };
 
     const getSeances = async (date) => {
         dispatch(setLoading(true));
-        //console.log("getSeances");
         const response = await getSeancesByDate(date);
         if (response.status === "success") {
             dispatch(setSeances(response.data));
         }
         else {
-            //TODO ERROR
+            dispatch(setError("Проблемы с сервером. Попробуйте позже"));
         }
         dispatch(setLoading(false));
     };
@@ -87,8 +82,7 @@ export default function ClientPage() {
     };
 
     useEffect(() => {
-       // console.log("useEffect isDrawPage", isDrawPage);
-        //console.log("useEffect last", lastIsDrawPage);
+
         if (isDrawPage && !lastIsDrawPage) {
             async function toGetNewData() {
                 await updateData();
@@ -99,20 +93,9 @@ export default function ClientPage() {
     }, [isDrawPage]);
 
     useEffect(() => {
-        //console.log("useeffect called count",drawCount);
-        //dispatch(setChosenSeance({seance: null, selectedPlaces:[],takenPlaces:[]}));
-        dispatch(setInitialChosenSeance())
+        dispatch(setInitialChosenSeance());
 
         async function toStart() {
-            //await fetchToken()
-            /*if(await isDrawFilms()){
-                //dispatch(fetchMovies());
-                ///dispatch(fetchHalls());
-                await getHallsFromServer();
-                await getMoviesFromServer();
-                await getSeances(chosenDate);
-            }*/
-
             await isDrawFilms();
             const interval = setInterval(isDrawFilms, 5000);
         }
@@ -120,6 +103,15 @@ export default function ClientPage() {
         toStart();
 
     }, []);
+
+    useEffect(() => {
+        if (!error) {
+            setErrorView({isError: false, message: ""});
+        }
+        if (error) {
+            setErrorView({isError: true, message: error});
+        }
+    }, [error]);
 
 
     const renderMovie = (movieId) => {
@@ -129,11 +121,9 @@ export default function ClientPage() {
         }
     };
 
-
-console.log("isDrawPage",isDrawPage);
-    //console.log("loading",loading);
     return (<>
-
+        <Popup isVisible={errorView.isError} message={errorView.message}
+               onClose={() => dispatch(setError(null))}/>
         <NavDays onChange={getSeances}/>
         <main>
             {isDrawPage ?

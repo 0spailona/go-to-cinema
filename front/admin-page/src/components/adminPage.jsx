@@ -95,13 +95,10 @@ export default function AdminPage() {
         }
     };
 
-    const closePopupError = ()=>{
-        dispatch(setError(null))
-    }
 
     return (<>
             <PopupError showPopup={errorView.isError} text={errorView.message}
-                        closePopup={()=>closePopupError()}/>
+                        closePopup={()=>dispatch(setError(null))}/>
             <main className="conf-steps">
                 <HallControl/>
                 <ConfigHall/>

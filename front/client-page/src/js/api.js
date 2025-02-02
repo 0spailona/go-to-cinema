@@ -1,5 +1,4 @@
-import {getHallsObj, getObjMovies, getSeancesObj} from "./utils.js";
-//import {getHallsObj} from "../../../admin-page/src/redux/utils.js";
+import {getHallsObj, getObjMovies, getSeancesObj} from "./modelUtils.js";
 
 const basedUrl = "";
 
@@ -21,16 +20,14 @@ export async function isOpenSails() {
         credentials: "same-origin",
     });
 
-    const json = await response.json();
-    //console.log(json);
 
     if (Math.floor(response.status / 100) === 2) {
+        const json = await response.json();
         return {status: "success", data: json.data};
     }
 
     return {status: "error"};
 }
-
 
 export async function getMovies() {
     const response = await fetch(`${basedUrl}api/moviesList`, {
@@ -39,10 +36,8 @@ export async function getMovies() {
         },
         credentials: "same-origin",
     });
-    //return response.json();
-    const json = await response.json();
 
-    //console.log("removeHall response.json()", json);
+    const json = await response.json();
 
     if (Math.floor(response.status / 100) === 2) {
 
@@ -55,7 +50,6 @@ export async function getMovies() {
     }
 }
 
-
 export async function getHalls() {
     const response = await fetch(`${basedUrl}api/hallsList`, {
         headers: {
@@ -65,14 +59,13 @@ export async function getHalls() {
     });
 
     const json = await response.json();
-    //console.log("getHalls response.json()", json);
+
     if (Math.floor(response.status / 100) === 2) {
-        //console.log("getHalls success",json.halls);
+
         const halls = getHallsObj(json.halls);
         return {status: "success", data: halls};
     }
     else {
-        console.log("getHalls error");
         return {status: "error"};
     }
 }
@@ -96,42 +89,39 @@ export async function getSeancesByDate(date) {
     return {status: "error"};
 }
 
-
 export async function getSeanceById(id) {
-    console.log("getSeanceById id", id);
+
     const response = await fetch(`${basedUrl}api/seance/${id}`, {
         headers: {
             Accept: "application/json",
         },
         credentials: "same-origin",
     });
-    //return response.json();
 
     const json = await response.json();
-    console.log("getSeanceById json", json);
+
     if (Math.floor(response.status / 100) === 2) {
-        //const seances = getSeancesObj(json.seance)
-        let arr=[]
+
+        let arr = [];
         for (let place of json.places) {
-            arr.push({rowIndex:place.row,placeIndex:place.place})
+            arr.push({rowIndex: place.row, placeIndex: place.place});
         }
 
-        return {status: "success", data:{seance: json.seance, takenPlaces:arr}};
+        return {status: "success", data: {seance: json.seance, takenPlaces: arr}};
     }
 
     return {status: "error"};
 }
 
-
 export async function toBook(data) {
-    console.log("toBook data ", data);
 
-    //try {
     const body = {
         seanceId: data.seanceId,
-        places: data.places.map(place => {return {row:place.rowIndex,place:place.placeIndex,status:place.lastStatus}})
+        places: data.places.map(place => {
+            return {row: place.rowIndex, place: place.placeIndex, status: place.lastStatus};
+        })
     };
-    //console.log("getQR body", body);
+
     const response = await fetch(`${basedUrl}api/toBook`, {
         headers: {
             Accept: "application/json",
@@ -144,13 +134,10 @@ export async function toBook(data) {
     });
     const json = await response.json();
 
-    console.log("getQR response.json()", json);
     if (Math.floor(response.status / 100) === 2) {
-        console.log("getQR success");
-        return {status: "success",data: json.data};
+        return {status: "success", data: json.data};
     }
     else {
-        console.log("getGR error");
         return {status: "error"};
     }
 }
