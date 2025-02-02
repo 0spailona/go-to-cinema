@@ -12,7 +12,7 @@ class AdminController
     {
         $data = $request->request->all();
 
-        if ($data['email'] != env('ADMIN_MAIL') && $data['password'] != env('ADMIN_PASSWORD')) {
+        if ($data['email'] != env('ADMIN_MAIL') && password_hash($data['password'], PASSWORD_DEFAULT) != env('ADMIN_PASSWORD')) {
             return redirect()->action([AdminController::class, 'showLoginPage']);
         } else {
             $sessionId = session()->getId();
