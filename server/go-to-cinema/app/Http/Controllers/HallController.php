@@ -9,96 +9,82 @@ use Illuminate\Support\Facades\Log;
 class HallController extends Controller
 {
 
-    private function toLogin(): void
-    {
-        redirect()->action([AdminController::class, 'showLoginPage']);
-    }
-
-    public function createHall(Request $request): ?\Illuminate\Http\JsonResponse
+    public function createHall(Request $request): \Illuminate\Http\JsonResponse
     {
         if (!ValidationUtils::checkAdminRights()) {
-            $this->toLogin();
-        } else {
-
-            $name = $request->getContent();
-
-            if (!ValidationUtils::checkString($name, 1, 20)) {
-                return response()->json(["status" => "error", "message" => "Неправильный формат названия зала"], 400, [], JSON_UNESCAPED_UNICODE);
-            }
-
-            if (Hall::byName($name) !== null) {
-                return response()->json(["status" => "error", "message" => "Зал с таким названием уже существует"], 400, [], JSON_UNESCAPED_UNICODE);
-            } else {
-                Hall::create(['name' => $name, 'id' => uniqid()]);
-
-                return response()->json(["status" => "ok"], 201);
-            }
+            return response()->json(["status" => "error", "message" => "Not authorized"], 401, [], JSON_UNESCAPED_UNICODE);
         }
-        return null;
-    }
 
+        $name = $request->getContent();
 
-    public function removeHall(Request $request): ?\Illuminate\Http\JsonResponse
-    {
-        if (!ValidationUtils::checkAdminRights()) {
-            $this->toLogin();
-        } else {
-            $id = $request->getContent();
-
-            if (Hall::byId($id) === null) {
-                return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400, [], JSON_UNESCAPED_UNICODE);
-            } else {
-                Hall::destroy($id);
-                return response()->json(["status" => "ok"]);
-            }
+        if (!ValidationUtils::checkString($name, 1, 20)) {
+            return response()->json(["status" => "error", "message" => "Неправильный формат названия зала"], 400, [], JSON_UNESCAPED_UNICODE);
         }
-        return null;
-    }
 
-    public function updatePricesInHall(Request $request): ?\Illuminate\Http\JsonResponse
-    {
-        if (!ValidationUtils::checkAdminRights()) {
-            $this->toLogin();
-        } else {
-            $wrong = ["status" => "error", "message" => "Неправильные данные", "data" => json_decode($request->getContent())];
-
-            $data = json_decode($request->getContent());
-            $id = $data->id;
-            $hallToUpdate = Hall::byId($id);
-            if ($hallToUpdate === null) {
-                return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400, [], JSON_UNESCAPED_UNICODE);
-            }
-
-            $vipPrice = $data->vipPrice;
-            $standardPrice = $data->standardPrice;
-            if (!ValidationUtils::checkInt($vipPrice, intval(env('MIN_VIP_PRICE')), intval(env('MAX_PRICE'))) ||
-                !ValidationUtils::checkInt($standardPrice, intval(env('MIN_STANDARD_PRICE')), intval(env('MAX_PRICE')))
-                || $vipPrice <= $standardPrice) {
-                return response()->json($wrong, 400, [], JSON_UNESCAPED_UNICODE);
-            }
-            $hallToUpdate->update(['vipPrice' => $vipPrice, 'standardPrice' => $standardPrice]);
-
-            return response()->json(["status" => "ok", "data" => json_decode($request->getContent())]);
+        if (Hall::byName($name) !== null) {
+            return response()->json(["status" => "error", "message" => "Зал с таким названием уже существует"], 400, [], JSON_UNESCAPED_UNICODE);
         }
-        return null;
+
+        Hall::create(['name' => $name, 'id' => uniqid()]);
+        return response()->json(["status" => "ok"], 201);
     }
 
 
-    public function updatePlacesInHall(Request $request): ?\Illuminate\Http\JsonResponse
+    public function removeHall(Request $request): \Illuminate\Http\JsonResponse
     {
         if (!ValidationUtils::checkAdminRights()) {
-            $this->toLogin();
+            return response()->json(["status" => "error", "message" => "Not authorized"], 401, [], JSON_UNESCAPED_UNICODE);
+        }
+        $id = $request->getContent();
+
+        if (Hall::byId($id) === null) {
+            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400, [], JSON_UNESCAPED_UNICODE);
         } else {
+            Hall::destroy($id);
+            return response()->json(["status" => "ok"]);
+        }
+
+    }
+
+    public function updatePricesInHall(Request $request): \Illuminate\Http\JsonResponse
+    {
+        if (!ValidationUtils::checkAdminRights()) {
+            return response()->json(["status" => "error", "message" => "Not authorized"], 401, [], JSON_UNESCAPED_UNICODE);
+        }
+        $wrong = ["status" => "error", "message" => "Неправильные данные", "data" => json_decode($request->getContent())];
+
+        $data = json_decode($request->getContent());
+        $id = $data->id;
+        $hallToUpdate = Hall::byId($id);
+        if ($hallToUpdate === null) {
+            return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 400, [], JSON_UNESCAPED_UNICODE);
+        }
+
+        $vipPrice = $data->vipPrice;
+        $standardPrice = $data->standardPrice;
+        if (!ValidationUtils::checkInt($vipPrice, intval(env('MIN_VIP_PRICE')), intval(env('MAX_PRICE'))) ||
+            !ValidationUtils::checkInt($standardPrice, intval(env('MIN_STANDARD_PRICE')), intval(env('MAX_PRICE')))
+            || $vipPrice <= $standardPrice) {
+            return response()->json($wrong, 400, [], JSON_UNESCAPED_UNICODE);
+        }
+        $hallToUpdate->update(['vipPrice' => $vipPrice, 'standardPrice' => $standardPrice]);
+
+        return response()->json(["status" => "ok", "data" => json_decode($request->getContent())]);
+
+    }
+
+
+    public function updatePlacesInHall(Request $request): \Illuminate\Http\JsonResponse
+    {
+        if (!ValidationUtils::checkAdminRights()) {
+            return response()->json(["status" => "error", "message" => "Not authorized"], 401, [], JSON_UNESCAPED_UNICODE);
+        }
         $wrong = ["status" => "error", "message" => "Неправильные данные", "data" => json_decode($request->getContent())];
 
         $data = json_decode($request->getContent());
 
-        $str = $request->getContent();
-        Log::debug("updatePlacesInHall $str");
-
         $id = $data->id;
         if (!$id || !is_string($id) || !$data->places || !is_array($data->places->vip) || !is_array($data->places->disabled)) {
-            // Log::debug("updatePlacesInHall id data->places data->places->vip data->places->disabled");
             return response()->json($wrong, 400, [], JSON_UNESCAPED_UNICODE);
         }
         $hallToUpdate = Hall::byId($id);
@@ -137,14 +123,12 @@ class HallController extends Controller
 
 
         return response()->json(["status" => "ok"], 200);
-        }
-        return null;
+
     }
 
     public function getHallsList(): \Illuminate\Http\JsonResponse
     {
         $halls = Hall::all();
-
         return response()->json(["status" => "ok", "halls" => $halls], 200);
     }
 

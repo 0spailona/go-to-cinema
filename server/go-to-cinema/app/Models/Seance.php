@@ -33,8 +33,7 @@ class Seance extends Model
     protected $hidden = [
         'created_at', 'updated_at'
     ];
-//protected $dateFormat = env('DATE_FORMAT');
-    //protected $dateFormat = DATE_FORMAT;
+
     protected $dates = ['startTime'];
 
     public $incrementing = false;

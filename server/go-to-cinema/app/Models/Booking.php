@@ -14,9 +14,6 @@ protected $table = 'bookings';
     protected string $id;
     protected string $seanceId;
     protected array $places;
-   // protected int $row;
-    //protected int $place;
-    //protected DateTime $startTime;
 
 protected $fillable = ['places','seanceId','id'];
 
