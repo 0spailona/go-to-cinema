@@ -5,8 +5,10 @@
  
  для работы QR c других хостов надо добавить -e PUBLIC_URL=http://PUBLIC_HOST:PUBLIC_PORT
  для переопределения почты админа -e ADMIN_MAIL=bbb@mail.ru
- для переопределения пароля админа -e ADMIN_PASSWORD=pass_hash
-   pass_hash можно получить вот так: echo "<?php print password_hash('MyNewPassword', PASSWORD_DEFAULT);" | php
+ для переопределения пароля админа -e ADMIN_PASSWORD=pass_hash\
+
+ pass_hash можно получить вот так: 
+ ```echo "<?php print password_hash('MyNewPassword', PASSWORD_DEFAULT);" | php```
 
 5) Открыть в браузере http://localhost:PORT/ для страницы клиента
 6) Открыть в браузере http://localhost:PORT/admin для страницы админа. 

@@ -38,7 +38,7 @@
                     <p class="ticket__info">Начало сеанса: <span class="ticket__details ticket__start">{{$startTime}}</span></p>
 
                     <a href="{{env('PUBLIC_URL') . "showBooking/" . $bookingId}}">
-                        <img class="ticket__info-qr" src="{{env('PUBLIC_URL') . "getQR/" . $bookingId}}" alt="Упс! Здесь должен быть ваш QR.">
+                        <img class="ticket__info-qr" src="{{"/getQR/" . $bookingId}}" alt="Упс! Здесь должен быть ваш QR.">
                     </a>
 
                     <p class="ticket__hint">Покажите QR-код нашему контроллеру для подтверждения бронирования.</p>

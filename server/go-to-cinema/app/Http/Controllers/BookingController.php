@@ -11,6 +11,7 @@ use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Nette\Utils\Arrays;
 use BaconQrCode\Writer;
 use function Psy\debug;
@@ -102,7 +103,7 @@ class BookingController
 
     public function getQR(string $bookingId)
     {
-        Log:debug(["getQR"]);
+        Log::debug("getQR");
         $renderer = new GDLibRenderer(400);
         $writer = new Writer($renderer);
         $url = env('PUBLIC_URL') . "showBooking/" . $bookingId;
