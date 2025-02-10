@@ -15,9 +15,10 @@ FROM php:8.3-cli as runtime
 
 RUN apt-get update && apt-get install -y \
   --no-install-recommends git zip unzip \
-  zlib1g-dev libzip-dev
+  zlib1g-dev libzip-dev \
+  libpng-dev
 
-RUN docker-php-ext-install zip
+RUN docker-php-ext-install -j$(nproc) zip gd
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_HOME /tmp

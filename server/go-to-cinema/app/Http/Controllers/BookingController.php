@@ -13,6 +13,7 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use Illuminate\Http\Request;
 use Nette\Utils\Arrays;
 use BaconQrCode\Writer;
+use function Psy\debug;
 
 class BookingController
 {
@@ -101,6 +102,7 @@ class BookingController
 
     public function getQR(string $bookingId)
     {
+        Log:debug(["getQR"]);
         $renderer = new GDLibRenderer(400);
         $writer = new Writer($renderer);
         $url = env('PUBLIC_URL') . "showBooking/" . $bookingId;
