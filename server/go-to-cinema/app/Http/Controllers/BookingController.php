@@ -106,7 +106,7 @@ class BookingController
         Log::debug("getQR");
         $renderer = new GDLibRenderer(400);
         $writer = new Writer($renderer);
-        $url = env('PUBLIC_URL') . "showBooking/" . $bookingId;
+        $url = rtrim(env('PUBLIC_URL'), '/') . "/showBooking/" . $bookingId;
         $qr = $writer->writeString($url);
         return response($qr)->header('Content-Type', 'image/png');
     }

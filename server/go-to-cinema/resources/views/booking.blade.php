@@ -37,7 +37,7 @@
                     <p class="ticket__info">В зале: <span class="ticket__details ticket__hall">{{$hallName}}</span></p>
                     <p class="ticket__info">Начало сеанса: <span class="ticket__details ticket__start">{{$startTime}}</span></p>
 
-                    <a href="{{env('PUBLIC_URL') . "showBooking/" . $bookingId}}">
+                    <a href="{{rtrim(env('PUBLIC_URL'), '/') . "/showBooking/" . $bookingId}}">
                         <img class="ticket__info-qr" src="{{"/getQR/" . $bookingId}}" alt="Упс! Здесь должен быть ваш QR.">
                     </a>
 
