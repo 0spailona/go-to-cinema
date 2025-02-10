@@ -45,4 +45,6 @@ RUN php artisan migrate
 COPY --from=build-front /front/admin-page/dist storage/spa/admin
 COPY --from=build-front /front/client-page/dist storage/spa/client
 
-CMD ["php", "artisan", "serve", "--host", "0.0.0.0", "--port", "8000"]
+COPY start.sh .
+
+CMD ["./start.sh"]
