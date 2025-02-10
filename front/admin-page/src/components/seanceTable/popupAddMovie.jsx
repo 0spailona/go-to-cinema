@@ -59,7 +59,6 @@ export default function PopupAddMovie({showPopup, onReset, onSubmit, onError, cl
     async function sendPoster(poster) {
         const formData = new FormData();
         formData.append("poster", poster);
-
         const response = await sendPosterToServer(formData);
 
         if (response.status === "success") {
@@ -87,7 +86,7 @@ export default function PopupAddMovie({showPopup, onReset, onSubmit, onError, cl
                  onSubmit={e => onSubmitAdd(e)}>
             <div className="popup__container">
                 <div className="popup__poster"
-                     style={{backgroundImage: `url(admin/api/posterBySession?${posterRandom})`}}>
+                     style={{backgroundImage: `url(api/posterBySession?${posterRandom})`}}>
                 </div>
                 <div className="popup__form">
                     <MyInput label="Название фильма" name="title" size="full" isRequired={true}
