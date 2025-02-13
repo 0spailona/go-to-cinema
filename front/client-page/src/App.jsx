@@ -2,7 +2,7 @@ import {Route, Routes} from 'react-router-dom';
 import ClientPage from "./components/clientPage.jsx";
 import Hall from "./components/hall/hall.jsx";
 import Ticket from "./components/ticket/ticket.jsx";
-import {setInitialChosenSeance, setIsDrawPage} from "./redux/slices/cinema.js";
+import {setIsDrawPage} from "./redux/slices/cinema.js";
 import {useEffect} from "react";
 import {isOpenSails} from "./js/api.js";
 import {useDispatch} from "react-redux";

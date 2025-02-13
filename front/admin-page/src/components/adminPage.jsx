@@ -6,9 +6,9 @@ import ConfigPrice from "./configPrice.jsx";
 import SeanceTable from "./seanceTable/seanceTable.jsx";
 import SailsControl from "./sailsControl.jsx";
 import {useEffect, useState} from "react";
-import {setConfig, setHalls, setLoadingHalls} from "../redux/slices/halls.js";
+import {setCanUpdate, setConfig, setHalls, setLoadingHalls} from "../redux/slices/halls.js";
 import {useDispatch, useSelector} from "react-redux";
-import {getHallConfig, getHalls, getMovies, logOut} from "../js/api.js";
+import {getHallConfig, getHalls, getMovies, isOpenSails, logOut} from "../js/api.js";
 import {setLoadingMovies, setMovies} from "../redux/slices/movies.js";
 import PopupError from "./common/popupError.jsx";
 import MyButton from "./common/myButton.jsx";
@@ -64,6 +64,17 @@ export default function AdminPage() {
         }
     };
 
+    const isCanUpdate = async () => {
+
+        const response = await isOpenSails();
+
+        if (response.status !== "success") {
+            dispatch(setCanUpdate(false));
+        }
+        else {
+            dispatch(setCanUpdate(!response.data));
+        }
+    };
 
     useEffect(() => {
 
@@ -73,6 +84,7 @@ export default function AdminPage() {
                 !await getMoviesFromServer()) {
                 setErrorView({isError: true, message: "Проблемы с сервером. Попробуйте позже"});
             }
+            await isCanUpdate();
         }
 
         toStart();

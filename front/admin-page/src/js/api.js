@@ -37,6 +37,24 @@ export async function logOut() {
     window.location = `${baseUrl}/logout`;
 }
 
+export async function isOpenSails() {
+
+    const response = await fetch(`${apiUrl}/isOpenSails`, {
+        headers: {
+            Accept: "application/json",
+        },
+        credentials: "same-origin",
+    });
+
+
+    if (Math.floor(response.status / 100) === 2) {
+        const json = await response.json();
+
+        return {status: "success", data: json.data};
+    }
+
+    return {status: "error"};
+}
 
 export async function openSails() {
     const response = await fetch(`${apiUrl}/openSails`, {

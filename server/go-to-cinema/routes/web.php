@@ -126,6 +126,7 @@ Route::prefix('admin')->group(function () {
 
         Route::post('openSails', [\App\Http\Controllers\AdminController::class, 'toOpenSails']);
         Route::post('closeSails', [\App\Http\Controllers\AdminController::class, 'toCloseSails']);
+        Route::get('isOpenSails', [\App\Http\Controllers\AdminController::class, 'isOpenSails']);
     });
 
     //admin SPA

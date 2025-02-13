@@ -95,13 +95,6 @@ export default function ClientPage() {
     useEffect(() => {
         dispatch(setInitialChosenSeance());
 
-        /*async function toStart() {
-            await isDrawFilms();
-            const interval = setInterval(isDrawFilms, 5000);
-        }
-
-        toStart();*/
-
     }, []);
 
     useEffect(() => {
@@ -140,6 +133,3 @@ export default function ClientPage() {
         </main>
     </>);
 }
-/*
-
-* */
