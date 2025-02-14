@@ -19,7 +19,6 @@ export const seancesSlice = createSlice({
     reducers: {
         addMovieToSeancesHall: (state, action) => {
             state.isUpdatedSeances = true;
-            console.log("addNewMovieToSeancesHall", action.payload);
             const hallId = action.payload.to;
             const fromHallId = action.payload.from;
             const movieId = action.payload.movieId;

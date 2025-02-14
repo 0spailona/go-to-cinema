@@ -53,10 +53,10 @@ export function checkDropInHall(itemOnDragX, width, hallWidth, dragMovie, seance
     const endTime = startTime + dragMovie.duration;
 
     for (let seance of seances) {
-        const endSeance = seance.start + movies[seance.movieId].duration;
+        const endSeance = seance.startTime + movies[seance.movieId].duration;
 
-        if ((startTime > seance.start && startTime < endSeance) ||
-            (endTime > seance.start && endTime < endSeance)) {
+        if ((startTime > seance.startTime && startTime < endSeance) ||
+            (endTime > seance.startTime && endTime < endSeance)) {
             return false;
         }
     }
