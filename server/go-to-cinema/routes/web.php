@@ -39,7 +39,7 @@ function serveFile($file, $folder, $defaultFile = null)
 {
     $filePath = storage_path('spa') . "/$folder/$file";
 
-    if (!file_exists($filePath)) {
+    if (!file_exists($filePath) && $defaultFile != null) {
         $filePath = storage_path('spa') . "/$folder/$defaultFile";
     }
 
