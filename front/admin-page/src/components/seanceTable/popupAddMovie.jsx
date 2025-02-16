@@ -57,6 +57,9 @@ export default function PopupAddMovie({showPopup, onReset, onSubmit, onError, cl
     };
 
     async function sendPoster(poster) {
+        if(!poster){
+            return;
+        }
         const formData = new FormData();
         formData.append("poster", poster);
         const response = await sendPosterToServer(formData);
