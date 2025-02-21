@@ -788,12 +788,13 @@ textarea.conf-step__input {
     right: 5px;
 }
 
-.popup__poster {
-    height: 340px;
-    width: 255px;
+.popup__poster__wrap {
     margin-right: 25px;
-    background-size: 100%;
-    background-repeat: no-repeat;
+}
+
+.popup__poster {
+    max-height: 340px;
+    max-width: 255px;
 }
 
 .popup__container {

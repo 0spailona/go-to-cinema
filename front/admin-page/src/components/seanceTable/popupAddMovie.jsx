@@ -54,6 +54,7 @@ export default function PopupAddMovie({showPopup, onReset, onSubmit, onError, cl
         setInputCountry("");
         setInputTime("");
         setInputRelease("");
+        setPosterRandom(Math.random());
     };
 
     async function sendPoster(poster) {
@@ -88,8 +89,8 @@ export default function PopupAddMovie({showPopup, onReset, onSubmit, onError, cl
                  onReset={e => onResetAdd(e)}
                  onSubmit={e => onSubmitAdd(e)}>
             <div className="popup__container">
-                <div className="popup__poster"
-                     style={{backgroundImage: `url(api/posterBySession?${posterRandom})`}}>
+                <div className="popup__poster__wrap">
+                    <img className="popup__poster" src={`api/posterBySession?${posterRandom}`} alt="poster"/>.
                 </div>
                 <div className="popup__form">
                     <MyInput label="Название фильма" name="title" size="full" isRequired={true}

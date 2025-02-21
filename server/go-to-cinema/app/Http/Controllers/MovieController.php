@@ -45,8 +45,6 @@ class MovieController
         if (!ValidationUtils::checkAdminRights()) {
             return response()->json(["status" => "error", "message" => "Not authorized"], 401, [], JSON_UNESCAPED_UNICODE);
         }
-        $message = "Неправильные данные";
-        //$wrong = ["status" => "error", "message" => $message, "data" => json_decode($request->getContent())];
 
         $data = json_decode($request->getContent());
         $title = $data->title;
