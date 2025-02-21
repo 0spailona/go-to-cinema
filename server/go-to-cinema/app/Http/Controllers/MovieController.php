@@ -45,7 +45,8 @@ class MovieController
         if (!ValidationUtils::checkAdminRights()) {
             return response()->json(["status" => "error", "message" => "Not authorized"], 401, [], JSON_UNESCAPED_UNICODE);
         }
-        $wrong = ["status" => "error", "message" => "Неправильные данные", "data" => json_decode($request->getContent())];
+        $message = "Неправильные данные";
+        //$wrong = ["status" => "error", "message" => $message, "data" => json_decode($request->getContent())];
 
         $data = json_decode($request->getContent());
         $title = $data->title;
@@ -53,12 +54,29 @@ class MovieController
         $release_year = $data->releaseYear;
         $duration = $data->duration;
         $description = $data->description;
-        $nowYear = intval(date("Y"));
 
-        if (!ValidationUtils::checkString($title, 0, 50) || !ValidationUtils::checkString($country, 2, 130)
-            || !ValidationUtils::checkString($description, 0, 200) || !ValidationUtils::checkInt($duration, 0, 1255)
-            || !ValidationUtils::checkInt($release_year, 1895, $nowYear)) {
-            return response()->json($wrong, 404, [], JSON_UNESCAPED_UNICODE);
+
+        if (!ValidationUtils::checkString($title, 1, 50)) {
+            $message = "Название фильма не может быть меньше одного символа или больше 50";
+            return response()->json(["status" => "error", "message" => $message, "data" => json_decode($request->getContent())], 404, [], JSON_UNESCAPED_UNICODE);
+        }
+        if (!ValidationUtils::checkString($country, 2, 130)) {
+            $message = "Название страны не может быть мельне 2х символов или больше 130";
+            return response()->json(["status" => "error", "message" => $message, "data" => json_decode($request->getContent())], 404, [], JSON_UNESCAPED_UNICODE);
+        }
+        if (!ValidationUtils::checkString($description, 0, 200)) {
+            $message = "Описание фильма не может быть больше 200 символов";
+            return response()->json(["status" => "error", "message" => $message, "data" => json_decode($request->getContent())], 404, [], JSON_UNESCAPED_UNICODE);
+        }
+        if (!ValidationUtils::checkInt($duration, 0, 1255)) {
+            $message = "Длительность фильма не может быть больше 1255 минут";
+            return response()->json(["status" => "error", "message" => $message, "data" => json_decode($request->getContent())], 404, [], JSON_UNESCAPED_UNICODE);
+        }
+        $nowYear = intval(date("Y"));
+        Log::debug("year  " . $nowYear);
+        if (!ValidationUtils::checkInt($release_year, 1895, $nowYear + 1)) {
+            $message = "Год релиза должен быть от 1895 до " . $nowYear;
+            return response()->json(["status" => "error", "message" => $message, "data" => json_decode($request->getContent())], 404, [], JSON_UNESCAPED_UNICODE);
         }
 
         $movieId = uniqid();

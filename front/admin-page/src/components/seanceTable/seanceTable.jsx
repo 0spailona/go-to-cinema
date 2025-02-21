@@ -345,7 +345,7 @@ export default function SeanceTable() {
         const response = await createMovie(data);
 
         if (response.status !== "success") {
-            dispatch(setError("Что-то пошло не так. Попробуйте позже"));
+            dispatch(setError(response.message));
         }
 
         dispatch(setLoadingMovies(false));
