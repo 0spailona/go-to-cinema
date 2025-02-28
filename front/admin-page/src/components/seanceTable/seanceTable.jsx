@@ -126,13 +126,15 @@ export default function SeanceTable() {
 
     const [sourceDroppableId, setSourceDroppableId] = useState(null);
 
-    function isCanDrop(hallId, movieId) {
+    function isCanDrop(hallId, movieId, seanceId) {
+
         if (curDroppableId?.includes(droppableIdsBase.seanceHall)) {
             const width = document.getElementById(curDraggableId).getBoundingClientRect().width;
             const hallWidth = getSeanceHallWidth();
             const seancesInHall = seances[hallId].seances;
 
-            if (!checkDropInHall(itemOnDragX, width, hallWidth, movies[movieId], seancesInHall, movies)) {
+            if (!checkDropInHall(itemOnDragX, width, hallWidth, movies[movieId], seancesInHall, movies, seanceId)) {
+
                 return false;
             }
 
@@ -222,11 +224,11 @@ export default function SeanceTable() {
             const hallId = toId.match(/^seances-hall-([0-9a-f]+)$/)[1];
             const movieId = draggableId.match(/^movie-in-[\w-]+-([0-9a-f]+)$/)[1];
 
-            if (!isCanDrop(hallId, movieId)) {
-                return;
-            }
-
             if (fromId === droppableIdsBase.allMovies) {
+                if (!isCanDrop(hallId, movieId, null)) {
+                    return;
+                }
+
                 dispatch(addMovieToSeancesHall({
                     from: null,
                     to: hallId,
@@ -237,6 +239,11 @@ export default function SeanceTable() {
             }
             else {
                 const fromHallId = fromId.match(/^seances-hall-([0-9a-f]+)$/)[1];
+                const seanceId = draggableId.match(/^movie-in-seance-hall-([0-9a-f]+)-([0-9a-f]+)-([0-9a-f]+)$/)[1];
+
+                if (!isCanDrop(hallId, movieId, seanceId)) {
+                    return;
+                }
 
                 dispatch(addMovieToSeancesHall({
                     from: fromHallId,

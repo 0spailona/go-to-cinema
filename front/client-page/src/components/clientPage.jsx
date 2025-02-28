@@ -16,6 +16,7 @@ import {
 } from "../redux/slices/cinema.js";
 import Loader from "react-js-loader";
 import Popup from "./common/popup.jsx";
+import {checkSeances, isEqual} from "../js/utils.js";
 
 
 export default function ClientPage() {
@@ -24,18 +25,6 @@ export default function ClientPage() {
 
     const {seances, chosenDate, isDrawPage, loading, lastIsDrawPage, error} = useSelector(state => state.cinema);
     const [errorView, setErrorView] = useState({isError: false, message: ""});
-
-    /*const isDrawFilms = async () => {
-
-        const response = await isOpenSails();
-
-        if (response.status === "success") {
-            dispatch(setIsDrawPage(response.data));
-        }
-        else {
-            dispatch(setIsDrawPage(false));
-        }
-    };*/
 
     const getMoviesFromServer = async () => {
         dispatch(setLoading(true));
@@ -66,7 +55,10 @@ export default function ClientPage() {
         dispatch(setLoading(true));
         const response = await getSeancesByDate(date);
         if (response.status === "success") {
-            dispatch(setSeances(response.data));
+
+            const now = new Date();
+            const seances = isEqual(new Date(date), now) ? checkSeances(response.data) : response.data;
+            dispatch(setSeances(seances));
         }
         else {
             dispatch(setError("Проблемы с сервером. Попробуйте позже"));

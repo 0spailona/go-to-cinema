@@ -44,17 +44,20 @@ export function toISOStringNoMs(date) {
     return date.toISOString().replace(/\.\d+/, "");
 }
 
-export function checkDropInHall(itemOnDragX, width, hallWidth, dragMovie, seances, movies) {
+export function checkDropInHall(itemOnDragX, width, hallWidth, dragMovie, seances, movies, seanceId) {
 
-    if (itemOnDragX < -10 || itemOnDragX + width > hallWidth + 10) {
+    if (itemOnDragX < -20 || itemOnDragX + width > hallWidth + 20) {
         return false;
     }
+
     const startTime = pxToMinutes(itemOnDragX);
     const endTime = startTime + dragMovie.duration;
 
     for (let seance of seances) {
         const endSeance = seance.startTime + movies[seance.movieId].duration;
-
+        if (seance.id === seanceId) {
+            continue;
+        }
         if ((startTime > seance.startTime && startTime < endSeance) ||
             (endTime > seance.startTime && endTime < endSeance)) {
             return false;
