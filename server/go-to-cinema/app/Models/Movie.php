@@ -27,6 +27,12 @@ class Movie extends Model
         'release_year',
         'poster',
     ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public $incrementing = false;
 
     // In Laravel 6.0+ make sure to also set $keyType

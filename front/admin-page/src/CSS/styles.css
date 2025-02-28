@@ -595,6 +595,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
 .conf-step__seances-hall-wrp {
     position: relative;
     display: flex;
+    gap:10px
 }
 
 .conf-step__seances-hall {

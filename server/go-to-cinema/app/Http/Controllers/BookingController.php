@@ -24,7 +24,9 @@ class BookingController
 
         if (!Seance::byId($data->seanceId)) {
             return response()->json(["status" => "error", "message" => "Сеанс не обнаружен"], 404, [], JSON_UNESCAPED_UNICODE);
-        } else {
+        }
+
+        else {
             $places = $data->places;
             if (is_array($places) != "array") {
                 return response()->json(["status" => "error", "message" => "Неверные данные"], 404, [], JSON_UNESCAPED_UNICODE);
@@ -33,6 +35,10 @@ class BookingController
                 return response()->json(["status" => "error", "message" => "Не выбрано ни одного места"], 404, [], JSON_UNESCAPED_UNICODE);
             }
             $seance = Seance::byId($data->seanceId);
+            $now = date('DATE_FORMAT', "Y-m-d\TH:i:sp");
+            if($seance->startTime < $now){
+                return response()->json(["status" => "error", "message" => "На выбранный сеанс уже закрыто бронирование"], 404, [], JSON_UNESCAPED_UNICODE);
+            }
 
             $hall = Hall::byId($seance->hallId);
 
