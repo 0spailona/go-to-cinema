@@ -222,6 +222,7 @@ export default function SeanceTable() {
         }
         else {
             const hallId = toId.match(/^seances-hall-([0-9a-f]+)$/)[1];
+            //console.log("draggableId",draggableId)
             const movieId = draggableId.match(/^movie-in-[\w-]+-([0-9a-f]+)$/)[1];
 
             if (fromId === droppableIdsBase.allMovies) {
@@ -239,7 +240,9 @@ export default function SeanceTable() {
             }
             else {
                 const fromHallId = fromId.match(/^seances-hall-([0-9a-f]+)$/)[1];
-                const seanceId = draggableId.match(/^movie-in-seance-hall-([0-9a-f]+)-([0-9a-f]+)-([0-9a-f]+)$/)[1];
+               // console.log("draggableId",draggableId)
+               // console.log("match",draggableId.match(/^movie-in-seance-hall-([0-9a-z]+)-([0-9a-f]+)-([0-9a-f]+)$/))
+                const seanceId = draggableId.match(/^movie-in-seance-hall-([0-9a-z]+)-([0-9a-f]+)-([0-9a-f]+)$/)[1];
 
                 if (!isCanDrop(hallId, movieId, seanceId)) {
                     return;

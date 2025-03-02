@@ -139,6 +139,6 @@ export async function toBook(data) {
         return {status: "success", data: json.data};
     }
     else {
-        return {status: "error"};
+        return {status: "error",message:json.message};
     }
 }

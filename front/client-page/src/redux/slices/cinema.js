@@ -37,7 +37,7 @@ export const cinemaSlice = createSlice({
             state.chosenSeance = {seanceData: null, selectedPlaces: [], takenPlaces: []};
         },
         setError(state, action) {
-            state.bookingId = action.payload;
+            state.error = action.payload;
         },
         setIsDrawPage: (state, action) => {
             state.lastIsDrawPage = state.isDrawPage;

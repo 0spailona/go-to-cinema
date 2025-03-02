@@ -54,8 +54,8 @@ export default function ClientPage() {
     const getSeances = async (date) => {
         dispatch(setLoading(true));
         const response = await getSeancesByDate(date);
-        if (response.status === "success") {
 
+        if (response.status === "success") {
             const now = new Date();
             const seances = isEqual(new Date(date), now) ? checkSeances(response.data) : response.data;
             dispatch(setSeances(seances));

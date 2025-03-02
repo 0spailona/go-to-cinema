@@ -35,7 +35,7 @@ class BookingController
                 return response()->json(["status" => "error", "message" => "Не выбрано ни одного места"], 404, [], JSON_UNESCAPED_UNICODE);
             }
             $seance = Seance::byId($data->seanceId);
-            $now = date('DATE_FORMAT', "Y-m-d\TH:i:sp");
+            $now = date('DATE_FORMAT');
             if($seance->startTime < $now){
                 return response()->json(["status" => "error", "message" => "На выбранный сеанс уже закрыто бронирование"], 404, [], JSON_UNESCAPED_UNICODE);
             }

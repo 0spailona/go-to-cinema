@@ -2,12 +2,13 @@ import MyButton from "../common/MyButton.jsx";
 import {useDispatch, useSelector} from "react-redux";
 import TicketInfo from "./ticketInfo.jsx";
 import Hint from "./hint.jsx";
-import {setChosenSeance, setLoading} from "../../redux/slices/cinema.js";
+import {setChosenSeance, setError, setLoading} from "../../redux/slices/cinema.js";
 import {useEffect, useState} from "react";
 import {getStartTimeStringFromMinutes} from "../../js/utils.js";
 import {getSeanceById, toBook} from "../../js/api.js";
 import Loader from "react-js-loader";
 import Popup from "../common/popup.jsx";
+import {res} from "react-email-validator";
 
 export default function Ticket() {
 
@@ -21,6 +22,7 @@ export default function Ticket() {
         isDrawPage,
         loading,
         lastIsDrawPage,
+        error
     } = useSelector(state => state.cinema);
 
     if (!chosenSeance.seanceData || chosenSeance.selectedPlaces.length === 0) {
@@ -30,9 +32,17 @@ export default function Ticket() {
                       }}/>;
     }
 
-    const [error, setError] = useState({isError: false, message: ""});
+    const [errorView, setErrorView] = useState({isError: false, message: ""});
 
-    let hall, time, movie, places, cost, seance, selectedPlaces,prices;
+    useEffect(() => {
+        if (!error) {
+            setErrorView({isError: false, message: ""});
+        }
+        if (error) {
+            setErrorView({isError: true, message: error});
+        }
+    }, [error]);
+
 
     useEffect(() => {
         if (isDrawPage && !lastIsDrawPage) {
@@ -43,6 +53,9 @@ export default function Ticket() {
             toGetUpdateSeance();
         }
     }, [isDrawPage]);
+
+
+    let hall, time, movie, places, cost, seance, selectedPlaces,prices;
 
 
     const getUpdateSeance = async (id) => {
@@ -81,13 +94,16 @@ export default function Ticket() {
         if (response.status === "success") {
             window.location = `/showBooking/${response.data}`;
         }
+        else{
+            dispatch(setError(response.message))
+        }
     };
 
     return (
         <>
-            <Popup isVisible={error.isError} message={error.message}
+            <Popup isVisible={errorView.isError} message={errorView.message}
                    onClose={() => {
-                       setError({isError: false, message: ""});
+                       setErrorView({isError: false, message: ""});
                        window.location = "/";
                    }}/>
 

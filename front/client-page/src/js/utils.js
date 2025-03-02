@@ -33,16 +33,30 @@ export function checkSeances(seancesByMovie){
         for(let hallSeances of Object.entries(movieSeances[1])){
             const hallId = hallSeances[0]
             if(hallSeances[1].length > 0){
-             hallSeances[1] = hallSeances[1].filter(seance => new Date(seance.startTime).getTime() > nowTime)
+
+                console.log("before filter hallSeances[1]", hallSeances[1]);
+
+             hallSeances[1] = hallSeances[1].filter(seance => {
+              if(new Date(seance.startTime).getTime() > nowTime) {
+                  console.log("startTime", new Date(seance.startTime).getTime(),"nowTime",nowTime);
+                  return seance
+              }
+              return ;
+             })
+
             }
             if(hallSeances[1].length === 0){
                 delete movieSeances[1][hallId];
             }
+            console.log(" after filter hallSeances[1]", hallSeances[1]);
         }
 
         if(Object.keys(movieSeances[1]).length === 0){
             delete seances[movieId];
         }
+        console.log("movieSeances[1]",movieSeances[1])
+
     }
+    console.log("seances",seances);
     return seances
 }
