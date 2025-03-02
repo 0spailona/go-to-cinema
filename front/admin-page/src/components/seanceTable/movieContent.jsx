@@ -10,6 +10,10 @@ export default function MovieContent({
                                          startTime,
                                          index
                                      }) {
+    if (isDragOverHall || isRenderInHall){
+        //console.log("MovieContent title",title,"startTime",startTime)
+    }
+
 
     if (isRenderInHall && !isDragOverHall && isDraggingElem) {
         return <div className="conf-step__seances-movie small-movie"

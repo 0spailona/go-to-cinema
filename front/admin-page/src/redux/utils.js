@@ -1,7 +1,10 @@
-export function createSeance(movieId, startTime, index) {
-    const id = `seance${index}`;
+import {v4} from "uuid";
+
+export function createSeance(movieId,hallId ,startTime) {
+
+    const id = `tmp${v4().replaceAll("-", "")}`;
     return {
-        id, movieId, startTime
+        id, movieId, hallId, startTime
     };
 }
 

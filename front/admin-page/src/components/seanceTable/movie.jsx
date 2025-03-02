@@ -19,6 +19,8 @@ export default function Movie({
     const {seances} = useSelector(state => state.seances);
     const {canUpdate} = useSelector(state => state.halls);
 
+
+
     let seanceStart = null;
     let timeStart = "";
     let offset = 0;
@@ -27,6 +29,7 @@ export default function Movie({
     if (hallId) {
         seanceStart = seances[hallId].seances.find(x => x.id === seanceId).startTime;
         timeStart = getViewTime(seanceStart);
+       // console.log("seanceId", seanceId, "title",movies[movieId].title,"timeStart",timeStart);
         offset = minutesToPx(seanceStart);
         isRenderInHall = true;
     }
@@ -45,12 +48,16 @@ export default function Movie({
 
     const movie = movies[movieId];
 
-    if(!movie){
+    if (!movie) {
         return null;
     }
 
     const id = hallId ? `${draggableIdsBase.movieInSeance}${seanceId}-${hallId}-${movieId}`
         : `${draggableIdsBase.movieInList}${movieId}`;
+if(hallId){
+    //console.log("movie draggableId",id)
+}
+
     const backGroundColorIndex = Object.keys(movies).indexOf(movieId);
 
     const width = minutesToPx(movie.duration);
@@ -66,20 +73,18 @@ export default function Movie({
             draggableStyle.transitionDuration = "0.00001s";
         }
 
-
         const isDragging = snapshot.isDragging;
         const draggingOver = snapshot.draggingOver;
 
         draggableStyle.position = isDragging ? "fixed" : isRenderInHall ? "absolute" : "relative";
-        if (!draggingOver) {
 
+        if (!draggingOver) {
             setTimeout(() => setIsDragOverHall(false), 1);
         }
         else if (draggingOver?.includes(droppableIdsBase.seanceHall)) {
             setTimeout(() => setIsDragOverHall(true), 1);
         }
         else if (draggingOver?.includes(droppableIdsBase.allMovies)) {
-
             setTimeout(() => setIsDragOverHall(false), 1);
         }
 
@@ -133,12 +138,13 @@ export default function Movie({
     };
 
     return (
-        <div className={`${isRenderInHall ? "conf-step__seances-movie-wrp" : "conf-step__movie-wrp"}`} key={index}
+        <div className={`${isRenderInHall ? "conf-step__seances-movie-wrp" : "conf-step__movie-wrp"}`}
              style={{
                  height: containerHeight
              }}>
             <Draggable draggableId={id}
-                       index={index}>
+                       //index={index}
+            >
                 {(provided, snapshot) => (
                     <div id={id}
                          {...provided.draggableProps}
@@ -151,6 +157,7 @@ export default function Movie({
                                       isDraggingElem={isDraggingElem} title={movie.title}
                                       movieId={movieId} duration={movie.duration}
                                       startTime={time}
+                                      //startTime={timeStart}
                                       index={backGroundColorIndex}/>
                     </div>
                 )}

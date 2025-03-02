@@ -33,7 +33,9 @@ export default function SeancesHall({
                              {...provided.droppableProps}>
 
                             {seancesInHall ? seancesInHall.map((seance, index) => (
-                                <Movie index={index} key={index} hallId={hallId}
+                                <Movie index={index}
+                                       key={seance.id}
+                                       hallId={hallId}
                                        movieId={seance.movieId} itemOnDragX={itemOnDragX}
                                        updateIsDropAnimating={updateIsDropAnimating}
                                        seanceId={seance.id}/>)) : null}

@@ -8,7 +8,14 @@ import {useDispatch, useSelector} from "react-redux";
 import PopupAddMovie from "./popupAddMovie.jsx";
 import PopupRemoveMovie from "./popupRemoveMovie.jsx";
 import {setLoadingMovies, setMovies,} from "../../redux/slices/movies.js";
-import {checkDropInHall, getItemOnDragX, getSeancesObj, pxToMinutes, toISOStringNoMs} from "../../js/utils.js";
+import {
+    checkDropInHall,
+    getItemOnDragX,
+    getSeancesObj,
+    getViewTime,
+    pxToMinutes,
+    toISOStringNoMs
+} from "../../js/utils.js";
 import {getSeanceHallWidth} from "../../js/info.js";
 import {draggableIdsBase, droppableIdsBase, getSeancesHallId} from "./utilsFunctions.js";
 import PopupUpdateDate from "./popupUpdateDate.jsx";
@@ -53,6 +60,9 @@ export default function SeanceTable() {
         loadingSeances
     } = useSelector(state => state.seances);
     const {halls} = useSelector(state => state.halls);
+
+    console.log("seances", seances);
+
 
     const [showAllMoviesLoader, setShowAllMoviesLoader] = useState(loadingMovies);
     const [errorView, setErrorView] = useState({isError: false, message: ""});
@@ -192,11 +202,16 @@ export default function SeanceTable() {
             return;
         }
 
+       // console.log("onDragEnd result", result);
+        //console.log("itemOnDragX",itemOnDragX);
+
         const fromId = source.droppableId;
         const itemIndex = source.index;
         const toId = destination.droppableId;
 
         const start = pxToMinutes(itemOnDragX);
+        //console.log("onDragEnd start",getViewTime(start))
+        //console.log("onDragEnd draggableId",draggableId);
 
         if (toId === droppableIdsBase.removeFromAllMovies) {
             if (source.droppableId !== droppableIdsBase.allMovies) {
@@ -235,7 +250,7 @@ export default function SeanceTable() {
                     to: hallId,
                     movieId,
                     start,
-                    movieIndex: itemIndex
+                    //movieIndex: itemIndex
                 }));
             }
             else {
@@ -248,12 +263,15 @@ export default function SeanceTable() {
                     return;
                 }
 
+                //console.log("seances by hall from",seances[fromHallId])
+
                 dispatch(addMovieToSeancesHall({
                     from: fromHallId,
                     to: hallId,
                     movieId,
                     start,
-                    movieIndex: itemIndex
+                    seanceId
+                    //movieIndex: itemIndex
                 }));
             }
             setInitialDnDState();

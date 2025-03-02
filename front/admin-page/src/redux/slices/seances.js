@@ -23,12 +23,12 @@ export const seancesSlice = createSlice({
             const fromHallId = action.payload.from;
             const movieId = action.payload.movieId;
             const start = action.payload.start;
-            const newSeance = createSeance(movieId, start, state.seances[hallId].seances.length);
-            state.seances[hallId].seances.push(newSeance);
-
             if (fromHallId) {
-                state.seances[fromHallId].seances.splice(action.payload.movieIndex, 1);
+                state.seances[fromHallId].seances = state.seances[fromHallId].seances.filter(seance => seance.id !== action.payload.seanceId);
+                //state.seances[fromHallId].seances.splice(action.payload.movieIndex, 1);
             }
+            const newSeance = createSeance(movieId,hallId, start);
+            state.seances[hallId].seances.push(newSeance);
         },
         removeMovieFromSeanceHall: (state, action) => {
             state.isUpdatedSeances = true;
