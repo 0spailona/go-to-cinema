@@ -56,9 +56,10 @@ export default function ClientPage() {
         const response = await getSeancesByDate(date);
 
         if (response.status === "success") {
-            const now = new Date();
-            const seances = isEqual(new Date(date), now) ? checkSeances(response.data) : response.data;
-            dispatch(setSeances(seances));
+            //const now = new Date();
+            //const seances = isEqual(new Date(date), now) ? checkSeances(response.data) : response.data;
+            //dispatch(setSeances(seances));
+            dispatch(setSeances(response.data))
         }
         else {
             dispatch(setError("Проблемы с сервером. Попробуйте позже"));

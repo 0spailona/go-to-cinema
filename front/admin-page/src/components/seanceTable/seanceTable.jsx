@@ -61,7 +61,7 @@ export default function SeanceTable() {
     } = useSelector(state => state.seances);
     const {halls} = useSelector(state => state.halls);
 
-    console.log("seances", seances);
+    //console.log("seances", seances);
 
 
     const [showAllMoviesLoader, setShowAllMoviesLoader] = useState(loadingMovies);
@@ -94,7 +94,7 @@ export default function SeanceTable() {
         dispatch(setLoadingSeances(true));
         const response = await updateSeances(data);
         if (response.status !== "success") {
-            dispatch(setError("Что-то пошло не такю Сеансы не были обновлены"));
+            dispatch(setError("Что-то пошло не так. Сеансы не были обновлены"));
         }
         dispatch(setLoadingSeances(false));
     };

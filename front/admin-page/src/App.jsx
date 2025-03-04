@@ -7,11 +7,12 @@ function App() {
     const [hasAdminRights, setHasAdminRights] = useState(false);
     const [error, setError] = useState({isError: false, message: ""});
 
-    const [a, setA] = useState(0);
+
+  /*  const [a, setA] = useState(0);
 
     setTimeout(() => {
         setA(a + 1);
-    }, 1000);
+    }, 1000);*/
 
     useEffect(() => {
         async function toStart() {
@@ -28,9 +29,11 @@ function App() {
         toStart();
     }, []);
 
+    //console.log("app")
+    //console.log(hasAdminRights);
+
     return (
         <>
-            <h1>{a}</h1>
             <header className="page-header">
                 <h1 className="page-header__title">Идём<span>в</span>кино</h1>
                 <span className="page-header__subtitle">Администраторррская</span>

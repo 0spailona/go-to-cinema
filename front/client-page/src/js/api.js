@@ -1,4 +1,5 @@
 import {getHallsObj, getObjMovies, getSeancesObj} from "./modelUtils.js";
+import {isEqual, toISOStringNoMs} from "./utils.js";
 
 const baseUrl = "";
 const apiUrl = `${baseUrl}/api`;
@@ -71,9 +72,26 @@ export async function getHalls() {
     }
 }
 
-export async function getSeancesByDate(date) {
+export async function getSeancesByDate(dateFrom) {
 
-    const response = await fetch(`${apiUrl}/seancesListByDate?date=${date}`, {
+    const now = new Date();
+    const date =  new Date(dateFrom);
+
+    let to = new Date();
+    to.setDate(date.getDate() + 1);
+    to.setHours(0, 0, 0, 0);
+    to = toISOStringNoMs(to)
+    console.log("to",to)
+
+    if(!isEqual(now, date)) {
+        date.setHours(0, 0, 0, 0);
+        dateFrom = toISOStringNoMs(date);
+    }
+
+    console.log("from",dateFrom)
+
+
+    const response = await fetch(`${apiUrl}/seancesListByDate?dateFrom=${dateFrom}&dateTo=${to}`, {
         headers: {
             Accept: "application/json",
         },

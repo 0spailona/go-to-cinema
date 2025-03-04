@@ -81,7 +81,7 @@ export function getArrFromSeances(seances, date) {
             const startTime = new Date(date.getTime());
             startTime.setHours(Math.trunc(seance.startTime / 60), seance.startTime % 60);
 
-            const id = seance.id.includes("seance") ? null : seance.id;
+            const id = seance.id.includes("tmp") ? null : seance.id;
 
             let obj = {hallId, movieId: seance.movieId, startTime: toISOStringNoMs(startTime)};
             if (id) {

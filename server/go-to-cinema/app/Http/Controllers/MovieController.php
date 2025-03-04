@@ -71,7 +71,7 @@ class MovieController
             return response()->json(["status" => "error", "message" => $message, "data" => json_decode($request->getContent())], 404, [], JSON_UNESCAPED_UNICODE);
         }
         $nowYear = intval(date("Y"));
-        Log::debug("year  " . $nowYear);
+        //Log::debug("year  " . $nowYear);
         if (!ValidationUtils::checkInt($release_year, 1895, $nowYear + 1)) {
             $message = "Год релиза должен быть от 1895 до " . $nowYear;
             return response()->json(["status" => "error", "message" => $message, "data" => json_decode($request->getContent())], 404, [], JSON_UNESCAPED_UNICODE);
