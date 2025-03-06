@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -31,6 +32,7 @@ class Hall extends Model
         'created_at',
         'updated_at',
     ];
+    protected $dateFormat = DATE_FORMAT;
 
     public $incrementing = false;
 
@@ -47,24 +49,9 @@ class Hall extends Model
         return self::where('id', $id)->first();
     }
 
-/*
-
-
-
-
-    static function deleteHall($id)
+    protected function serializeDate(DateTimeInterface $date) : string
     {
-        DB::table('halls')->where('id', $id)->delete();
+        return $date->format(DATE_FORMAT);
     }
 
-    static function updateHallPlaces($id,$places,$rowCount,$placesInRow)
-    {
-        DB::table('halls')->where('id', $id)->update(['places' => $places,'rowsCount' => $rowCount,'placesInRow' => $placesInRow]);
-    }
-
-    static function updateHallPrices($id,$vipPrice,$standardPrice)
-    {
-        DB::table('halls')->where('id', $id)->update(['vipPrice' => $vipPrice,'standardPrice' => $standardPrice]);
-    }
-*/
 }

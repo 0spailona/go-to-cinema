@@ -3,11 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hall;
+use App\Models\utils\HallConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class HallController extends Controller
 {
+    private \stdClass $hallConfig;
+
+    public function __construct()
+    {
+        $this->hallConfig = HallConfig::getHallConfig();
+    }
 
     public function createHall(Request $request): \Illuminate\Http\JsonResponse
     {
@@ -51,7 +58,6 @@ class HallController extends Controller
         if (!ValidationUtils::checkAdminRights()) {
             return response()->json(["status" => "error", "message" => "Not authorized"], 401, [], JSON_UNESCAPED_UNICODE);
         }
-        $wrong = ["status" => "error", "message" => "Неправильные данные", "data" => json_decode($request->getContent())];
 
         $data = json_decode($request->getContent());
         $id = $data->id;
@@ -62,60 +68,105 @@ class HallController extends Controller
 
         $vipPrice = $data->vipPrice;
         $standardPrice = $data->standardPrice;
-        if (!ValidationUtils::checkInt($vipPrice, intval(env('MIN_VIP_PRICE')), intval(env('MAX_PRICE'))) ||
-            !ValidationUtils::checkInt($standardPrice, intval(env('MIN_STANDARD_PRICE')), intval(env('MAX_PRICE')))
-            || $vipPrice <= $standardPrice) {
-            return response()->json($wrong, 400, [], JSON_UNESCAPED_UNICODE);
+        if (!ValidationUtils::checkInt($vipPrice, $this->hallConfig->minVipPrice, $this->hallConfig->maxPrice)) {
+
+            return response()->json(["status" => "error",
+                "message" => "Цена вип места должна быть в диапазоне от {$this->hallConfig->minVipPrice} до {$this->hallConfig->maxPrice}",
+                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);
         }
+
+        if (!ValidationUtils::checkInt($standardPrice, $this->hallConfig->minStandardPrice, $this->hallConfig->maxPrice)) {
+            return response()->json(["status" => "error",
+                "message" => "Цена места должна быть в диапазоне от {$this->hallConfig->minStandardPrice} до {$this->hallConfig->maxPrice}",
+                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);
+        }
+
+        if ($vipPrice <= $standardPrice) {
+            return response()->json(["status" => "error",
+                "message" => "Цена за стандартное место не может быть больше, чем за вип место",
+                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);
+        }
+
         $hallToUpdate->update(['vipPrice' => $vipPrice, 'standardPrice' => $standardPrice]);
 
         return response()->json(["status" => "ok", "data" => json_decode($request->getContent())]);
 
     }
 
+private function checkPlacesInHall($places,$hallData){
+    foreach ($places as $place) {
+        if (!$place) {
+            Log::debug("updatePlacesInHall disabled");
+            return "Отсутствуют данные о месте";
+            /*return response()->json(["status" => "error",
+                "message" => "Отсутствуют данные о месте",
+                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);*/
+        }
+        if (!ValidationUtils::checkInt($place->row, 0, $hallData->rowsCount)) {
+            Log::debug("updatePlacesInHall disabled");
+            return "Неверные данные места: места с таким номером не существует";
+           /* return response()->json(["status" => "error",
+                "message" => "Неверные данные места: ряда с таким номером не существует",
+                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);*/
+        }
+        if (!ValidationUtils::checkInt($place->place, 0, $hallData->placesInRow)) {
+            Log::debug("updatePlacesInHall disabled");
+            return "Неверные данные места: места с таким номером не существует";
+            /*return response()->json(["status" => "error",
+                "message" => "Неверные данные места: места с таким номером не существует",
+                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);*/
+        }
+    }
+    return null;
+}
 
     public function updatePlacesInHall(Request $request): \Illuminate\Http\JsonResponse
     {
         if (!ValidationUtils::checkAdminRights()) {
             return response()->json(["status" => "error", "message" => "Not authorized"], 401, [], JSON_UNESCAPED_UNICODE);
         }
-        $wrong = ["status" => "error", "message" => "Неправильные данные", "data" => json_decode($request->getContent())];
+        //$wrong = ["status" => "error", "message" => "Неправильные данные", "data" => json_decode($request->getContent())];
 
         $data = json_decode($request->getContent());
 
         $id = $data->id;
         if (!$id || !is_string($id) || !$data->places || !is_array($data->places->vip) || !is_array($data->places->disabled)) {
-            return response()->json($wrong, 400, [], JSON_UNESCAPED_UNICODE);
+            return response()->json(["status" => "error", "message" => "Отсутствует часть данных",
+                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);
         }
         $hallToUpdate = Hall::byId($id);
         if ($hallToUpdate === null) {
             return response()->json(["status" => "error", "message" => "Зал с таким названием не существует"], 404, [], JSON_UNESCAPED_UNICODE);
         }
 
-        if (!ValidationUtils::checkInt($data->rowsCount, intval(env('MIN_ROWS_IN_HALL')), intval(env('MAX_ROWS_IN_HALL'))) ||
-            !ValidationUtils::checkInt($data->placesInRow, intval(env('MIN_PLACES_IN_ROW')), intval(env('MAX_PLACES_IN_ROW')))) {
+        if (!ValidationUtils::checkInt($data->rowsCount, $this->hallConfig->rowsCount->min, $this->hallConfig->rowsCount->max)) {
             Log::debug("updatePlacesInHall rowCount placesInRow");
-            return response()->json($wrong, 400, [], JSON_UNESCAPED_UNICODE);
+            return response()->json(["status" => "error",
+                "message" => "Количество рядов должно быть в диапазоне от {$this->hallConfig->rowsCount->min} до {$this->hallConfig->rowsCount->max}",
+                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);
+        }
+
+        if (!ValidationUtils::checkInt($data->placesInRow, $this->hallConfig->placesInRow->min, $this->hallConfig->placesInRow->max)) {
+            Log::debug("updatePlacesInHall rowCount placesInRow");
+            return response()->json(["status" => "error",
+                "message" => "Количество мест в ряду должно быть в диапазоне от {$this->hallConfig->placesInRow->min} до {$this->hallConfig->placesInRow->max}",
+                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);
         }
 
         $disabled = $data->places->disabled;
-        foreach ($disabled as $place) {
-            if (!$place ||
-                !ValidationUtils::checkInt($place->row, 0, $data->rowsCount) ||
-                !ValidationUtils::checkInt($place->place, 0, $data->placesInRow)) {
-                Log::debug("updatePlacesInHall disabled");
-                return response()->json($wrong, 400, [], JSON_UNESCAPED_UNICODE);
-            }
+        $mistakeMsg = $this->checkPlacesInHall($disabled,$data);
+        if($mistakeMsg !== null) {
+            return response()->json(["status" => "error",
+                "message" => $mistakeMsg,
+                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);
         }
-        $vip = $data->places->vip;
-        foreach ($vip as $place) {
 
-            if (!$place ||
-                !ValidationUtils::checkInt($place->row, 0, $data->rowsCount) ||
-                !ValidationUtils::checkInt($place->place, 0, $data->placesInRow)) {
-                Log::debug("updatePlacesInHall vip");
-                return response()->json($wrong, 400, [], JSON_UNESCAPED_UNICODE);
-            }
+        $vip = $data->places->vip;
+        $mistakeMsg = $this->checkPlacesInHall($vip,$data);
+        if($mistakeMsg !== null) {
+            return response()->json(["status" => "error",
+                "message" => $mistakeMsg,
+                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);
         }
 
         $places = json_encode($data->places);

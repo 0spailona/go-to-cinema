@@ -13,10 +13,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use stdClass;
 
-use const DATE_FORMAT;
-
-define('DATE_FORMAT', "Y-m-d\TH:i:sp");
-
 
 class SeanceController
 {
@@ -50,9 +46,11 @@ class SeanceController
         if (!$this->checkSeances($data->seances)) {
             return response()->json(["status" => "error", "message" => "Неверные данные"], 404, [], JSON_UNESCAPED_UNICODE);
         }
-        $date = DateTime::createFromFormat(DATE_FORMAT, $data->date);
+        $dateStart = DateTime::createFromFormat(DATE_FORMAT, $data->date);
+        $dateEnd = clone $dateStart;
 
-        $seancesInDb = $this->getListByDate($date,null);
+        $dateEnd->add(new DateInterval('P1D'));
+        $seancesInDb = $this->getListByDate($dateStart,$dateEnd);
 
         $seancesInDbById = Utils::toDictionary($seancesInDb, function ($x) {
             return $x->id;
@@ -90,14 +88,8 @@ class SeanceController
         return response()->json(["status" => "ok"]);
     }
 
-    private function getListByDate(DateTime $dateStart, ?DateTime  $dateEnd = null)
+    private function getListByDate(DateTime $dateStart, DateTime  $dateEnd)
     {
-        if($dateEnd === null){
-            $dateEnd = clone $dateStart;
-            $dateEnd->add(new DateInterval('P1D'));
-        }
-
-        //$dateEnd = $dateEnd->setTime(0,0);
         $datePrint = $dateStart->format(DATE_FORMAT);
         $dateEndPrint = $dateEnd->format(DATE_FORMAT);
         Log::debug("date : $datePrint");
@@ -112,28 +104,11 @@ class SeanceController
     {
         Log::debug("getSeancesByDateToClient");
         $dateStart = DateTime::createFromFormat(DATE_FORMAT, $request->query('dateFrom'));
-        $datePrint = $dateStart->format(DATE_FORMAT);
-        //Log::debug("date : $datePrint");
 
         $dateEnd = DateTime::createFromFormat(DATE_FORMAT, $request->query('dateTo'));
-        $dateEndPrint = $dateEnd->format(DATE_FORMAT);
-        //Log::debug("dateEnd: $dateEndPrint");
-        //$datePrint = $dateStart->format(DATE_FORMAT);
-        //Log::debug("date : $datePrint");
+
         $seances = $this->getListByDate($dateStart, $dateEnd)->toArray();
-        //$seanceToLog = json_encode($seances, JSON_UNESCAPED_UNICODE);
-        //Log::debug($seanceToLog);
-        /*$now = date('DATE_FORMAT');
-        $dateEnd = clone $dateStart;
-        $dateEnd->add(new DateInterval('P1D'));
 
-        $seances =  Seance::select()
-            ->where('startTime', '>', $now) // Laravel and SQLite
-            ->where('startTime', '<', $dateEnd->format(DATE_FORMAT)) // Laravel and SQLite
-            ->get();*/
-
-        //Log::debug("now . $now");
-        //Log::debug("dateStart: $dateStart" );
 
         return response()->json([
             "status" => "ok",
@@ -145,9 +120,12 @@ class SeanceController
 
     public function getSeancesByDateToAdmin(Request $request): \Illuminate\Http\JsonResponse
     {
-        $dateStart = DateTime::createFromFormat(DATE_FORMAT, $request->query('date'));
+        Log::debug("DATE_FORMAT " . DATE_FORMAT);
 
-        $seances = $this->getListByDate($dateStart,null)->toArray();
+        $dateStart = DateTime::createFromFormat(DATE_FORMAT, $request->query('date'));
+        $dateEnd = clone $dateStart;
+        $dateEnd->add(new DateInterval('P1D'));
+        $seances = $this->getListByDate($dateStart,$dateEnd)->toArray();
 
         return response()->json([
             "status" => "ok",

@@ -1,5 +1,7 @@
+import {months} from "./info.js";
+
 export function getDateStringFromDate(date) {
-    return `${date.getDate()} ${date.getMonth()} ${date.getFullYear()}`;
+    return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()} года`;
 }
 
 
@@ -23,40 +25,3 @@ export function  isEqual  (a, b)  {
     return getDateStringFromDate(a) === getDateStringFromDate(b);
 }
 
-export function checkSeances(seancesByMovie){
-    const nowTime = new Date().getTime();
-
-    let seances = {...seancesByMovie};
-
-    for (let movieSeances of Object.entries(seances)) {
-        const movieId = movieSeances[0]
-        for(let hallSeances of Object.entries(movieSeances[1])){
-            const hallId = hallSeances[0]
-            if(hallSeances[1].length > 0){
-
-                console.log("before filter hallSeances[1]", hallSeances[1]);
-
-             hallSeances[1] = hallSeances[1].filter(seance => {
-              if(new Date(seance.startTime).getTime() > nowTime) {
-                  console.log("startTime", new Date(seance.startTime).getTime(),"nowTime",nowTime);
-                  return seance
-              }
-              return ;
-             })
-
-            }
-            if(hallSeances[1].length === 0){
-                delete movieSeances[1][hallId];
-            }
-            console.log(" after filter hallSeances[1]", hallSeances[1]);
-        }
-
-        if(Object.keys(movieSeances[1]).length === 0){
-            delete seances[movieId];
-        }
-        console.log("movieSeances[1]",movieSeances[1])
-
-    }
-    console.log("seances",seances);
-    return seances
-}

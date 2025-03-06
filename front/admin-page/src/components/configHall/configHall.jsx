@@ -121,7 +121,7 @@ export default function ConfigHall() {
         const response = await updatePlacesInHall(halls[hallToUpdate.hallId])
 
         if(response.status !== "success") {
-            dispatch(setError("Что-то пошло не так. Попробуйте позже"))
+            dispatch(setError(response.message))
         }
         setLoadingHalls(false);
     }

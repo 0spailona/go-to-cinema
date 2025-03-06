@@ -16,8 +16,6 @@ import {
 } from "../redux/slices/cinema.js";
 import Loader from "react-js-loader";
 import Popup from "./common/popup.jsx";
-import {checkSeances, isEqual} from "../js/utils.js";
-
 
 export default function ClientPage() {
 
@@ -56,9 +54,6 @@ export default function ClientPage() {
         const response = await getSeancesByDate(date);
 
         if (response.status === "success") {
-            //const now = new Date();
-            //const seances = isEqual(new Date(date), now) ? checkSeances(response.data) : response.data;
-            //dispatch(setSeances(seances));
             dispatch(setSeances(response.data))
         }
         else {

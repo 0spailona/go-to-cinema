@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class Movie extends Model
 {
@@ -33,6 +33,7 @@ class Movie extends Model
         'updated_at',
     ];
 
+    protected $dateFormat = DATE_FORMAT;
     public $incrementing = false;
 
     // In Laravel 6.0+ make sure to also set $keyType
@@ -47,5 +48,10 @@ class Movie extends Model
     static function deleteMovie($id)
     {
         self::where('id', $id)->delete();
+    }
+
+    protected function serializeDate(DateTimeInterface $date) : string
+    {
+        return $date->format(DATE_FORMAT);
     }
 }

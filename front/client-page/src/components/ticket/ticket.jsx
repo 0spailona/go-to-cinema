@@ -2,9 +2,9 @@ import MyButton from "../common/MyButton.jsx";
 import {useDispatch, useSelector} from "react-redux";
 import TicketInfo from "./ticketInfo.jsx";
 import Hint from "./hint.jsx";
-import {setChosenSeance, setError, setLoading} from "../../redux/slices/cinema.js";
+import {setChosenSeance, setError, setInitialChosenSeance, setLoading} from "../../redux/slices/cinema.js";
 import {useEffect, useState} from "react";
-import {getStartTimeStringFromMinutes} from "../../js/utils.js";
+import {getDateStringFromDate, getStartTimeStringFromMinutes} from "../../js/utils.js";
 import {getSeanceById, toBook} from "../../js/api.js";
 import Loader from "react-js-loader";
 import Popup from "../common/popup.jsx";
@@ -25,12 +25,17 @@ export default function Ticket() {
         error
     } = useSelector(state => state.cinema);
 
-    if (!chosenSeance.seanceData || chosenSeance.selectedPlaces.length === 0) {
-        return <Popup isVisible={true} message="Что-то пошло не так"
-                      onClose={() => {
-                          window.location = "/";
-                      }}/>;
-    }
+
+    console.log("chosenSeance",chosenSeance);
+    /*useEffect(() => {
+        console.log("chosenSeance",chosenSeance);
+        if (!chosenSeance.seanceData){
+            return <Popup isVisible={true} message="Что-то пошло не так"
+                          onClose={() => {
+                              window.location = "/";
+                          }}/>;
+        }
+    }, [chosenSeance]);*/
 
     const [errorView, setErrorView] = useState({isError: false, message: ""});
 
@@ -55,8 +60,15 @@ export default function Ticket() {
     }, [isDrawPage]);
 
 
+
     let hall, time, movie, places, cost, seance, selectedPlaces,prices;
 
+    if (!chosenSeance.seanceData || chosenSeance.selectedPlaces.length === 0) {
+        return <Popup isVisible={true} message="Что-то пошло не так"
+                      onClose={() => {
+                          window.location = "/";
+                      }}/>;
+    }
 
     const getUpdateSeance = async (id) => {
         dispatch(setLoading(true));
@@ -92,6 +104,7 @@ export default function Ticket() {
         const data = {seanceId: seance.id, places: selectedPlaces};
         const response = await toBook(data);
         if (response.status === "success") {
+            dispatch(setInitialChosenSeance());
             window.location = `/showBooking/${response.data}`;
         }
         else{
@@ -122,7 +135,7 @@ export default function Ticket() {
                                 <TicketInfo info="На фильм" data={movie.title}/>
                                 <TicketInfo info="Места" data={places}/>
                                 <TicketInfo info="В зале" data={hall.name}/>
-                                <TicketInfo info="На дату" data={chosenDate}/>
+                                <TicketInfo info="На дату" data={getDateStringFromDate(new Date(chosenDate))}/>
                                 <TicketInfo info="Начало сеанса" data={`${time.hours}:${time.min}`}/>
                                 <TicketInfo info="Стоимость" data={`${cost}`} add=" рублей"/>
                                 <MyButton text="Получить код бронирования" onClick={toBookPlaces}/>

@@ -2,15 +2,11 @@
 
 namespace App\Models;
 
-use DateInterval;
 use DateTime;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use const DATE_FORMAT;
 
-//define('DATE_FORMAT', "Y-m-d\TH:i:sp");
 
 class Seance extends Model
 {
@@ -34,6 +30,7 @@ class Seance extends Model
         'created_at', 'updated_at'
     ];
 
+    protected $dateFormat = DATE_FORMAT;
     protected $dates = ['startTime'];
 
     public $incrementing = false;
@@ -43,7 +40,7 @@ class Seance extends Model
 
     protected function serializeDate(DateTimeInterface $date) : string
     {
-        return $date->format(env('DATE_FORMAT'));
+        return $date->format(DATE_FORMAT);
     }
 
     static function byId(string $id) : ?Seance

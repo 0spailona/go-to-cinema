@@ -258,7 +258,6 @@ export async function updatePlacesInHall(hall) {
         return {status: "success"};
     }
     else {
-        console.log("removeHall error");
         return {status: "error", message: json.message};
     }
 

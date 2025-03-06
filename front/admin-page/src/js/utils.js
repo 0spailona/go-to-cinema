@@ -7,7 +7,7 @@ export const getValidationError = (value, min, max) => {
     if (value < min) {
         return `Число должно быть больше ${min}`;
     }
-    if (value > max) {
+    if (value >= max) {
         return `Число должно быть меньше ${max}`;
     }
     return null;

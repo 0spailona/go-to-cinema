@@ -10,6 +10,7 @@ use BaconQrCode\Renderer\GDLibRenderer;
 use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Nette\Utils\Arrays;
@@ -29,13 +30,19 @@ class BookingController
         else {
             $places = $data->places;
             if (is_array($places) != "array") {
-                return response()->json(["status" => "error", "message" => "Неверные данные"], 404, [], JSON_UNESCAPED_UNICODE);
+                return response()->json(["status" => "error", "message" => "Неверный тип данных"], 404, [], JSON_UNESCAPED_UNICODE);
             }
             if (count($places) === 0) {
                 return response()->json(["status" => "error", "message" => "Не выбрано ни одного места"], 404, [], JSON_UNESCAPED_UNICODE);
             }
             $seance = Seance::byId($data->seanceId);
-            $now = date('DATE_FORMAT');
+
+            $now = new DateTime();
+
+
+            Log::debug("now " . $now->format(DATE_FORMAT));
+            Log::debug("startTime " . $seance->startTime->format(DATE_FORMAT));
+
             if($seance->startTime < $now){
                 return response()->json(["status" => "error", "message" => "На выбранный сеанс уже закрыто бронирование"], 404, [], JSON_UNESCAPED_UNICODE);
             }
@@ -44,7 +51,7 @@ class BookingController
 
             foreach ($places as $place) {
                 if (!$this->validatePlace($place, $hall, $data->seanceId)) {
-                    return response()->json(["status" => "error", "message" => "Неверные данные"], 404, [], JSON_UNESCAPED_UNICODE);
+                    return response()->json(["status" => "error", "message" => "Неверные данные: бронируемое место не существует"], 404, [], JSON_UNESCAPED_UNICODE);
                 }
             }
 
@@ -65,6 +72,8 @@ class BookingController
         }
 
         $takenPlacesOfAllBookings = Booking::where("seanceId", $seanceId)->pluck("places")->toArray();
+        $takenPlaceForPrint = json_encode($takenPlacesOfAllBookings);
+        Log::debug("takenPlacesOfAllBookings " . $takenPlaceForPrint);
         foreach ($takenPlacesOfAllBookings as $takenPlaces) {
             $takenPlaces = json_decode($takenPlaces);
             foreach ($takenPlaces as $takenPlace) {
