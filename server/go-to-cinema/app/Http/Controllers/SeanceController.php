@@ -138,7 +138,7 @@ class SeanceController
     {
         $seance = Seance::byId($id);
         if ($seance === null) {
-            return response()->json(["status" => "error"], 404);
+            return response()->json(["status" => "error", "message" => "Сеанс не обнаружен"], 404, [], JSON_UNESCAPED_UNICODE);
         }
         $bookings = Booking::where("seanceId", $seance->id)->get();
 

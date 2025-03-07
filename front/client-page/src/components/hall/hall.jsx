@@ -4,7 +4,7 @@ import HallScheme from "./hallScheme.jsx";
 import PriceLegend from "./priceLegend.jsx";
 import {placesType} from "../../js/info.js";
 import MyButton from "../common/MyButton.jsx";
-import {Link, Navigate, useParams} from "react-router-dom";
+import {Link, Navigate, useNavigate, useParams} from "react-router-dom";
 import {getStartTimeStringFromMinutes} from "../../js/utils.js";
 import {setChosenSeance, setLoading} from "../../redux/slices/cinema.js";
 import {getSeanceById} from "../../js/api.js";
@@ -14,14 +14,24 @@ import Popup from "../common/popup.jsx";
 
 export default function Hall() {
 
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const {chosenSeance, halls, movies, isDrawPage, loading, lastIsDrawPage} = useSelector(state => state.cinema);
     const [isToDoBig, setToDoBig] = useState(false);
     const [error, setError] = useState({isError: false, message: ""});
-    const params = useParams();
+    //const params = useParams();
     let hall, time, movie;
 
-    const getSeance = async (id) => {
+    if (!chosenSeance.seanceData
+        // && !params.id
+    ) {
+      return  <Popup isVisible={true} message="Что-то пошло не так"
+               onClose={() => navigate("/")}/>
+        //setError({isError: true, message: "Что-то пошло не так"});
+        //navigate("/")
+        //return <Navigate to="/"/>;
+    }
+   /* const getSeance = async (id) => {
         dispatch(setLoading(true));
         const response = await getSeanceById(id);
         if (response.status === "success") {
@@ -34,32 +44,35 @@ export default function Hall() {
             dispatch(setLoading(false));
             return false;
         }
-    };
+    };*/
 
-    useEffect(() => {
+    /*useEffect(() => {
         async function startDraw() {
-            if (!chosenSeance.seanceData && !params.id) {
+            if (!chosenSeance.seanceData
+               // && !params.id
+            ) {
                 setError({isError: true, message: "Что-то пошло не так"});
-                return <Navigate to="/"/>;
+                //navigate("/")
+                //return <Navigate to="/"/>;
             }
-            else {
+            /*else {
                 if (!await getSeance(params.id)) {
                     setError({isError: true, message: "Что-то пошло не так"});
                 }
-            }
-        }
+            }*/
+      /*  }
 
         startDraw();
-    }, []);
+    }, []);*/
 
-    if (chosenSeance.seanceData) {
+    //if (chosenSeance.seanceData) {
         hall = halls[chosenSeance.seanceData.hallId];
         time = getStartTimeStringFromMinutes(chosenSeance.seanceData.startTime);
         movie = movies[chosenSeance.seanceData.movieId];
-    }
+    //}
 
 
-    useEffect(() => {
+   /* useEffect(() => {
         if (isDrawPage && !lastIsDrawPage) {
             async function toGetUpdateSeance() {
                 if (chosenSeance.seanceData) {
@@ -71,7 +84,7 @@ export default function Hall() {
 
             toGetUpdateSeance();
         }
-    }, [isDrawPage]);
+    }, [isDrawPage]);*/
 
     const toggleBig = (e) => {
         if (e.target.classList.contains("toBig")) {
@@ -82,6 +95,13 @@ export default function Hall() {
         }
     };
 
+    const onBooking = () => {
+        console.log("hall onBooking chosenSeance",chosenSeance);
+        if(chosenSeance.selectedPlaces.length > 0){
+            navigate("/ticket")
+        }
+        else {setError({isError: true, message: "Выберите, пожалуйста, места"});}
+    }
 
     return (
         <>
@@ -120,7 +140,7 @@ export default function Hall() {
                                     </div>
                                 </div>
                             </div>
-                            <Link to={"/ticket"}><MyButton text="Забронировать"/></Link>
+                          <MyButton text="Забронировать" onClick={onBooking}/>
                         </section> : ""}
                     </main>
                 :

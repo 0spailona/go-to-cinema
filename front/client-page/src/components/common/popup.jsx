@@ -9,7 +9,8 @@ export default function Popup({message, isVisible, onClose}) {
                     <div className="popup__header">
                         <h2 className="popup__title">
                             {message}
-                            <a className="popup__dismiss" href="/"><img src={CloseImg} alt="Закрыть" onClick={onClose}/></a>
+                            <div className="popup__dismiss">
+                                <img  src={CloseImg} alt="Закрыть" onClick={onClose}/></div>
                         </h2>
                     </div>
                 </div>
@@ -17,3 +18,8 @@ export default function Popup({message, isVisible, onClose}) {
         </div>
     );
 }
+
+/*
+* <a className="popup__dismiss" href="/">
+                                <img src={CloseImg} alt="Закрыть" onClick={onClose}/>
+                            </a>*/

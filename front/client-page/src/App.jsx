@@ -33,7 +33,7 @@ function App() {
             </header>
             <Routes>
                 <Route path="/" element={<ClientPage/>}/>
-                <Route path="/hall/:id" element={<Hall/>}/>
+                <Route path="/hall" element={<Hall/>}/>
                 <Route path="/ticket" element={<Ticket/>}/>
             </Routes>
         </>
@@ -41,3 +41,5 @@ function App() {
 }
 
 export default App
+
+/*<Route path="/hall/:id" element={<Hall/>}/>*/

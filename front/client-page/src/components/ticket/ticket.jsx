@@ -9,10 +9,12 @@ import {getSeanceById, toBook} from "../../js/api.js";
 import Loader from "react-js-loader";
 import Popup from "../common/popup.jsx";
 import {res} from "react-email-validator";
+import {useNavigate} from "react-router-dom";
 
 export default function Ticket() {
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const {
         chosenSeance,
@@ -26,7 +28,7 @@ export default function Ticket() {
     } = useSelector(state => state.cinema);
 
 
-    console.log("chosenSeance",chosenSeance);
+    //console.log("chosenSeance",chosenSeance);
     /*useEffect(() => {
         console.log("chosenSeance",chosenSeance);
         if (!chosenSeance.seanceData){
@@ -66,7 +68,7 @@ export default function Ticket() {
     if (!chosenSeance.seanceData || chosenSeance.selectedPlaces.length === 0) {
         return <Popup isVisible={true} message="Что-то пошло не так"
                       onClose={() => {
-                          window.location = "/";
+                          navigate("/");
                       }}/>;
     }
 
@@ -104,7 +106,7 @@ export default function Ticket() {
         const data = {seanceId: seance.id, places: selectedPlaces};
         const response = await toBook(data);
         if (response.status === "success") {
-            dispatch(setInitialChosenSeance());
+            await dispatch(setInitialChosenSeance());
             window.location = `/showBooking/${response.data}`;
         }
         else{
@@ -117,7 +119,7 @@ export default function Ticket() {
             <Popup isVisible={errorView.isError} message={errorView.message}
                    onClose={() => {
                        setErrorView({isError: false, message: ""});
-                       window.location = "/";
+                       navigate("/");
                    }}/>
 
             {isDrawPage ?

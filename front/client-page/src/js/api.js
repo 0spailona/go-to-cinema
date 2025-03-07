@@ -125,7 +125,7 @@ export async function getSeanceById(id) {
         return {status: "success", data: {seance: json.seance, takenPlaces: arr}};
     }
 
-    return {status: "error"};
+    return {status: "error", message:json.message};
 }
 
 export async function toBook(data) {

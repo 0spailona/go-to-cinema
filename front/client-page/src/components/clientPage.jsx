@@ -4,8 +4,9 @@ import NavDays from "./seances/navDays.jsx";
 import {useDispatch, useSelector} from "react-redux";
 import Movie from "./seances/movie.jsx";
 import {useEffect, useState} from "react";
-import {getHalls, getMovies, getSeancesByDate, isOpenSails} from "../js/api.js";
+import {getHalls, getMovies, getSeanceById, getSeancesByDate, isOpenSails} from "../js/api.js";
 import {
+    setChosenSeance,
     setError,
     setHalls,
     setInitialChosenSeance,
@@ -16,10 +17,12 @@ import {
 } from "../redux/slices/cinema.js";
 import Loader from "react-js-loader";
 import Popup from "./common/popup.jsx";
+import {redirect, useNavigate} from "react-router-dom";
 
 export default function ClientPage() {
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const {seances, chosenDate, isDrawPage, loading, lastIsDrawPage, error} = useSelector(state => state.cinema);
     const [errorView, setErrorView] = useState({isError: false, message: ""});
@@ -94,11 +97,33 @@ export default function ClientPage() {
         }
     }, [error]);
 
+    const getSeance = async (id) => {
+        dispatch(setLoading(true));
+        //console.log("ClientPage getSeance",id);
+        const response = await getSeanceById(id);
+        if (response.status === "success") {
+            dispatch(setChosenSeance(response.data));
+            dispatch(setLoading(false));
+            navigate("/hall")
+
+            //return redirect("/hall")
+            //window.location = "/hall"
+            //return true;
+        }
+        else {
+            dispatch(setInitialChosenSeance());
+            dispatch(setLoading(false));
+            dispatch(setError(response.message));
+            //return false;
+        }
+    };
 
     const renderMovie = (movieId) => {
         const movieSeancesByHallId = seances[movieId];
         if (movieSeancesByHallId && Object.keys(movieSeancesByHallId).length > 0) {
-            return <Movie key={`movie-/${movieId}`} movieId={movieId} movieSeancesByHallId={movieSeancesByHallId}/>;
+            return <Movie key={`movie-/${movieId}`} movieId={movieId}
+                          movieSeancesByHallId={movieSeancesByHallId}
+                          onChooseSeance={(seanceId) => getSeance(seanceId)} />;
         }
     };
 
