@@ -18,8 +18,3 @@ export default function Popup({message, isVisible, onClose}) {
         </div>
     );
 }
-
-/*
-* <a className="popup__dismiss" href="/">
-                                <img src={CloseImg} alt="Закрыть" onClick={onClose}/>
-                            </a>*/

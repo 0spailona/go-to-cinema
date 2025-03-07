@@ -41,5 +41,3 @@ function App() {
 }
 
 export default App
-
-/*<Route path="/hall/:id" element={<Hall/>}/>*/

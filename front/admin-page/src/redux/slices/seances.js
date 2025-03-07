@@ -34,8 +34,10 @@ export const seancesSlice = createSlice({
             state.isUpdatedSeances = true;
             console.log("removeMovieFromSeanceHall", action.payload);
             const fromHallId = action.payload.hallId;
-            const movieIndex = action.payload.movieIndex;
-            state.seances[fromHallId].seances.splice(movieIndex, 1);
+            const seanceId = action.payload.seanceId;
+            state.seances[fromHallId].seances = state.seances[fromHallId].seances.filter(seance => seance.id !== seanceId);
+            //const movieIndex = action.payload.movieIndex;
+            //state.seances[fromHallId].seances.splice(movieIndex, 1);
         },
         setLoadingSeances: (state, action) => {
             state.loadingSeances = action.payload;

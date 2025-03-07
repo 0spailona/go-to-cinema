@@ -3,7 +3,6 @@ import {toISOStringNoMs} from "../../js/utils.js";
 
 
 const initialDate = new Date();
-//initialDate.setHours(0, 0, 0, 0);
 
 const initialState = {
     loading: true,

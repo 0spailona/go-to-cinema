@@ -12,15 +12,15 @@ import MyPopup from "./common/myPopup.jsx";
 import {getHalls, updatePricesInHall} from "../js/api.js";
 import {setError} from "../redux/slices/common.js";
 
+let pricesFromServer = {
+    vip: null,
+    standard: null,
+};
+
 export default function ConfigPrice() {
 
     const dispatch = useDispatch();
     const {halls, hallConfig} = useSelector(state => state.halls);
-
-    const pricesFromServer = {
-        vip: null,
-        standard: null,
-    };
 
     const [inputValueStandardPrice, setInputValueStandardPrice] = useState(0);
     const [inputValueVipPrice, setInputValueVipPrice] = useState(0);
@@ -30,21 +30,32 @@ export default function ConfigPrice() {
     const [validateError, setValidateError] = useState(null);
     const [showErrorPopup, setShowErrorPopup] = useState(false);
 
-    const setInitialState = (hall) => {
-        setInputValueStandardPrice(hall.prices.standard);
-        setInputValueVipPrice(hall.prices.vip);
-        setHallToUpdate({hallId: hall.id, isUpdated: false});
+    const setInitialState = (hall,isUpdated) => {
         pricesFromServer.vip = hall.prices.vip;
         pricesFromServer.standard = hall.prices.standard;
+        setInputValueStandardPrice(hall.prices.standard);
+        setInputValueVipPrice(hall.prices.vip);
+        setHallToUpdate({hallId: hall.id, isUpdated});
     };
 
     useEffect(() => {
-        if (halls && Object.keys(halls).length > 0 && hallToUpdate.hallId === null) {
-            setInitialState(halls[Object.keys(halls)[0]]);
+        if (!halls || Object.keys(halls).length === 0){
+            return
         }
-        if (halls && Object.keys(halls).length > 0 && hallToUpdate.hallId !== null && !halls[hallToUpdate.hallId]) {
-            setInitialState(halls[Object.keys(halls)[0]]);
+
+        if (!hallToUpdate.hallId) {
+            setInitialState(halls[Object.keys(halls)[0]],false);
         }
+
+        else {
+            if(!halls[hallToUpdate.hallId]){
+                setInitialState(halls[Object.keys(halls)[0]],false);
+            }
+            else{
+                setInitialState(halls[hallToUpdate.hallId],true);
+            }
+        }
+
     }, [halls]);
 
     const getHallsFromServer = async () => {
@@ -72,7 +83,6 @@ export default function ConfigPrice() {
                 price: value,
                 hallId: hallToUpdate.hallId
             }));
-            setValidateError(null);
 
             if (value !== pricesFromServer.vip) {
                 setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
@@ -90,14 +100,15 @@ export default function ConfigPrice() {
             setShowErrorPopup(true);
         }
         else {
+
             dispatch(updateStandardPrice({
                 price: value,
                 hallId: hallToUpdate.hallId
             }));
-            setValidateError(null);
-        }
-        if (value !== pricesFromServer.standard) {
-            setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
+
+            if (value !== pricesFromServer.standard) {
+                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
+            }
         }
     };
 
@@ -115,7 +126,7 @@ export default function ConfigPrice() {
     };
 
     const changeHall = (newHallToUpdate) => {
-        setInitialState(halls[newHallToUpdate]);
+        setInitialState(halls[newHallToUpdate],false);
     };
 
     const notToSaveChanges = async (e, newHallToUpdate) => {
@@ -154,7 +165,10 @@ export default function ConfigPrice() {
             <div className="conf-step__wrapper">
                 {halls && hallToUpdate.hallId ? <>
                         <MyPopup isVisible={showErrorPopup} title="Неверно введенные данные"
-                                 onClose={() => setShowErrorPopup(false)}>
+                                 onClose={() => {
+                                     setShowErrorPopup(false)
+                                     setValidateError(null);
+                                 }}>
                             <p className="conf-step__paragraph">{`${validateError}`}</p>
                         </MyPopup>
                         <MyPopup isVisible={showPopup}

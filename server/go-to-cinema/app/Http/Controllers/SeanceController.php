@@ -41,8 +41,6 @@ class SeanceController
         }
         $data = json_decode($request->getContent());
 
-        //Log::debug("updateSeances " . $request->getContent());
-
         if (!$this->checkSeances($data->seances)) {
             return response()->json(["status" => "error", "message" => "Неверные данные"], 404, [], JSON_UNESCAPED_UNICODE);
         }

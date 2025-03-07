@@ -7,15 +7,11 @@ use App\Models\Movie;
 use App\Models\Seance;
 use App\Models\Booking;
 use BaconQrCode\Renderer\GDLibRenderer;
-use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
-use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Nette\Utils\Arrays;
 use BaconQrCode\Writer;
-use function Psy\debug;
 
 class BookingController
 {

@@ -28,17 +28,6 @@ export default function Ticket() {
     } = useSelector(state => state.cinema);
 
 
-    //console.log("chosenSeance",chosenSeance);
-    /*useEffect(() => {
-        console.log("chosenSeance",chosenSeance);
-        if (!chosenSeance.seanceData){
-            return <Popup isVisible={true} message="Что-то пошло не так"
-                          onClose={() => {
-                              window.location = "/";
-                          }}/>;
-        }
-    }, [chosenSeance]);*/
-
     const [errorView, setErrorView] = useState({isError: false, message: ""});
 
     useEffect(() => {

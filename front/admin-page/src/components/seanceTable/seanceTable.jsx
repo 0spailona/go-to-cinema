@@ -12,7 +12,7 @@ import {
     checkDropInHall,
     getItemOnDragX,
     getSeancesObj,
-    getViewTime,
+    //getViewTime,
     pxToMinutes,
     toISOStringNoMs
 } from "../../js/utils.js";
@@ -128,7 +128,8 @@ export default function SeanceTable() {
     const initialShowRemoveSeance = {
         isShown: false,
         hallId: null,
-        movieIndex: null,
+        seanceId: null,
+        //movieIndex: null,
         movieTitle: null
     };
     const [showRemoveSeance, setShowRemoveSeance] = useState(initialShowRemoveSeance);
@@ -227,11 +228,13 @@ export default function SeanceTable() {
             }
             const hallId = toId.match(/^remove-movie-from-hall-([0-9a-f]+)$/)[1];
             const movieId = draggableId.match(/^movie-in-[\w-]+-([0-9a-f]+)$/)[1];
+            const seanceId = draggableId.match(/^movie-in-seance-hall-([0-9a-z]+)-([0-9a-f]+)-([0-9a-f]+)$/)[1];
             const movieTitle = movies[movieId].title;
             setShowRemoveSeance({
                 isShown: true,
                 hallId,
-                movieIndex: itemIndex,
+                seanceId,
+               // movieIndex: itemIndex,
                 movieTitle
             });
         }
@@ -323,7 +326,8 @@ export default function SeanceTable() {
     const onSubmitRemoveFromSeance = (e) => {
         e.preventDefault();
         dispatch(removeMovieFromSeanceHall({
-            movieIndex: showRemoveSeance.movieIndex,
+            //movieIndex: showRemoveSeance.movieIndex,
+            seanceId: showRemoveSeance.seanceId,
             hallId: showRemoveSeance.hallId
         }));
         setShowRemoveSeance(initialShowRemoveSeance);
@@ -505,7 +509,7 @@ export default function SeanceTable() {
                     </DragDropContext>
                     <div className="conf-step__buttons text-center">
                         <MyButton type="reset" text="Отмена"
-                                  onclick={() => dispatch(getSeancesByDate(toISOStringNoMs(chosenDate)))}/>
+                                  onclick={async () => await getSeances(toISOStringNoMs(chosenDate))}/>
                         <MyButton type="submit" text="Сохранить" onclick={async () => {
                             await updateSeancesByDate({seances, date: chosenDate});
                             await getSeances(toISOStringNoMs(chosenDate));
@@ -515,5 +519,4 @@ export default function SeanceTable() {
             </section>
         </>
     );
-
 }

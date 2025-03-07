@@ -4,10 +4,8 @@ import HallScheme from "./hallScheme.jsx";
 import PriceLegend from "./priceLegend.jsx";
 import {placesType} from "../../js/info.js";
 import MyButton from "../common/MyButton.jsx";
-import {Link, Navigate, useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {getStartTimeStringFromMinutes} from "../../js/utils.js";
-import {setChosenSeance, setLoading} from "../../redux/slices/cinema.js";
-import {getSeanceById} from "../../js/api.js";
 import Loader from "react-js-loader";
 import Popup from "../common/popup.jsx";
 
@@ -15,76 +13,21 @@ import Popup from "../common/popup.jsx";
 export default function Hall() {
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
     const {chosenSeance, halls, movies, isDrawPage, loading, lastIsDrawPage} = useSelector(state => state.cinema);
     const [isToDoBig, setToDoBig] = useState(false);
     const [error, setError] = useState({isError: false, message: ""});
     //const params = useParams();
     let hall, time, movie;
 
-    if (!chosenSeance.seanceData
-        // && !params.id
-    ) {
+    if (!chosenSeance.seanceData) {
       return  <Popup isVisible={true} message="Что-то пошло не так"
                onClose={() => navigate("/")}/>
-        //setError({isError: true, message: "Что-то пошло не так"});
-        //navigate("/")
-        //return <Navigate to="/"/>;
     }
-   /* const getSeance = async (id) => {
-        dispatch(setLoading(true));
-        const response = await getSeanceById(id);
-        if (response.status === "success") {
-            dispatch(setChosenSeance(response.data));
-            dispatch(setLoading(false));
-            return true;
-        }
-        else {
-            dispatch(setChosenSeance(null));
-            dispatch(setLoading(false));
-            return false;
-        }
-    };*/
 
-    /*useEffect(() => {
-        async function startDraw() {
-            if (!chosenSeance.seanceData
-               // && !params.id
-            ) {
-                setError({isError: true, message: "Что-то пошло не так"});
-                //navigate("/")
-                //return <Navigate to="/"/>;
-            }
-            /*else {
-                if (!await getSeance(params.id)) {
-                    setError({isError: true, message: "Что-то пошло не так"});
-                }
-            }*/
-      /*  }
-
-        startDraw();
-    }, []);*/
-
-    //if (chosenSeance.seanceData) {
         hall = halls[chosenSeance.seanceData.hallId];
         time = getStartTimeStringFromMinutes(chosenSeance.seanceData.startTime);
         movie = movies[chosenSeance.seanceData.movieId];
-    //}
-
-
-   /* useEffect(() => {
-        if (isDrawPage && !lastIsDrawPage) {
-            async function toGetUpdateSeance() {
-                if (chosenSeance.seanceData) {
-                    if (!await getSeance(chosenSeance.seanceData.id)) {
-                        setError({isError: true, message: "Что-то пошло не так"});
-                    }
-                }
-            }
-
-            toGetUpdateSeance();
-        }
-    }, [isDrawPage]);*/
 
     const toggleBig = (e) => {
         if (e.target.classList.contains("toBig")) {

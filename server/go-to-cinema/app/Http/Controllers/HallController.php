@@ -98,23 +98,14 @@ private function checkPlacesInHall($places,$hallData){
         if (!$place) {
             Log::debug("updatePlacesInHall disabled");
             return "Отсутствуют данные о месте";
-            /*return response()->json(["status" => "error",
-                "message" => "Отсутствуют данные о месте",
-                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);*/
         }
         if (!ValidationUtils::checkInt($place->row, 0, $hallData->rowsCount)) {
             Log::debug("updatePlacesInHall disabled");
             return "Неверные данные места: места с таким номером не существует";
-           /* return response()->json(["status" => "error",
-                "message" => "Неверные данные места: ряда с таким номером не существует",
-                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);*/
         }
         if (!ValidationUtils::checkInt($place->place, 0, $hallData->placesInRow)) {
             Log::debug("updatePlacesInHall disabled");
             return "Неверные данные места: места с таким номером не существует";
-            /*return response()->json(["status" => "error",
-                "message" => "Неверные данные места: места с таким номером не существует",
-                "data" => json_decode($request->getContent())], 400, [], JSON_UNESCAPED_UNICODE);*/
         }
     }
     return null;
@@ -125,7 +116,6 @@ private function checkPlacesInHall($places,$hallData){
         if (!ValidationUtils::checkAdminRights()) {
             return response()->json(["status" => "error", "message" => "Not authorized"], 401, [], JSON_UNESCAPED_UNICODE);
         }
-        //$wrong = ["status" => "error", "message" => "Неправильные данные", "data" => json_decode($request->getContent())];
 
         $data = json_decode($request->getContent());
 

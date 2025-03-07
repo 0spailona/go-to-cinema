@@ -10,7 +10,7 @@ import {
     setError,
     setHalls,
     setInitialChosenSeance,
-    setIsDrawPage,
+    //setIsDrawPage,
     setLoading,
     setMovies,
     setSeances
@@ -105,16 +105,11 @@ export default function ClientPage() {
             dispatch(setChosenSeance(response.data));
             dispatch(setLoading(false));
             navigate("/hall")
-
-            //return redirect("/hall")
-            //window.location = "/hall"
-            //return true;
         }
         else {
             dispatch(setInitialChosenSeance());
             dispatch(setLoading(false));
             dispatch(setError(response.message));
-            //return false;
         }
     };
 
