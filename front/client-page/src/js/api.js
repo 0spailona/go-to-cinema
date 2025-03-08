@@ -75,14 +75,14 @@ export async function getHalls() {
 export async function getSeancesByDate(dateFrom) {
 
     const now = new Date();
-    const date =  new Date(dateFrom);
+    const date = new Date(dateFrom);
 
     let to = new Date();
     to.setDate(date.getDate() + 1);
     to.setHours(0, 0, 0, 0);
-    to = toISOStringNoMs(to)
+    to = toISOStringNoMs(to);
 
-    if(!isEqual(now, date)) {
+    if (!isEqual(now, date)) {
         date.setHours(0, 0, 0, 0);
         dateFrom = toISOStringNoMs(date);
     }
@@ -125,7 +125,45 @@ export async function getSeanceById(id) {
         return {status: "success", data: {seance: json.seance, takenPlaces: arr}};
     }
 
-    return {status: "error", message:json.message};
+    return {status: "error", message: json.message};
+}
+
+export async function getHallById(id) {
+
+    const response = await fetch(`${apiUrl}/hall/${id}`, {
+        headers: {
+            Accept: "application/json",
+        },
+        credentials: "same-origin",
+    });
+
+    const json = await response.json();
+
+    if (Math.floor(response.status / 100) === 2) {
+        const halls = getHallsObj([json.data]);
+        return {status: "success", data: halls[Object.keys(halls)[0]]};
+    }
+
+    return {status: "error", message: json.message};
+}
+
+export async function getMovieById(id) {
+
+    const response = await fetch(`${apiUrl}/movie/${id}`, {
+        headers: {
+            Accept: "application/json",
+        },
+        credentials: "same-origin",
+    });
+
+    const json = await response.json();
+
+    if (Math.floor(response.status / 100) === 2) {
+
+        return {status: "success", data: json.data};
+    }
+
+    return {status: "error", message: json.message};
 }
 
 export async function toBook(data) {
@@ -153,6 +191,6 @@ export async function toBook(data) {
         return {status: "success", data: json.data};
     }
     else {
-        return {status: "error",message:json.message};
+        return {status: "error", message: json.message};
     }
 }

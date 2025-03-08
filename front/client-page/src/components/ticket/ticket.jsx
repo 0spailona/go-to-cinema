@@ -65,10 +65,11 @@ export default function Ticket() {
         dispatch(setLoading(true));
         const response = await getSeanceById(id);
         if (response.status === "success") {
+
             dispatch(setChosenSeance(response.data));
         }
         else {
-            dispatch(setChosenSeance(null));
+            dispatch(setInitialChosenSeance());
         }
         dispatch(setLoading(false));
     };
@@ -103,6 +104,7 @@ export default function Ticket() {
         }
     };
 
+    console.log("ticket chosenSeance", chosenSeance);
     return (
         <>
             <Popup isVisible={errorView.isError} message={errorView.message}

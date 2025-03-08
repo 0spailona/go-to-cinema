@@ -37,7 +37,6 @@ export function getObjMovies(arr) {
 }
 
 export function getHallsObj(arr) {
-
     const obj = {};
     for (let hall of arr) {
         obj[hall.id] = {name: hall.name, id: hall.id, rowsCount: hall.rowsCount, placesInRow: hall.placesInRow};

@@ -1,7 +1,7 @@
 import SeancesHall from "./seancesHall.jsx";
 import {useSelector} from "react-redux";
 
-export default function Movie({movieId, movieSeancesByHallId, onChooseSeance}) {
+export default function Movie({movieId, movieSeancesByHallId}) {
 
     const {movies} = useSelector(state => state.cinema);
     const movie = movies[movieId];
@@ -23,11 +23,7 @@ export default function Movie({movieId, movieSeancesByHallId, onChooseSeance}) {
                 </div>
             </div>
             {Object.keys(movieSeancesByHallId).map(hallId => <SeancesHall key={hallId} hallId={hallId}
-                                                                          seances={movieSeancesByHallId[hallId]}
-                                                                          onChooseSeance={(seanceId) => {
-                                                                              //console.log("Movie seanceId",seanceId);
-                                                                              onChooseSeance(seanceId);
-                                                                          }}/>)}
+                                                                          seances={movieSeancesByHallId[hallId]}/>)}
         </section>
     );
 }

@@ -26,8 +26,19 @@ export default function ClientPage() {
 
     const {seances, chosenDate, isDrawPage, loading, lastIsDrawPage, error} = useSelector(state => state.cinema);
     const [errorView, setErrorView] = useState({isError: false, message: ""});
+    const getSeances = async (date) => {
+        dispatch(setLoading(true));
+        const response = await getSeancesByDate(date);
 
-    const getMoviesFromServer = async () => {
+        if (response.status === "success") {
+            dispatch(setSeances(response.data))
+        }
+        else {
+            dispatch(setError("Проблемы с сервером. Попробуйте позже"));
+        }
+        dispatch(setLoading(false));
+    };
+    /*const getMoviesFromServer = async () => {
         dispatch(setLoading(true));
 
         const response = await getMovies();
@@ -52,18 +63,7 @@ export default function ClientPage() {
         dispatch(setLoading(false));
     };
 
-    const getSeances = async (date) => {
-        dispatch(setLoading(true));
-        const response = await getSeancesByDate(date);
 
-        if (response.status === "success") {
-            dispatch(setSeances(response.data))
-        }
-        else {
-            dispatch(setError("Проблемы с сервером. Попробуйте позже"));
-        }
-        dispatch(setLoading(false));
-    };
 
 
     const updateData = async () => {
@@ -81,7 +81,7 @@ export default function ClientPage() {
 
             toGetNewData();
         }
-    }, [isDrawPage]);
+    }, [isDrawPage]);*/
 
     useEffect(() => {
         dispatch(setInitialChosenSeance());
@@ -97,7 +97,7 @@ export default function ClientPage() {
         }
     }, [error]);
 
-    const getSeance = async (id) => {
+   /* const getSeance = async (id) => {
         dispatch(setLoading(true));
         //console.log("ClientPage getSeance",id);
         const response = await getSeanceById(id);
@@ -111,14 +111,13 @@ export default function ClientPage() {
             dispatch(setLoading(false));
             dispatch(setError(response.message));
         }
-    };
+    };*/
 
     const renderMovie = (movieId) => {
         const movieSeancesByHallId = seances[movieId];
         if (movieSeancesByHallId && Object.keys(movieSeancesByHallId).length > 0) {
             return <Movie key={`movie-/${movieId}`} movieId={movieId}
-                          movieSeancesByHallId={movieSeancesByHallId}
-                          onChooseSeance={(seanceId) => getSeance(seanceId)} />;
+                          movieSeancesByHallId={movieSeancesByHallId}/>;
         }
     };
 

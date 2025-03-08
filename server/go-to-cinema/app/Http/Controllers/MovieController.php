@@ -168,5 +168,13 @@ class MovieController
         return response()->json(["status" => "ok", "data" => "uploadPoster"]);
 
     }
+    public function getMovieById(string $id): \Illuminate\Http\JsonResponse
+    {
+        $movie = Movie::getMovie($id);
+        if ($movie === null) {
+            return response()->json(["status" => "error", "message" => "Фильм с таким идентификатором не существует"], 400, [], JSON_UNESCAPED_UNICODE);
+        }
 
+        return response()->json(["status" => "ok", "data" => $movie]);
+    }
 }

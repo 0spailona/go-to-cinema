@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,8 +43,9 @@ function serveFile($file, $folder, $defaultFile = null)
     if (!file_exists($filePath) && $defaultFile != null) {
         $filePath = storage_path('spa') . "/ /$defaultFile";
     }
-
+    //Log::debug("filePath $filePath");
     if (!file_exists($filePath)) {
+        Log::debug("serveFile 404");
         abort(404, 'File not found');
     } else {
         return response()->file($filePath,
@@ -148,6 +150,8 @@ Route::prefix('api')->group(function () {
     Route::get('seancesListByDate', [\App\Http\Controllers\SeanceController::class, 'getSeancesByDateToClient']);
     Route::get('moviesList', [\App\Http\Controllers\MovieController::class, 'getMoviesList']);
     Route::get('hallsList', [\App\Http\Controllers\HallController::class, 'getHallsList']);
+    Route::get('hall/{id}', [\App\Http\Controllers\HallController::class, 'getHallById']);
+    Route::get('movie/{id}', [\App\Http\Controllers\MovieController::class, 'getMovieById']);
     Route::get('posterByMovieId/{movieId}', [\App\Http\Controllers\MovieController::class, 'getPosterByMovieId']);
     Route::get('seance/{id}', [\App\Http\Controllers\SeanceController::class, 'getSeanceById']);
 
@@ -160,26 +164,38 @@ Route::prefix('api')->group(function () {
     });
 });
 
+Route::get('/seanceHall', function () {
+    Log::debug("/seanceHall/{seanceId}/{hallId}/{movieId}");
+    return serveFile("index.html", "client", "index.html");
+});
+
 //client SPA
 Route::get('{file?}', function ($file = "index.html") {
     return serveFile($file, "client", "index.html");
 });
 
-Route::get('hall/{id}', function () {
+
+
+/*Route::get('hall/{id}', function () {
     return serveFile("index.html", "client");
-});
+});*/
 
 Route::get('ticket/', function () {
     return serveFile("index.html", "client");
 });
 
 Route::get('assets/{file}', function ($file) {
+    Log::debug($file);
     return serveFile($file, "client/assets");
 });
 
-Route::get('hall/assets/{file}', function ($file) {
+Route::get('/seanceHall/{seanceId}/{hallId}/{movieId}/assets/{file}', function ($file) {
+    Log::debug($file);
     return serveFile($file, "client/assets");
 });
+/*Route::get('hall/assets/{file}', function ($file) {
+    return serveFile($file, "client/assets");
+});*/
 
 Route::get('ticket/assets/{file}', function ($file) {
     return serveFile($file, "client/assets");

@@ -11,7 +11,7 @@ const initialState = {
     halls: {},
     seances: {},
     chosenDate: toISOStringNoMs(initialDate),
-    chosenSeance: {seanceData: null, selectedPlaces: [], takenPlaces: []},
+    chosenSeance: {seanceData: null, selectedPlaces: [], takenPlaces: [],hallData:null},
     isDrawPage: false,
     lastIsDrawPage: null,
 };
@@ -33,7 +33,7 @@ export const cinemaSlice = createSlice({
     reducers: {
         setInitialChosenSeance: (state) => {
             state.chosenDate = toISOStringNoMs(initialDate);
-            state.chosenSeance = {seanceData: null, selectedPlaces: [], takenPlaces: []};
+            state.chosenSeance = {seanceData: null, selectedPlaces: [], takenPlaces: [],hallData:null};
         },
         setError(state, action) {
             state.error = action.payload;
@@ -45,6 +45,7 @@ export const cinemaSlice = createSlice({
         setChosenSeance: (state, action) => {
             state.chosenSeance.takenPlaces = action.payload.takenPlaces;
             state.chosenSeance.seanceData = action.payload.seance;
+            state.chosenSeance.hallData = action.payload.hallData;
         },
         setSeances: (state, action) => {
             state.seances = action.payload;
@@ -62,10 +63,10 @@ export const cinemaSlice = createSlice({
             state.chosenDate = action.payload;
         },
         changePlaceStatus: (state, action) => {
+            console.log("changePlaceStatus");
             const rowIndex = action.payload.rowIndex;
             const placeIndex = action.payload.placeIndex;
-            const hallId = state.chosenSeance.seanceData.hallId;
-            state.halls[hallId].places[rowIndex][placeIndex] = action.payload.newStatus;
+            state.chosenSeance.hallData.places[rowIndex][placeIndex] = action.payload.newStatus;
         },
         changeSelectedPlaces: (state, action) => {
             const rowIndex = action.payload.rowIndex;

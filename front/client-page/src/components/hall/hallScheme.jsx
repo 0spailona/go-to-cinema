@@ -3,13 +3,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {changePlaceStatus, changeSelectedPlaces} from "../../redux/slices/cinema.js";
 import {placesType} from "../../js/info.js";
 
-export default function HallScheme() {
+export default function HallScheme({hall}) {
 
     const dispatch = useDispatch();
 
-    const {chosenSeance, halls} = useSelector(state => state.cinema);
-
-    const hall = halls[chosenSeance.seanceData.hallId];
+    const {chosenSeance} = useSelector(state => state.cinema);
 
     for (let place of chosenSeance.takenPlaces) {
         dispatch(changePlaceStatus({

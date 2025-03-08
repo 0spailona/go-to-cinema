@@ -1,17 +1,17 @@
 import {NavLink} from "react-router-dom";
 import {getStartTimeStringFromMinutes} from "../../js/utils.js";
 
-export default function TimeBlock({seance, onClick}) {
+export default function TimeBlock({seance}) {
 
     const startTime = getStartTimeStringFromMinutes(seance.startTime);
 
-   //console.log("TimeBlock seance.id",seance.id)
+   //console.log("TimeBlock seance",seance)
 
     return (
         <li className="movie-seances__time-block">
-            <div className="movie-seances__time" onClick={() => onClick(seance.id)}
+            <NavLink className="movie-seances__time" to={`/seanceHall?seanceId=${seance.id}`}
             >{startTime.hours}:{startTime.min}
-            </div>
+            </NavLink>
         </li>
     );
 }
