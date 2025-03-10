@@ -5,25 +5,42 @@ import Hint from "./hint.jsx";
 import {setChosenSeance, setError, setInitialChosenSeance, setLoading} from "../../redux/slices/cinema.js";
 import {useEffect, useState} from "react";
 import {getDateStringFromDate, getStartTimeStringFromMinutes} from "../../js/utils.js";
-import {getSeanceById, toBook} from "../../js/api.js";
+import {getHallById, getMovieById, getSeanceById, toBook} from "../../js/api.js";
 import Loader from "react-js-loader";
 import Popup from "../common/popup.jsx";
-import {res} from "react-email-validator";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
+import TicketContent from "./ticketContent.jsx";
+
+
 
 export default function Ticket() {
 
+    const location = useLocation();
     const dispatch = useDispatch();
-    const navigate = useNavigate();
+    const query = new URLSearchParams(location.search);
+
+    const seanceId = query.get("seanceId");
+    const selected = query.get("places").split(",").map(item => item.split("_")).map(item => {
+        const rowIndex = parseInt(item[0]);
+        const placeIndex = parseInt(item[1]);
+
+        if (!isNaN(rowIndex) && !isNaN(placeIndex)) {
+            return {
+                rowIndex, placeIndex
+            };
+        }
+        else {
+            dispatch(setError("Что-то пошло не так"));
+        }
+
+    });
+
+
+    //console.log("selected", selected);
+    //console.log("ticket seanceId", seanceId);
 
     const {
-        chosenSeance,
-        halls,
-        movies,
-        chosenDate,
         isDrawPage,
-        loading,
-        lastIsDrawPage,
         error
     } = useSelector(state => state.cinema);
 
@@ -39,108 +56,26 @@ export default function Ticket() {
         }
     }, [error]);
 
-
-    useEffect(() => {
-        if (isDrawPage && !lastIsDrawPage) {
-            async function toGetUpdateSeance() {
-                await getUpdateSeance(chosenSeance.seanceData.id);
-            }
-
-            toGetUpdateSeance();
-        }
-    }, [isDrawPage]);
-
-
-
-    let hall, time, movie, places, cost, seance, selectedPlaces,prices;
-
-    if (!chosenSeance.seanceData || chosenSeance.selectedPlaces.length === 0) {
+    if (!seanceId || selected.length === 0) {
         return <Popup isVisible={true} message="Что-то пошло не так"
                       onClose={() => {
                           navigate("/");
                       }}/>;
     }
 
-    const getUpdateSeance = async (id) => {
-        dispatch(setLoading(true));
-        const response = await getSeanceById(id);
-        if (response.status === "success") {
+    if (!isDrawPage) {
+        return <p className="info">Продажа билетов временно приостановлена</p>;
+    }
 
-            dispatch(setChosenSeance(response.data));
-        }
-        else {
-            dispatch(setInitialChosenSeance());
-        }
-        dispatch(setLoading(false));
-    };
 
-    const getPlacesForView = () => {
-        let view = "";
-        for (let i = 0; i < selectedPlaces.length; i++) {
-            const separator = i === selectedPlaces.length - 1 ? "" : ", ";
-            view = `${view}ряд ${selectedPlaces[i].rowIndex + 1} место ${selectedPlaces[i].placeIndex + 1}${separator}`;
-        }
-        return view;
-    };
-
-    seance = chosenSeance.seanceData;
-    selectedPlaces = chosenSeance.selectedPlaces;
-    hall = halls[seance.hallId];
-    time = getStartTimeStringFromMinutes(seance.startTime);
-    movie = movies[seance.movieId];
-    places = getPlacesForView();
-    prices = hall.prices;
-    cost = selectedPlaces.reduce((acc, place) => acc + prices[place.lastStatus], 0);
-
-    const toBookPlaces = async () => {
-        const data = {seanceId: seance.id, places: selectedPlaces};
-        const response = await toBook(data);
-        if (response.status === "success") {
-            await dispatch(setInitialChosenSeance());
-            window.location = `/showBooking/${response.data}`;
-        }
-        else{
-            dispatch(setError(response.message))
-        }
-    };
-
-    console.log("ticket chosenSeance", chosenSeance);
+    //console.log("ticket chosenSeance", chosenSeance);
     return (
-        <>
-            <Popup isVisible={errorView.isError} message={errorView.message}
-                   onClose={() => {
-                       setErrorView({isError: false, message: ""});
-                       navigate("/");
-                   }}/>
+        <> <Popup isVisible={errorView.isError} message={errorView.message}
+                  onClose={() => {
+                      setErrorView({isError: false, message: ""});
+                      navigate("/");
+                  }}/>
+            <TicketContent selectedPlaces={selected} seanceId={seanceId}/></>
+    );
 
-            {isDrawPage ?
-                loading ?
-                    <div className="loader">
-                        <Loader type="bubble-scale" bgColor="rgba(241, 235, 230, 0.95)" color="#FFFFFF"
-                                size={50}/>
-                    </div> :
-                    <main>
-                        <section className="ticket">
-                            <header className="tichet__check">
-                                <h2 className="ticket__check-title">Вы выбрали билеты:</h2>
-                            </header>
-                            <div className="ticket__info-wrapper">
-                                <TicketInfo info="На фильм" data={movie.title}/>
-                                <TicketInfo info="Места" data={places}/>
-                                <TicketInfo info="В зале" data={hall.name}/>
-                                <TicketInfo info="На дату" data={getDateStringFromDate(new Date(chosenDate))}/>
-                                <TicketInfo info="Начало сеанса" data={`${time.hours}:${time.min}`}/>
-                                <TicketInfo info="Стоимость" data={`${cost}`} add=" рублей"/>
-                                <MyButton text="Получить код бронирования" onClick={toBookPlaces}/>
-                                <Hint text="После бронирования билет будет доступен в этом окне, а также придёт вам
-                        на почту. Покажите QR-код кассиру."/>
-                                <Hint text="Приятного просмотра!"/>
-                            </div>
-                        </section>
-                    </main>
-                :
-                <p className="info">Продажа билетов временно приостановлена</p>}
-        </>
-    )
-        ;
 }

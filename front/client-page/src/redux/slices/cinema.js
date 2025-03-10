@@ -63,7 +63,7 @@ export const cinemaSlice = createSlice({
             state.chosenDate = action.payload;
         },
         changePlaceStatus: (state, action) => {
-            console.log("changePlaceStatus");
+            //console.log("changePlaceStatus");
             const rowIndex = action.payload.rowIndex;
             const placeIndex = action.payload.placeIndex;
             state.chosenSeance.hallData.places[rowIndex][placeIndex] = action.payload.newStatus;

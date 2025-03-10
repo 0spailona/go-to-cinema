@@ -169,6 +169,10 @@ Route::get('/seanceHall', function () {
     return serveFile("index.html", "client", "index.html");
 });
 
+Route::get('ticket/', function () {
+    return serveFile("index.html", "client");
+});
+
 //client SPA
 Route::get('{file?}', function ($file = "index.html") {
     return serveFile($file, "client", "index.html");
@@ -180,9 +184,7 @@ Route::get('{file?}', function ($file = "index.html") {
     return serveFile("index.html", "client");
 });*/
 
-Route::get('ticket/', function () {
-    return serveFile("index.html", "client");
-});
+
 
 Route::get('assets/{file}', function ($file) {
     Log::debug($file);

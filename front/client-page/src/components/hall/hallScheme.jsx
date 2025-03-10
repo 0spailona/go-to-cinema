@@ -8,6 +8,7 @@ export default function HallScheme({hall}) {
     const dispatch = useDispatch();
 
     const {chosenSeance} = useSelector(state => state.cinema);
+console.log("HallScheme chosenSeance",chosenSeance);
 
     for (let place of chosenSeance.takenPlaces) {
         dispatch(changePlaceStatus({
@@ -22,9 +23,10 @@ export default function HallScheme({hall}) {
         dispatch(changePlaceStatus({rowIndex, placeIndex, newStatus}));
     };
 
+
     return (
         <div className="buying-scheme__wrapper">
-            {hall.places.map((row, rowIndex) => {
+            {hall?.places.map((row, rowIndex) => {
                 return <div className="buying-scheme__row" key={rowIndex}>{row.map((place, placeIndex) => {
                     return <Place status={place} key={`${rowIndex}-${placeIndex}`}
                                   onChange={(newStatus, isSelected) => onPlaceChange(rowIndex, placeIndex, newStatus, isSelected, place)}/>;

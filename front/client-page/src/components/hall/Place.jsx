@@ -7,6 +7,8 @@ export default function Place({status, onChange}) {
 
     let style;
 
+    //console.log("Place status", status);
+
     if (onChange && (status === placesType.standard
         || status === placesType.selected
         || status === placesType.vip)) {
