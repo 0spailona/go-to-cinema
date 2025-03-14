@@ -128,6 +128,33 @@ export async function getSeanceById(id) {
     return {status: "error", message: json.message};
 }
 
+export async function checkPlaces(places,seanceId) {
+
+    //const arr = places.map(place => `${place.rowIndex}_${place.placeIndex}`);
+
+    const response = await fetch(`${apiUrl}/checkPlaces?places=${places}&seanceId=${seanceId}`, {
+        headers: {
+            Accept: "application/json",
+        },
+        credentials: "same-origin",
+    });
+
+    const json = await response.json();
+
+    if (Math.floor(response.status / 100) === 2) {
+        //const halls = getHallsObj([json.data]);
+        const places = json.data.map(place => {
+                return {
+                    rowIndex: place.row, placeIndex: place.place
+                };
+            })
+        return {status: "success", data: places};
+        //return {status: "success", data: halls[Object.keys(halls)[0]]};
+    }
+
+    return {status: "error", message: json.message};
+}
+
 export async function getHallById(id) {
 
     const response = await fetch(`${apiUrl}/hall/${id}`, {

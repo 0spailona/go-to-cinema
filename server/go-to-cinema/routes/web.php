@@ -157,6 +157,7 @@ Route::prefix('api')->group(function () {
 
     Route::get('isOpenSails', [\App\Http\Controllers\AdminController::class, 'isOpenSails']);
     Route::post('toBook', [\App\Http\Controllers\BookingController::class, 'toBook']);
+    Route::get('checkPlaces', [\App\Http\Controllers\BookingController::class, 'checkPlaces']);
 
 
     Route::get('{api_method}', function ($api_method) {

@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Nette\Utils\Arrays;
 use BaconQrCode\Writer;
+use stdClass;
+use function Psy\debug;
 
 class BookingController
 {
@@ -21,9 +23,7 @@ class BookingController
 
         if (!Seance::byId($data->seanceId)) {
             return response()->json(["status" => "error", "message" => "Сеанс не обнаружен"], 404, [], JSON_UNESCAPED_UNICODE);
-        }
-
-        else {
+        } else {
             $places = $data->places;
             if (is_array($places) != "array") {
                 return response()->json(["status" => "error", "message" => "Неверный тип данных"], 404, [], JSON_UNESCAPED_UNICODE);
@@ -36,10 +36,10 @@ class BookingController
             $now = new DateTime();
 
 
-            Log::debug("now " . $now->format(DATE_FORMAT));
-            Log::debug("startTime " . $seance->startTime->format(DATE_FORMAT));
+            //Log::debug("now " . $now->format(DATE_FORMAT));
+            //Log::debug("startTime " . $seance->startTime->format(DATE_FORMAT));
 
-            if($seance->startTime < $now){
+            if ($seance->startTime < $now) {
                 return response()->json(["status" => "error", "message" => "На выбранный сеанс уже закрыто бронирование"], 404, [], JSON_UNESCAPED_UNICODE);
             }
 
@@ -57,19 +57,34 @@ class BookingController
         return response()->json(["status" => "ok", "data" => $id]);
     }
 
-    private function validatePlace($place, $hall, $seanceId): bool
+    private function checkPlaceInHall(stdClass $place, Hall $hall) : bool
     {
-        if (!$place->row || !$place->place) {
-            return false;
-        }
-        if (!ValidationUtils::checkInt($place->row, 1, $hall->rowsCount)
-            || !ValidationUtils::checkInt($place->place, 1, $hall->placesInRow)) {
+        if (!ValidationUtils::checkInt($place->row, 0, $hall->rowsCount)
+            || !ValidationUtils::checkInt($place->place, 0, $hall->placesInRow)) {
+            Log::debug("checkInt");
             return false;
         }
 
+        $disabledPlaces = Arrays::filter(json_decode($hall->places)->disabled, function ($disabledPlace) use ($place) {
+            if ($disabledPlace->row === $place->row && $disabledPlace->place === $place->place) {
+                return $disabledPlace;
+            }
+        });
+
+        if (count($disabledPlaces) > 0) {
+            Log::debug("count (disabledPlaces) > 0");
+            return false;
+        }
+        return true;
+    }
+
+    private function checkPlaceFree(stdClass $place, $seanceId,Hall $hall) : bool
+    {
         $takenPlacesOfAllBookings = Booking::where("seanceId", $seanceId)->pluck("places")->toArray();
         $takenPlaceForPrint = json_encode($takenPlacesOfAllBookings);
+
         Log::debug("takenPlacesOfAllBookings " . $takenPlaceForPrint);
+
         foreach ($takenPlacesOfAllBookings as $takenPlaces) {
             $takenPlaces = json_decode($takenPlaces);
             foreach ($takenPlaces as $takenPlace) {
@@ -78,22 +93,33 @@ class BookingController
                 }
             }
         }
+        return true;
+    }
 
-        $hallPlacesStatus = json_decode($hall->places);
-
-        $status = $place->status;
-        if ($status !== "standard" && $status !== "vip") {
+    private function validatePlace($place, $hall, $seanceId): bool
+    {
+        $placeForPrint = json_encode($place);
+        Log::debug("placeForPrint " . $placeForPrint);
+        if (!$place->row || !$place->place) {
             return false;
         }
 
-        $disabledPlaces = Arrays::filter($hallPlacesStatus->disabled, function ($disabledPlace) use ($place) {
-            if ($disabledPlace->row === $place->row && $disabledPlace->place === $place->place) {
-                return $disabledPlace;
-            }
-        });
+        if(!$this->checkPlaceInHall($place, $hall)) {
+            return false;
+        }
 
-        if (count($disabledPlaces) > 0) {
+       if(!$this->checkPlaceFree($place, $seanceId,$hall)) {
+           return false;
+       }
 
+        $hallPlacesStatus = json_decode($hall->places);
+
+        //$validatePlaces = json_encode($hall->places->toArray());
+        //Log::debug((array)"hallPlacesStatus : $validatePlaces");
+
+        $status = $place->status;
+        if ($status !== "standard" && $status !== "vip") {
+            Log::debug("status is not standard or vip" . $status);
             return false;
         }
 
@@ -101,13 +127,15 @@ class BookingController
             return $vipPlace->row === $place->row && $vipPlace->place === $place->place;
         });
 
-        if ($status === "standard" && count($vipPlaces) > 0) {
-            return false;
-        }
+         if ($status === "standard" && count($vipPlaces) > 0) {
+             Log::debug("vip as standard");
+             return false;
+         }
 
-        if ($status === "vip" && count($vipPlaces) === 0) {
-            return false;
-        }
+         if ($status === "vip" && count($vipPlaces) === 0) {
+             Log::debug("vip is hall without vip");
+             return false;
+         }
 
         return true;
     }
@@ -125,7 +153,7 @@ class BookingController
     public function showBooking($id)
     {
         $booking = Booking::byId($id);
-        if($booking == null){
+        if ($booking == null) {
             abort(404);
         }
         $seance = Seance::byId($booking->seanceId);
@@ -165,4 +193,54 @@ class BookingController
         return $view;
     }
 
+    public function checkPlaces(Request $request)
+    {
+        $places = $request->query('places');
+
+        if (preg_match("/^([0-9]{1,2}_[0-9]{1,2},)*[0-9]{1,2}_[0-9]{1,2}$/", $places) != 1) {
+            return response()->json(["status" => "error", "message" => "Неверные данные"], 404, [], JSON_UNESCAPED_UNICODE);
+        }
+
+        $seanceId = $request->query('seanceId');
+
+        $seance = Seance::byId($seanceId);
+        if (!$seance) {
+            return response()->json(["status" => "error", "message" => "Сеанс не обнаружен"], 404, [], JSON_UNESCAPED_UNICODE);
+        }
+
+        $hall = Hall::byId($seance->hallId);
+        if (!$hall) {
+            return response()->json(["status" => "error", "message" => "Зал не обнаружен"], 404, [], JSON_UNESCAPED_UNICODE);
+        }
+
+        //$hallPlacesStatus = json_decode($hall->places);
+        //Log::debug("hallPlacesStatus : " . $hall->places);
+
+        $selectedPlaces = explode(",", $places);
+
+        $selectedPlaces = array_map(function ($place) {
+            $place = explode("_", $place);
+            $stdPlace = new stdClass();
+            $stdPlace->row = intval($place[0]);
+            $stdPlace->place = intval($place[1]);
+            return $stdPlace;
+        }, $selectedPlaces);
+
+        $placesForPrint = json_encode($selectedPlaces);
+
+        //Log::debug("checkPlaces " . $placesForPrint);
+        //Log::debug("seanceId " . $seanceId);
+
+        foreach ($selectedPlaces as $place) {
+            if(!$this->checkPlaceInHall($place, $hall)) {
+                return response()->json(["status" => "error", "message" => "Эти места не доступны для бронирования"], 404, [], JSON_UNESCAPED_UNICODE);
+            }
+            if(!$this->checkPlaceFree($place,$seanceId,$hall)) {
+                return response()->json(["status" => "error", "message" => "Эти места уже забронированы"], 404, [], JSON_UNESCAPED_UNICODE);
+            }
+        }
+
+        return response()->json(["status" => "success", "data" => $selectedPlaces]);
+
+    }
 }

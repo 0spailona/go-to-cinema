@@ -3,6 +3,10 @@ import {placesType} from "../../js/info.js";
 
 export default function PriceLegend({status,prices}) {
 
+    if(!prices){
+        return null;
+    }
+
     let price;
     let text;
 

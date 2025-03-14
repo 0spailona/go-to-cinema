@@ -25,3 +25,13 @@ export function  isEqual  (a, b)  {
     return getDateStringFromDate(a) === getDateStringFromDate(b);
 }
 
+export  function getPlacesForView (places)  {
+    let view = "";
+    for (let i = 0; i < places.length; i++) {
+        const separator = i === places.length - 1 ? "" : ", ";
+        view = `${view}ряд ${places[i].rowIndex + 1} место ${places[i].placeIndex + 1}${separator}`;
+    }
+    return view;
+}
+
+

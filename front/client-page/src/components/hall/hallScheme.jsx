@@ -8,7 +8,7 @@ export default function HallScheme({hall}) {
     const dispatch = useDispatch();
 
     const {chosenSeance} = useSelector(state => state.cinema);
-console.log("HallScheme chosenSeance",chosenSeance);
+//console.log("HallScheme chosenSeance",chosenSeance);
 
     for (let place of chosenSeance.takenPlaces) {
         dispatch(changePlaceStatus({
