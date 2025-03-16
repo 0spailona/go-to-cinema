@@ -43,7 +43,7 @@ export default function ConfigHall() {
 
 
     useEffect(() => {
-        console.log("useEffect hallConfig halls hallToUpdate", hallToUpdate);
+        //console.log("useEffect hallConfig halls hallToUpdate", hallToUpdate);
 
         if (!halls || Object.keys(halls).length === 0) {
             return;
@@ -54,11 +54,11 @@ export default function ConfigHall() {
         }
         else {
             if (!halls[hallToUpdate.hallId]) {
-                console.log("not hall");
+                //console.log("not hall");
                 setInitialState(halls[Object.keys(halls)[0]], false);
             }
             else if(hallToUpdate.isUpdated){
-                console.log("hallToUpdate is updated", hallToUpdate);
+                //console.log("hallToUpdate is updated", hallToUpdate);
                 setInitialState(halls[hallToUpdate.hallId], true);
             }
             else {

@@ -47,7 +47,7 @@ export const seancesSlice = createSlice({
         },
         setIsUpdateSeancesFalse: (state) => {
             state.isUpdatedSeances = false;
-        }
+        },
     },
 });
 
