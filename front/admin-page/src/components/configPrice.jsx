@@ -224,7 +224,7 @@ export default function ConfigPrice() {
                         </div>
                         <div className="conf-step__buttons text-center">
                             <MyButton type="reset" text="Отмена" onclick={async () => {
-                                setInitialState(hallToUpdate.hallId);
+                                setInitialState(halls[hallToUpdate.hallId]);
                                 await getHallsFromServer();
                             }}/>
                             <MyButton type="submit" text="Сохранить" onclick={toSaveByButton}/>

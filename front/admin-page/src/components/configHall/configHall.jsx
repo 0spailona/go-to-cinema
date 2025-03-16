@@ -43,14 +43,35 @@ export default function ConfigHall() {
 
 
     useEffect(() => {
-        if((!halls || Object.keys(halls).length === 0) && hallToUpdate.hallId !== null) {
+        console.log("useEffect hallConfig halls");
+
+        if (!halls || Object.keys(halls).length === 0) {
+            return;
+        }
+
+        if (!hallToUpdate.hallId) {
+            setInitialState(halls[Object.keys(halls)[0]], false);
+        }
+        else {
+            if (!halls[hallToUpdate.hallId]) {
+                setInitialState(halls[Object.keys(halls)[0]], false);
+            }
+            else if(hallToUpdate.isUpdated){
+                setInitialState(halls[hallToUpdate.hallId], true);
+            }
+            else {
+                //console.log("useEffect halls", hallToUpdate.hallId);
+                setInitialState(halls[hallToUpdate.hallId], false);
+            }
+        }
+        /*if((!halls || Object.keys(halls).length === 0) && hallToUpdate.hallId !== null) {
             setHallToUpdate({hallId: null, isUpdated: false});
         }
 
         else if ((halls && Object.keys(halls).length !== 0 && hallToUpdate.hallId === null)
         ||(hallToUpdate.hallId !== null && !Object.keys(halls).includes(hallToUpdate.hallId))) {
             setInitialState(halls[Object.keys(halls)[0]]);
-        }
+        }*/
     }, [halls]);
 
 
@@ -216,6 +237,7 @@ export default function ConfigHall() {
                                   }/>
                             <div className="conf-step__buttons text-center">
                                 <MyButton type="reset" text="Отмена" onclick={async () => {
+                                    setInitialState(halls[hallToUpdate.hallId]);
                                     await getHallsFromServer()
                                 }}/>
                                 <MyButton type="submit" text="Сохранить" onclick={toSaveByButton}/>
