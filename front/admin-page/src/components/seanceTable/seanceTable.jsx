@@ -48,7 +48,7 @@ let timerId = null;
 let itemOnDragX = null;
 
 export default function SeanceTable() {
-
+//console.log("SeanceTable render");
 
     const dispatch = useDispatch();
 

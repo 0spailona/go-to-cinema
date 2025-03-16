@@ -6,7 +6,9 @@ import Place from "../common/place.jsx";
 import MyButton from "../common/myButton.jsx";
 import {useEffect, useState} from "react";
 import {
-    setHalls, setHallToUpdateConfig, setLoadingHalls,
+    setHalls,
+    //setHallToUpdateConfig,
+    setLoadingHalls,
     updateCustomPlaces,
     updateCustomRows,
 } from "../../redux/slices/halls.js";
@@ -31,6 +33,8 @@ export default function ConfigHall() {
     const [showPopup, setShowPopup] = useState(false);
     const [nextCheckedHallName, setNextCheckedHallName] = useState(null);
 
+    //console.log("configHall hallToUpdate", hallToUpdate);
+
     const setInitialState = (hall) => {
         setInputValueRows(hall.rowsCount);
         setInputValuePlaces(hall.placesInRow);
@@ -49,9 +53,10 @@ export default function ConfigHall() {
         }
     }, [halls]);
 
-    useEffect(()=>{
+
+   /* useEffect(()=>{
         setHallToUpdate(hallToUpdateConfig)
-    },[hallToUpdateConfig])
+    },[hallToUpdateConfig])*/
 
 
     const getHallsFromServer = async () => {
@@ -81,7 +86,8 @@ export default function ConfigHall() {
             }));
 
             if (value !== lastData) {
-                dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: true}))
+                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true})
+                //dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: true}))
             }
         }
     };
@@ -100,7 +106,8 @@ export default function ConfigHall() {
             }));
 
             if (value !== lastData) {
-                dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: true}))
+                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true})
+                //dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: true}))
             }
         }
     };
@@ -145,7 +152,8 @@ export default function ConfigHall() {
         }
         else {
             await updatePlacesInHallOnServer()
-            dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: false}));
+            setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: false})
+            //dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: false}));
         }
     };
 
@@ -168,6 +176,7 @@ export default function ConfigHall() {
                                      textForSubmitBtn="Да"
                                      textForResetBtn="Нет"/>
                             <SelectionHall selectedHall={hallToUpdate}
+                                           history="hall"
                                            onChange={async (e, hallId) => {
                                               if (hallToUpdate.isUpdated) {
                                                   setShowPopup(true);

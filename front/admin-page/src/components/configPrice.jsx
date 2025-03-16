@@ -12,12 +12,9 @@ import MyPopup from "./common/myPopup.jsx";
 import {getHalls, updatePricesInHall} from "../js/api.js";
 import {setError} from "../redux/slices/common.js";
 
-let pricesFromServer = {
-    vip: null,
-    standard: null,
-};
 
 export default function ConfigPrice() {
+
 
     const dispatch = useDispatch();
     const {halls, hallConfig} = useSelector(state => state.halls);
@@ -29,30 +26,45 @@ export default function ConfigPrice() {
     const [nextCheckedHallId, setNextCheckedHallId] = useState(null);
     const [validateError, setValidateError] = useState(null);
     const [showErrorPopup, setShowErrorPopup] = useState(false);
+    const [pricesFromServer, setPricesFromServer] = useState({
+        vip: null,
+        standard: null
+    });
 
-    const setInitialState = (hall,isUpdated) => {
-        pricesFromServer.vip = hall.prices.vip;
-        pricesFromServer.standard = hall.prices.standard;
+    //console.log("configPrice hallToUpdate", hallToUpdate);
+
+    const setInitialState = (hall, isUpdated) => {
+        setPricesFromServer({
+            vip: hall.prices.vip,
+            standard: hall.prices.standard
+        });
         setInputValueStandardPrice(hall.prices.standard);
         setInputValueVipPrice(hall.prices.vip);
         setHallToUpdate({hallId: hall.id, isUpdated});
     };
 
+
     useEffect(() => {
-        if (!halls || Object.keys(halls).length === 0){
-            return
+        //console.log("configPrice useEffect halls start", hallToUpdate);
+
+        if (!halls || Object.keys(halls).length === 0) {
+            return;
         }
 
         if (!hallToUpdate.hallId) {
-            setInitialState(halls[Object.keys(halls)[0]],false);
+            setInitialState(halls[Object.keys(halls)[0]], false);
         }
 
         else {
-            if(!halls[hallToUpdate.hallId]){
-                setInitialState(halls[Object.keys(halls)[0]],false);
+            if (!halls[hallToUpdate.hallId]) {
+                setInitialState(halls[Object.keys(halls)[0]], false);
             }
-            else{
-                setInitialState(halls[hallToUpdate.hallId],true);
+            else if(hallToUpdate.isUpdated){
+                setInitialState(halls[hallToUpdate.hallId], true);
+            }
+            else {
+                //console.log("useEffect halls", hallToUpdate.hallId);
+                setInitialState(halls[hallToUpdate.hallId], false);
             }
         }
 
@@ -79,14 +91,14 @@ export default function ConfigPrice() {
             setShowErrorPopup(true);
         }
         else {
+            if (value !== pricesFromServer.vip) {
+                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
+            }
             dispatch(updateVipPrice({
                 price: value,
                 hallId: hallToUpdate.hallId
             }));
 
-            if (value !== pricesFromServer.vip) {
-                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
-            }
         }
     };
 
@@ -101,14 +113,15 @@ export default function ConfigPrice() {
         }
         else {
 
+            if (value !== pricesFromServer.standard) {
+                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
+            }
+
             dispatch(updateStandardPrice({
                 price: value,
                 hallId: hallToUpdate.hallId
             }));
 
-            if (value !== pricesFromServer.standard) {
-                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
-            }
         }
     };
 
@@ -126,7 +139,7 @@ export default function ConfigPrice() {
     };
 
     const changeHall = (newHallToUpdate) => {
-        setInitialState(halls[newHallToUpdate],false);
+        setInitialState(halls[newHallToUpdate], false);
     };
 
     const notToSaveChanges = async (e, newHallToUpdate) => {
@@ -166,7 +179,7 @@ export default function ConfigPrice() {
                 {halls && hallToUpdate.hallId ? <>
                         <MyPopup isVisible={showErrorPopup} title="Неверно введенные данные"
                                  onClose={() => {
-                                     setShowErrorPopup(false)
+                                     setShowErrorPopup(false);
                                      setValidateError(null);
                                  }}>
                             <p className="conf-step__paragraph">{`${validateError}`}</p>
@@ -185,8 +198,10 @@ export default function ConfigPrice() {
                                  textForSubmitBtn="Да"
                                  textForResetBtn="Нет"/>
                         <SelectionHall selectedHall={hallToUpdate}
+                                       history="price"
                                        onChange={async (e, hallId) => {
                                            if (hallToUpdate.isUpdated) {
+                                               //console.log("configPrice hallToUpdate", hallToUpdate);
                                                setShowPopup(true);
                                                setNextCheckedHallId(hallId);
                                            }

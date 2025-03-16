@@ -7,6 +7,7 @@ function App() {
     const [hasAdminRights, setHasAdminRights] = useState(false);
     const [error, setError] = useState({isError: false, message: ""});
 
+    //console.log("app render");
 
   /*  const [a, setA] = useState(0);
 

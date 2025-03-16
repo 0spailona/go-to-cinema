@@ -11,7 +11,7 @@ const initialState = {
         hallNameLength: {min: 2, max: 15}, rowsCount: {min: 6, max: 20}, placesInRow: {min: 6, max: 20},
         maxPrice: 1000, minVipPrice: 360, minStandardPrice: 20
     },
-    hallToUpdateConfig: {hallId: null, isUpdated: false}
+   // hallToUpdateConfig: {hallId: null, isUpdated: false}
 };
 
 const hallsSlice = createSlice({
@@ -23,13 +23,13 @@ const hallsSlice = createSlice({
             loadingHalls: (state => state.loadingHalls),
             hallConfig: (state) => state.hallConfig,
             canUpdate: (state) => state.canUpdate,
-            hallToUpdateConfig: (state) => state.hallToUpdateConfig,
+            //hallToUpdateConfig: (state) => state.hallToUpdateConfig,
         },
         reducers: {
-            setHallToUpdateConfig: (state, action) => {
+            /*setHallToUpdateConfig: (state, action) => {
                 state.hallToUpdateConfig.hallId = action.payload.hallId;
                 state.hallConfig.isUpdated = action.payload.isUpdated;
-            },
+            },*/
             setCanUpdate: (state, action) => {
                 state.canUpdate = action.payload;
             },
@@ -99,7 +99,7 @@ const hallsSlice = createSlice({
 
 
 export const {
-    setHallToUpdateConfig,
+    //setHallToUpdateConfig,
     setCanUpdate,
     updateCustomRows,
     updateCustomPlaces,
