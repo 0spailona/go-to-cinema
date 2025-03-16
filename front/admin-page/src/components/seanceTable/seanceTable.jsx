@@ -373,7 +373,7 @@ export default function SeanceTable() {
 
     const onSubmitAddToList = async (data) => {
         dispatch(setLoadingMovies(true));
-
+console.log("onSubmitAddToList data", data);
         const response = await createMovie(data);
 
         if (response.status !== "success") {

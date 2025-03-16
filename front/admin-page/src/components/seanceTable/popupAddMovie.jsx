@@ -29,7 +29,7 @@ export default function PopupAddMovie({showPopup, onReset, onSubmit, onError, cl
         const releaseYear = +Object.fromEntries(formData).releaseYear.trim();
         const durationError = getValidationError(duration, 10, 250);
         const yearNow = +new Date().getFullYear();
-        const releaseYearError = getValidationError(releaseYear, 1895, yearNow);
+        const releaseYearError = getValidationError(releaseYear, 1895, yearNow + 1);
         if (durationError) {
             onError(`Ошибка в поле "Продолжительность фильма". ${durationError}`);
         }
