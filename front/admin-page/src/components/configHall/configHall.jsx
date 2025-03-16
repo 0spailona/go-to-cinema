@@ -35,15 +35,15 @@ export default function ConfigHall() {
 
     //console.log("configHall hallToUpdate", hallToUpdate);
 
-    const setInitialState = (hall) => {
+    const setInitialState = (hall,isUpdated) => {
         setInputValueRows(hall.rowsCount);
         setInputValuePlaces(hall.placesInRow);
-        setHallToUpdate({hallId: hall.id, isUpdated: false});
+        setHallToUpdate({hallId: hall.id, isUpdated});
     };
 
 
     useEffect(() => {
-        console.log("useEffect hallConfig halls");
+        console.log("useEffect hallConfig halls hallToUpdate", hallToUpdate);
 
         if (!halls || Object.keys(halls).length === 0) {
             return;
@@ -54,9 +54,11 @@ export default function ConfigHall() {
         }
         else {
             if (!halls[hallToUpdate.hallId]) {
+                console.log("not hall");
                 setInitialState(halls[Object.keys(halls)[0]], false);
             }
             else if(hallToUpdate.isUpdated){
+                console.log("hallToUpdate is updated", hallToUpdate);
                 setInitialState(halls[hallToUpdate.hallId], true);
             }
             else {
@@ -101,15 +103,16 @@ export default function ConfigHall() {
             dispatch(setError(`Ошибка в количестве мест. ${error}`));
         }
         else {
+
+            if (value !== lastData) {
+                console.log("onBlurPlacesInput value, lastData",value, lastData);
+                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true})
+                //dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: true}))
+            }
             dispatch(updateCustomPlaces({
                 places: value,
                 hallId: hallToUpdate.hallId
             }));
-
-            if (value !== lastData) {
-                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true})
-                //dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: true}))
-            }
         }
     };
 
@@ -121,20 +124,23 @@ export default function ConfigHall() {
             dispatch(setError(`Ошибка в количестве рядов. ${error}`))
         }
         else {
+
+            if (value !== lastData) {
+                console.log("onBlurRowsInput value, lastData",value, lastData);
+                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true})
+                //dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: true}))
+            }
             dispatch(updateCustomRows({
                 rows: value,
                 hallId: hallToUpdate.hallId
             }));
 
-            if (value !== lastData) {
-                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true})
-                //dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: true}))
-            }
+
         }
     };
 
     const changeHall = (newHallToUpdate) => {
-        setInitialState(halls[newHallToUpdate]);
+        setInitialState(halls[newHallToUpdate],false);
     };
 
     const notToSaveChanges = async (e, newHallToUpdate) => {
@@ -200,6 +206,7 @@ export default function ConfigHall() {
                                            history="hall"
                                            onChange={async (e, hallId) => {
                                               if (hallToUpdate.isUpdated) {
+                                                  console.log("hallConfig hallToUpdate", hallToUpdate);
                                                   setShowPopup(true);
                                                   setNextCheckedHallName(hallId);
                                               }
@@ -237,7 +244,7 @@ export default function ConfigHall() {
                                   }/>
                             <div className="conf-step__buttons text-center">
                                 <MyButton type="reset" text="Отмена" onclick={async () => {
-                                    setInitialState(halls[hallToUpdate.hallId]);
+                                    setInitialState(halls[hallToUpdate.hallId],false);
                                     await getHallsFromServer()
                                 }}/>
                                 <MyButton type="submit" text="Сохранить" onclick={toSaveByButton}/>
