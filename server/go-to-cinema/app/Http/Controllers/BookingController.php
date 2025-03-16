@@ -46,8 +46,9 @@ class BookingController
             $hall = Hall::byId($seance->hallId);
 
             foreach ($places as $place) {
-                if (!$this->validatePlace($place, $hall, $data->seanceId)) {
-                    return response()->json(["status" => "error", "message" => "Неверные данные: бронируемое место не существует"], 404, [], JSON_UNESCAPED_UNICODE);
+                $validateResult = $this->validatePlace($place, $hall, $data->seanceId);
+                if (!$validateResult->status) {
+                    return response()->json(["status" => "error", "message" => $validateResult->message], 404, [], JSON_UNESCAPED_UNICODE);
                 }
             }
 
@@ -57,8 +58,9 @@ class BookingController
         return response()->json(["status" => "ok", "data" => $id]);
     }
 
-    private function checkPlaceInHall(stdClass $place, Hall $hall) : bool
+    private function checkPlaceInHall(stdClass $place, Hall $hall): bool
     {
+
         if (!ValidationUtils::checkInt($place->row, 0, $hall->rowsCount)
             || !ValidationUtils::checkInt($place->place, 0, $hall->placesInRow)) {
             Log::debug("checkInt");
@@ -78,17 +80,18 @@ class BookingController
         return true;
     }
 
-    private function checkPlaceFree(stdClass $place, $seanceId,Hall $hall) : bool
+    private function checkPlaceFree(stdClass $place, $seanceId, Hall $hall): bool
     {
         $takenPlacesOfAllBookings = Booking::where("seanceId", $seanceId)->pluck("places")->toArray();
         $takenPlaceForPrint = json_encode($takenPlacesOfAllBookings);
-
+        $placeForPrint = json_encode($place);
+        Log::debug("checkPlaceFree place" . $placeForPrint);
         Log::debug("takenPlacesOfAllBookings " . $takenPlaceForPrint);
 
         foreach ($takenPlacesOfAllBookings as $takenPlaces) {
             $takenPlaces = json_decode($takenPlaces);
             foreach ($takenPlaces as $takenPlace) {
-                if ($takenPlace->place === $place->place && $takenPlace->row === $hall->row) {
+                if ($takenPlace->place === $place->place && $takenPlace->row === $place->row) {
                     return false;
                 }
             }
@@ -96,21 +99,31 @@ class BookingController
         return true;
     }
 
-    private function validatePlace($place, $hall, $seanceId): bool
+    private function validatePlace($place, $hall, $seanceId): stdClass
     {
         $placeForPrint = json_encode($place);
-        Log::debug("placeForPrint " . $placeForPrint);
-        if (!$place->row || !$place->place) {
-            return false;
+        $result = new stdClass();
+        $result->status = true;
+        $result->message = null;
+
+       // Log::debug("placeForPrint " . $placeForPrint);
+        if (!isset($place->row) || !isset($place->place)) {
+            $result->status = false;
+            $result->message = "Неверно переданные данные";
+            return $result;
         }
 
-        if(!$this->checkPlaceInHall($place, $hall)) {
-            return false;
+        if (!$this->checkPlaceInHall($place, $hall)) {
+            $result->status = false;
+            $result->message = "Места не доступны для бронирования";
+            return $result;
         }
 
-       if(!$this->checkPlaceFree($place, $seanceId,$hall)) {
-           return false;
-       }
+        if (!$this->checkPlaceFree($place, $seanceId, $hall)) {
+            $result->status = false;
+            $result->message = "Места уже забронированы";
+            return $result;
+        }
 
         $hallPlacesStatus = json_decode($hall->places);
 
@@ -120,24 +133,30 @@ class BookingController
         $status = $place->status;
         if ($status !== "standard" && $status !== "vip") {
             Log::debug("status is not standard or vip" . $status);
-            return false;
+            $result->status = false;
+            $result->message = "Передан неверный статус места";
+            return $result;
         }
 
         $vipPlaces = Arrays::filter($hallPlacesStatus->vip, function ($vipPlace) use ($place) {
             return $vipPlace->row === $place->row && $vipPlace->place === $place->place;
         });
 
-         if ($status === "standard" && count($vipPlaces) > 0) {
-             Log::debug("vip as standard");
-             return false;
-         }
+        if ($status === "standard" && count($vipPlaces) > 0) {
+            Log::debug("vip as standard");
+            $result->status = false;
+            $result->message = "Передан неверный статус места";
+            return $result;
+        }
 
-         if ($status === "vip" && count($vipPlaces) === 0) {
-             Log::debug("vip is hall without vip");
-             return false;
-         }
+        if ($status === "vip" && count($vipPlaces) === 0) {
+            Log::debug("vip is hall without vip");
+            $result->status = false;
+            $result->message = "Передан неверный статус места";
+            return $result;
+        }
 
-        return true;
+        return $result;
     }
 
     public function getQR(string $bookingId)
@@ -232,10 +251,10 @@ class BookingController
         //Log::debug("seanceId " . $seanceId);
 
         foreach ($selectedPlaces as $place) {
-            if(!$this->checkPlaceInHall($place, $hall)) {
+            if (!$this->checkPlaceInHall($place, $hall)) {
                 return response()->json(["status" => "error", "message" => "Эти места не доступны для бронирования"], 404, [], JSON_UNESCAPED_UNICODE);
             }
-            if(!$this->checkPlaceFree($place,$seanceId,$hall)) {
+            if (!$this->checkPlaceFree($place, $seanceId, $hall)) {
                 return response()->json(["status" => "error", "message" => "Эти места уже забронированы"], 404, [], JSON_UNESCAPED_UNICODE);
             }
         }

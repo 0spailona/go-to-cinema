@@ -30,12 +30,12 @@ export default function TicketContent({seanceId, selectedPlaces}) {
     const [loading, setLoading] = useState(false);
     const [hall, setHall] = useState(null);
     const [movie, setMovie] = useState(null);
-    //const [places, setPlaces] = useState(getPlacesForView(selectedPlaces));
+    const [places, setPlaces] = useState(selectedPlaces);
     const [cost, setCost] = useState(null);
     //const [seance, setSeance] = useState(null);
     const [time, setTime] = useState(null);
 
-    const places = getPlacesForView(selectedPlaces);
+    //const placesForView = getPlacesForView(selectedPlaces);
     //const [prices, setPrices] = useState(null);
 
     /*const checkPlacesOnServer = async () => {
@@ -144,6 +144,8 @@ export default function TicketContent({seanceId, selectedPlaces}) {
             for (let place of selectedPlaces) {
                 hallData.hall.places[place["rowIndex"]][place["placeIndex"]] = placesType.selected;
             }
+
+            setPlaces(places)
             setHall(hallData.hall);
             setCost(places.reduce((acc, place) => acc + hallData.hall.prices[place.lastStatus], 0));
             setTime(getStartTimeStringFromMinutes(data.seanceData.seance.startTime));
@@ -170,8 +172,10 @@ export default function TicketContent({seanceId, selectedPlaces}) {
 
     const toBookPlaces = async () => {
 console.log("To Book Places chosenSeance.selectedPlaces",chosenSeance.selectedPlaces);
+console.log("To Book Places places",places)
 //TODO send places from state not from redux
-        const data = {seanceId, places: chosenSeance.selectedPlaces};
+        const data = {seanceId, places};
+       // const data = {seanceId, places: chosenSeance.selectedPlaces};
         const response = await toBook(data);
         if (response.status === "success") {
             await dispatch(setInitialChosenSeance());
@@ -207,7 +211,7 @@ console.log("To Book Places chosenSeance.selectedPlaces",chosenSeance.selectedPl
                         </header>
                         <div className="ticket__info-wrapper">
                             <TicketInfo info="На фильм" data={movie.title}/>
-                            <TicketInfo info="Места" data={places}/>
+                            <TicketInfo info="Места" data={getPlacesForView(selectedPlaces)}/>
                             <TicketInfo info="В зале" data={hall.name}/>
                             <TicketInfo info="На дату" data={getDateStringFromDate(new Date(chosenDate))}/>
                             <TicketInfo info="Начало сеанса" data={`${time.hours}:${time.min}`}/>
