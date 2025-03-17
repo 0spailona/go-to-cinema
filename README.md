@@ -1,13 +1,17 @@
 1) Склонировать репозиторий
 2) Перейти в корневую папку репозитория
 3) Выполнить:```docker build . -t go-to-cinema``` для сборки 
-4) и ```docker run -it --rm -p PORT:80 go-to-cinema``` для запуска
+4) и ```docker run -it --rm -p PORT:80 go-to-cinema``` для запуска, где PORT -  это порт, на который будем принимать подключение, например 8000
  
- для работы QR c других хостов надо добавить ```-e PUBLIC_URL=http://PUBLIC_HOST:PUBLIC_PORT```
+
+ для работы QR c других хостов надо добавить ```-e PUBLIC_URL=http://PUBLIC_HOST:PORT```, где PUBLIC_HOST - это адрес компьютера в локальной сети
+
 
  для переопределения почты админа ```-e ADMIN_MAIL=bbb@mail.ru```  
  
+
 для переопределения пароля админа ```-e ADMIN_PASSWORD=pass_hash```  
+
 
  pass_hash можно получить вот так: 
  ```echo "<?php print password_hash('MyNewPassword', PASSWORD_DEFAULT);" | php```
