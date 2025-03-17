@@ -94,6 +94,7 @@ export default function SeanceTable() {
     const getSeances = async (date) => {
         dispatch(setLoadingSeances(true));
 
+        console.log("isUpdatedSeances",isUpdatedSeances);
         const response = await getSeancesByDate(date);
         if (response.status === "success") {
             let newSeances = getSeancesObj(halls, response.data);
@@ -406,6 +407,7 @@ export default function SeanceTable() {
         e.preventDefault();
         await updateSeancesByDate({seances, date: chosenDate});
         dispatch(setIsUpdateSeancesFalse());
+        dispatch(setSeances(null))
 
         const date = toISOStringNoMs(showPopupUpdateDate.date);
         if(await getSeances(date)){
