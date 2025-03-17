@@ -405,12 +405,13 @@ export default function SeanceTable() {
     const onSubmitUpdateDate = async (e) => {
         e.preventDefault();
         await updateSeancesByDate({seances, date: chosenDate});
-        const date = toISOStringNoMs(showPopupUpdateDate.date);
+        dispatch(setIsUpdateSeancesFalse());
 
+        const date = toISOStringNoMs(showPopupUpdateDate.date);
         if(await getSeances(date)){
             setChosenDate(showPopupUpdateDate.date);
             setShowPopupUpdateDate({isShown: false, date: null});
-            dispatch(setIsUpdateSeancesFalse());
+
         }
         else {
             setErrorView({isError: true, message: "Что-то пошло не так. Попробуйте позже."});
