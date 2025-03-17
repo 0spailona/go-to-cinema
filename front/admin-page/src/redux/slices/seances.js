@@ -25,7 +25,6 @@ export const seancesSlice = createSlice({
             const start = action.payload.start;
             if (fromHallId) {
                 state.seances[fromHallId].seances = state.seances[fromHallId].seances.filter(seance => seance.id !== action.payload.seanceId);
-                //state.seances[fromHallId].seances.splice(action.payload.movieIndex, 1);
             }
             const newSeance = createSeance(movieId,hallId, start);
             state.seances[hallId].seances.push(newSeance);
@@ -36,8 +35,6 @@ export const seancesSlice = createSlice({
             const fromHallId = action.payload.hallId;
             const seanceId = action.payload.seanceId;
             state.seances[fromHallId].seances = state.seances[fromHallId].seances.filter(seance => seance.id !== seanceId);
-            //const movieIndex = action.payload.movieIndex;
-            //state.seances[fromHallId].seances.splice(movieIndex, 1);
         },
         setLoadingSeances: (state, action) => {
             state.loadingSeances = action.payload;

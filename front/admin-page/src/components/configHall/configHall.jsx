@@ -7,7 +7,6 @@ import MyButton from "../common/myButton.jsx";
 import {useEffect, useState} from "react";
 import {
     setHalls,
-    //setHallToUpdateConfig,
     setLoadingHalls,
     updateCustomPlaces,
     updateCustomRows,
@@ -24,7 +23,7 @@ export default function ConfigHall() {
     const dispatch = useDispatch();
 
     const {
-        halls, hallConfig,hallToUpdateConfig
+        halls, hallConfig
     } = useSelector(state => state.halls);
 
     const [inputValueRows, setInputValueRows] = useState(0);
@@ -32,8 +31,6 @@ export default function ConfigHall() {
     const [hallToUpdate, setHallToUpdate] = useState({hallId: null, isUpdated: false});
     const [showPopup, setShowPopup] = useState(false);
     const [nextCheckedHallName, setNextCheckedHallName] = useState(null);
-
-    //console.log("configHall hallToUpdate", hallToUpdate);
 
     const setInitialState = (hall,isUpdated) => {
         setInputValueRows(hall.rowsCount);
@@ -43,7 +40,6 @@ export default function ConfigHall() {
 
 
     useEffect(() => {
-        //console.log("useEffect hallConfig halls hallToUpdate", hallToUpdate);
 
         if (!halls || Object.keys(halls).length === 0) {
             return;
@@ -54,33 +50,17 @@ export default function ConfigHall() {
         }
         else {
             if (!halls[hallToUpdate.hallId]) {
-                //console.log("not hall");
                 setInitialState(halls[Object.keys(halls)[0]], false);
             }
             else if(hallToUpdate.isUpdated){
-                //console.log("hallToUpdate is updated", hallToUpdate);
                 setInitialState(halls[hallToUpdate.hallId], true);
             }
             else {
-                //console.log("useEffect halls", hallToUpdate.hallId);
                 setInitialState(halls[hallToUpdate.hallId], false);
             }
         }
-        /*if((!halls || Object.keys(halls).length === 0) && hallToUpdate.hallId !== null) {
-            setHallToUpdate({hallId: null, isUpdated: false});
-        }
 
-        else if ((halls && Object.keys(halls).length !== 0 && hallToUpdate.hallId === null)
-        ||(hallToUpdate.hallId !== null && !Object.keys(halls).includes(hallToUpdate.hallId))) {
-            setInitialState(halls[Object.keys(halls)[0]]);
-        }*/
     }, [halls]);
-
-
-   /* useEffect(()=>{
-        setHallToUpdate(hallToUpdateConfig)
-    },[hallToUpdateConfig])*/
-
 
     const getHallsFromServer = async () => {
         dispatch(setLoadingHalls(true));
@@ -105,9 +85,7 @@ export default function ConfigHall() {
         else {
 
             if (value !== lastData) {
-                console.log("onBlurPlacesInput value, lastData",value, lastData);
                 setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true})
-                //dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: true}))
             }
             dispatch(updateCustomPlaces({
                 places: value,
@@ -126,16 +104,12 @@ export default function ConfigHall() {
         else {
 
             if (value !== lastData) {
-                console.log("onBlurRowsInput value, lastData",value, lastData);
                 setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true})
-                //dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: true}))
             }
             dispatch(updateCustomRows({
                 rows: value,
                 hallId: hallToUpdate.hallId
             }));
-
-
         }
     };
 
@@ -180,7 +154,6 @@ export default function ConfigHall() {
         else {
             await updatePlacesInHallOnServer()
             setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: false})
-            //dispatch(setHallToUpdateConfig({hallId: hallToUpdate.hallId, isUpdated: false}));
         }
     };
 
@@ -203,7 +176,6 @@ export default function ConfigHall() {
                                      textForSubmitBtn="Да"
                                      textForResetBtn="Нет"/>
                             <SelectionHall selectedHall={hallToUpdate}
-                                           history="hall"
                                            onChange={async (e, hallId) => {
                                               if (hallToUpdate.isUpdated) {
                                                   console.log("hallConfig hallToUpdate", hallToUpdate);

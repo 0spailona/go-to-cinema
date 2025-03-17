@@ -31,8 +31,6 @@ export default function ConfigPrice() {
         standard: null
     });
 
-    //console.log("configPrice hallToUpdate", hallToUpdate);
-
     const setInitialState = (hall, isUpdated) => {
         setPricesFromServer({
             vip: hall.prices.vip,
@@ -45,7 +43,6 @@ export default function ConfigPrice() {
 
 
     useEffect(() => {
-        //console.log("configPrice useEffect halls start", hallToUpdate);
 
         if (!halls || Object.keys(halls).length === 0) {
             return;
@@ -63,7 +60,6 @@ export default function ConfigPrice() {
                 setInitialState(halls[hallToUpdate.hallId], true);
             }
             else {
-                //console.log("useEffect halls", hallToUpdate.hallId);
                 setInitialState(halls[hallToUpdate.hallId], false);
             }
         }
@@ -198,10 +194,8 @@ export default function ConfigPrice() {
                                  textForSubmitBtn="Да"
                                  textForResetBtn="Нет"/>
                         <SelectionHall selectedHall={hallToUpdate}
-                                       history="price"
                                        onChange={async (e, hallId) => {
                                            if (hallToUpdate.isUpdated) {
-                                               //console.log("configPrice hallToUpdate", hallToUpdate);
                                                setShowPopup(true);
                                                setNextCheckedHallId(hallId);
                                            }

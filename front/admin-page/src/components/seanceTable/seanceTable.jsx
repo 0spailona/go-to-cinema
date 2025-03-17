@@ -30,7 +30,7 @@ import {
     removeMovieFromSeanceHall,
     setIsUpdateSeancesFalse,
     setLoadingSeances,
-    setSeances, updateSeancesWithNewCountHalls,
+    setSeances,
 } from "../../redux/slices/seances.js";
 
 import {createMovie, getMovies, getSeancesByDate, removeMovieFromList, updateSeances} from "../../js/api.js";
@@ -48,7 +48,6 @@ let timerId = null;
 let itemOnDragX = null;
 
 export default function SeanceTable() {
-//console.log("SeanceTable render");
 
     const dispatch = useDispatch();
 
@@ -59,10 +58,8 @@ export default function SeanceTable() {
         isUpdatedSeances,
         loadingSeances
     } = useSelector(state => state.seances);
+
     const {halls} = useSelector(state => state.halls);
-
-    //console.log("seances", seances);
-
 
     const [showAllMoviesLoader, setShowAllMoviesLoader] = useState(loadingMovies);
     const [errorView, setErrorView] = useState({isError: false, message: ""});
@@ -71,20 +68,42 @@ export default function SeanceTable() {
     today.setHours(0, 0, 0, 0);
     const [chosenDate, setChosenDate] = useState(today);
 
+    const getFilteredSeances = (newSeances) => {
+        const moviesIdsArr = Object.keys(movies);
+
+        let notSavedSeancesArr = Object.fromEntries(Object.entries(seances).map(arr => {
+            const seancesForHall = arr[1].seances
+            const hallId = arr[0];
+
+            if(seancesForHall.length !== newSeances[hallId].seances.length) {
+                const seancesNotSaved = seances[hallId].seances.filter(seance => {
+                    return seance.id.startsWith("tmp") && moviesIdsArr.includes(seance.movieId);
+                })
+                return [hallId, {seances: seancesNotSaved}]
+            }
+            return [hallId, {seances:[]}];
+        }).filter(x => x[1].seances.length > 0));
+
+        for (let hallId of Object.keys(notSavedSeancesArr)) {
+            newSeances[hallId].seances.push(...notSavedSeancesArr[hallId].seances);
+        }
+
+        return newSeances
+    }
 
     const getSeances = async (date) => {
         dispatch(setLoadingSeances(true));
 
         const response = await getSeancesByDate(date);
         if (response.status === "success") {
-            const seances = getSeancesObj(halls, response.data);
-            dispatch(setSeances(seances));
-            //dispatch(setIsUpdateSeancesFalse());
+            let newSeances = getSeancesObj(halls, response.data);
+            newSeances = isUpdatedSeances? getFilteredSeances(newSeances) : newSeances;
+
+            dispatch(setSeances(newSeances));
             dispatch(setLoadingSeances(false));
             return true;
         }
         else {
-            //dispatch(setIsUpdateSeancesFalse());
             dispatch(setLoadingSeances(false));
             return false;
         }
@@ -128,8 +147,7 @@ export default function SeanceTable() {
                         newSeances[key] = seances[key];
                     }
                 }
-                //console.log("useEffect seances",seances);
-                //console.log("useEffect newSeances",newSeances);
+
                 dispatch(setSeances(newSeances));
             }
            else if(hallIds.length > Object.keys(seances).length){
@@ -141,8 +159,7 @@ export default function SeanceTable() {
                         newSeances[hallId] = {seances:[]};
                     }
                 }
-                //console.log("useEffect seances",seances);
-                //console.log("useEffect newSeances",newSeances);
+
                 dispatch(setSeances(newSeances));
             }
 
@@ -165,7 +182,6 @@ export default function SeanceTable() {
         isShown: false,
         hallId: null,
         seanceId: null,
-        //movieIndex: null,
         movieTitle: null
     };
     const [showRemoveSeance, setShowRemoveSeance] = useState(initialShowRemoveSeance);
@@ -181,7 +197,6 @@ export default function SeanceTable() {
             const seancesInHall = seances[hallId].seances;
 
             if (!checkDropInHall(itemOnDragX, width, hallWidth, movies[movieId], seancesInHall, movies, seanceId)) {
-
                 return false;
             }
 
@@ -239,16 +254,10 @@ export default function SeanceTable() {
             return;
         }
 
-       // console.log("onDragEnd result", result);
-        //console.log("itemOnDragX",itemOnDragX);
-
         const fromId = source.droppableId;
-        const itemIndex = source.index;
         const toId = destination.droppableId;
 
         const start = pxToMinutes(itemOnDragX);
-        //console.log("onDragEnd start",getViewTime(start))
-        //console.log("onDragEnd draggableId",draggableId);
 
         if (toId === droppableIdsBase.removeFromAllMovies) {
             if (source.droppableId !== droppableIdsBase.allMovies) {
@@ -270,13 +279,11 @@ export default function SeanceTable() {
                 isShown: true,
                 hallId,
                 seanceId,
-               // movieIndex: itemIndex,
                 movieTitle
             });
         }
         else {
             const hallId = toId.match(/^seances-hall-([0-9a-f]+)$/)[1];
-            //console.log("draggableId",draggableId)
             const movieId = draggableId.match(/^movie-in-[\w-]+-([0-9a-f]+)$/)[1];
 
             if (fromId === droppableIdsBase.allMovies) {
@@ -289,20 +296,15 @@ export default function SeanceTable() {
                     to: hallId,
                     movieId,
                     start,
-                    //movieIndex: itemIndex
                 }));
             }
             else {
                 const fromHallId = fromId.match(/^seances-hall-([0-9a-f]+)$/)[1];
-               // console.log("draggableId",draggableId)
-               // console.log("match",draggableId.match(/^movie-in-seance-hall-([0-9a-z]+)-([0-9a-f]+)-([0-9a-f]+)$/))
                 const seanceId = draggableId.match(/^movie-in-seance-hall-([0-9a-z]+)-([0-9a-f]+)-([0-9a-f]+)$/)[1];
 
                 if (!isCanDrop(hallId, movieId, seanceId)) {
                     return;
                 }
-
-                //console.log("seances by hall from",seances[fromHallId])
 
                 dispatch(addMovieToSeancesHall({
                     from: fromHallId,
@@ -310,7 +312,6 @@ export default function SeanceTable() {
                     movieId,
                     start,
                     seanceId
-                    //movieIndex: itemIndex
                 }));
             }
             setInitialDnDState();
@@ -362,7 +363,6 @@ export default function SeanceTable() {
     const onSubmitRemoveFromSeance = (e) => {
         e.preventDefault();
         dispatch(removeMovieFromSeanceHall({
-            //movieIndex: showRemoveSeance.movieIndex,
             seanceId: showRemoveSeance.seanceId,
             hallId: showRemoveSeance.hallId
         }));
@@ -444,8 +444,6 @@ export default function SeanceTable() {
         setValidateError(msg);
         setShowErrorPopup(true);
     };
-
-    //console.log("isUpdatedSeances: ", isUpdatedSeances);
 
     return (<>
             <PopupError showPopup={errorView.isError} text={errorView.message}

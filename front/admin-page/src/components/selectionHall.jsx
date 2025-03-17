@@ -1,7 +1,6 @@
 import {useSelector} from "react-redux";
 
-export default function SelectionHall({selectedHall, onChange, history}) {
-//console.log("SelectionHall selectedHall",selectedHall, history);
+export default function SelectionHall({selectedHall, onChange}) {
 
     const {
         halls
