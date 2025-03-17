@@ -5,8 +5,6 @@ export default function TimeBlock({seance}) {
 
     const startTime = getStartTimeStringFromMinutes(seance.startTime);
 
-   //console.log("TimeBlock seance",seance)
-
     return (
         <li className="movie-seances__time-block">
             <NavLink className="movie-seances__time" to={`/seanceHall?seanceId=${seance.id}`}
@@ -15,11 +13,3 @@ export default function TimeBlock({seance}) {
         </li>
     );
 }
-
-/*
- <li className="movie-seances__time-block">
-            <NavLink className="movie-seances__time" to={`/hall/${seance.id}`}
-            >{startTime.hours}:{startTime.min}
-            </NavLink>
-        </li>
-*/

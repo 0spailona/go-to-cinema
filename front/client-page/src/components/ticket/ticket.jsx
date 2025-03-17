@@ -1,14 +1,14 @@
-import {useDispatch, useSelector} from "react-redux";
-import {setError} from "../../redux/slices/cinema.js";
+import {useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 import Popup from "../common/popup.jsx";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import TicketContent from "./ticketContent.jsx";
 import {checkPlaces} from "../../js/api.js";
 
 
 export default function Ticket() {
 
+    const navigate = useNavigate();
     const location = useLocation();
     const query = new URLSearchParams(location.search);
     const {
@@ -38,7 +38,8 @@ export default function Ticket() {
     }, []);
 
     if (!seanceId || selected.length === 0) {
-        return <Popup isVisible={true} message="Что-то пошло не так"
+        const message = errorView.message.length > 0 ? errorView.message : "Что-то пошло не так";
+        return <Popup isVisible={true} message={message}
                       onClose={() => {
                           navigate("/");
                       }}/>;

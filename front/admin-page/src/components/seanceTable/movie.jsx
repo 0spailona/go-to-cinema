@@ -20,7 +20,6 @@ export default function Movie({
     const {canUpdate} = useSelector(state => state.halls);
 
 
-
     let seanceStart = null;
     let timeStart = "";
     let offset = 0;
@@ -29,7 +28,6 @@ export default function Movie({
     if (hallId) {
         seanceStart = seances[hallId].seances.find(x => x.id === seanceId).startTime;
         timeStart = getViewTime(seanceStart);
-       // console.log("seanceId", seanceId, "title",movies[movieId].title,"timeStart",timeStart);
         offset = minutesToPx(seanceStart);
         isRenderInHall = true;
     }
@@ -54,9 +52,8 @@ export default function Movie({
 
     const id = hallId ? `${draggableIdsBase.movieInSeance}${seanceId}-${hallId}-${movieId}`
         : `${draggableIdsBase.movieInList}${movieId}`;
-if(hallId){
-    //console.log("movie draggableId",id)
-}
+    if (hallId) {
+    }
 
     const backGroundColorIndex = Object.keys(movies).indexOf(movieId);
 
@@ -143,7 +140,7 @@ if(hallId){
                  height: containerHeight
              }}>
             <Draggable draggableId={id}
-                       //index={index}
+                //index={index}
             >
                 {(provided, snapshot) => (
                     <div id={id}
@@ -157,7 +154,6 @@ if(hallId){
                                       isDraggingElem={isDraggingElem} title={movie.title}
                                       movieId={movieId} duration={movie.duration}
                                       startTime={time}
-                                      //startTime={timeStart}
                                       index={backGroundColorIndex}/>
                     </div>
                 )}

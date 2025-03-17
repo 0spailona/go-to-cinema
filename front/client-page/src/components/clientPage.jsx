@@ -4,27 +4,22 @@ import NavDays from "./seances/navDays.jsx";
 import {useDispatch, useSelector} from "react-redux";
 import Movie from "./seances/movie.jsx";
 import {useEffect, useState} from "react";
-import {getHalls, getMovies, getSeanceById, getSeancesByDate, isOpenSails} from "../js/api.js";
+import { getSeancesByDate} from "../js/api.js";
 import {
-    setChosenSeance,
     setError,
-    setHalls,
     setInitialChosenSeance,
-    //setIsDrawPage,
     setLoading,
-    setMovies,
     setSeances
 } from "../redux/slices/cinema.js";
 import Loader from "react-js-loader";
 import Popup from "./common/popup.jsx";
-import {redirect, useNavigate} from "react-router-dom";
+
 
 export default function ClientPage() {
 
     const dispatch = useDispatch();
-    const navigate = useNavigate();
 
-    const {seances, chosenDate, isDrawPage, loading, lastIsDrawPage, error} = useSelector(state => state.cinema);
+    const {seances, isDrawPage, loading, error} = useSelector(state => state.cinema);
     const [errorView, setErrorView] = useState({isError: false, message: ""});
     const getSeances = async (date) => {
         dispatch(setLoading(true));
@@ -38,50 +33,6 @@ export default function ClientPage() {
         }
         dispatch(setLoading(false));
     };
-    /*const getMoviesFromServer = async () => {
-        dispatch(setLoading(true));
-
-        const response = await getMovies();
-        if (response.status === "success") {
-            dispatch(setMovies(response.data));
-        }
-        else {
-            dispatch(setError("Проблемы с сервером. Попробуйте позже"));
-        }
-        dispatch(setLoading(false));
-    };
-
-    const getHallsFromServer = async () => {
-        dispatch(setLoading(true));
-        const response = await getHalls();
-        if (response.status === "success") {
-            dispatch(setHalls(response.data));
-        }
-        else {
-            dispatch(setError("Проблемы с сервером. Попробуйте позже"));
-        }
-        dispatch(setLoading(false));
-    };
-
-
-
-
-    const updateData = async () => {
-        await getHallsFromServer();
-        await getMoviesFromServer();
-        await getSeances(chosenDate);
-    };
-
-    useEffect(() => {
-
-        if (isDrawPage && !lastIsDrawPage) {
-            async function toGetNewData() {
-                await updateData();
-            }
-
-            toGetNewData();
-        }
-    }, [isDrawPage]);*/
 
     useEffect(() => {
         dispatch(setInitialChosenSeance());
@@ -97,21 +48,6 @@ export default function ClientPage() {
         }
     }, [error]);
 
-   /* const getSeance = async (id) => {
-        dispatch(setLoading(true));
-        //console.log("ClientPage getSeance",id);
-        const response = await getSeanceById(id);
-        if (response.status === "success") {
-            dispatch(setChosenSeance(response.data));
-            dispatch(setLoading(false));
-            navigate("/hall")
-        }
-        else {
-            dispatch(setInitialChosenSeance());
-            dispatch(setLoading(false));
-            dispatch(setError(response.message));
-        }
-    };*/
 
     const renderMovie = (movieId) => {
         const movieSeancesByHallId = seances[movieId];

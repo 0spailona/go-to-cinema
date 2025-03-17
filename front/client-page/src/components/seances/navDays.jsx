@@ -12,13 +12,11 @@ export default function NavDays({onChange}) {
     const getNextDate = (lastDate) => {
         const nextDay = new Date();
         nextDay.setDate(lastDate.getDate() + 1);
-        //nextDay.setHours(0, 0, 0, 0);
         return nextDay;
     };
 
     const dates = [];
     const now = new Date();
-    //now.setHours(0, 0, 0, 0);
     dates.push(now);
     let count = 0;
     while (count < maxDays - 1) {
@@ -33,7 +31,6 @@ export default function NavDays({onChange}) {
     const updateNavDaysToNext = () => {
         const lastDay = navDays[navDays.length - 1];
         const nextDay = getNextDate(lastDay);
-       // nextDay.setHours(0, 0, 0, 0);
         const newNavDays = [...navDays, nextDay];
         newNavDays.shift();
         setNavDays(newNavDays);
@@ -43,7 +40,6 @@ export default function NavDays({onChange}) {
     const updateNavDaysToPrev = () => {
         const day = new Date(navDays[0].getTime());
         day.setDate(day.getDate() - 1);
-        //day.setHours(0, 0, 0, 0);
         const newNavDays = [day, ...navDays];
         newNavDays.pop();
         setNavDays(newNavDays);
@@ -54,11 +50,6 @@ export default function NavDays({onChange}) {
         dispatch(changeChosenDate(string));
         onChange(string);
     };
-
-    /*const isEqual = (a, b) => {
-        return getDateStringFromDate(a) === getDateStringFromDate(b);
-    };*/
-
 
     return (
         <nav className="page-nav">

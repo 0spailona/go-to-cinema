@@ -47,7 +47,6 @@ export async function getMovies() {
         return {status: "success", data: movies};
     }
     else {
-        console.log("getMovies error");
         return {status: "error"};
     }
 }

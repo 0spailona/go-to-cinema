@@ -5,12 +5,7 @@ import MyInput from "../common/myInput.jsx";
 import Place from "../common/place.jsx";
 import MyButton from "../common/myButton.jsx";
 import {useEffect, useState} from "react";
-import {
-    setHalls,
-    setLoadingHalls,
-    updateCustomPlaces,
-    updateCustomRows,
-} from "../../redux/slices/halls.js";
+import {setHalls, setLoadingHalls, updateCustomPlaces, updateCustomRows,} from "../../redux/slices/halls.js";
 import {useDispatch, useSelector} from "react-redux";
 import {getValidationError} from "../../js/utils.js";
 import {placesType} from "../../js/info.js";
@@ -32,7 +27,7 @@ export default function ConfigHall() {
     const [showPopup, setShowPopup] = useState(false);
     const [nextCheckedHallName, setNextCheckedHallName] = useState(null);
 
-    const setInitialState = (hall,isUpdated) => {
+    const setInitialState = (hall, isUpdated) => {
         setInputValueRows(hall.rowsCount);
         setInputValuePlaces(hall.placesInRow);
         setHallToUpdate({hallId: hall.id, isUpdated});
@@ -52,7 +47,7 @@ export default function ConfigHall() {
             if (!halls[hallToUpdate.hallId]) {
                 setInitialState(halls[Object.keys(halls)[0]], false);
             }
-            else if(hallToUpdate.isUpdated){
+            else if (hallToUpdate.isUpdated) {
                 setInitialState(halls[hallToUpdate.hallId], true);
             }
             else {
@@ -69,7 +64,7 @@ export default function ConfigHall() {
             dispatch(setHalls(response.data));
         }
         else {
-           dispatch(setError("Что-то пошло не так. Попробуйте позже"))
+            dispatch(setError("Что-то пошло не так. Попробуйте позже"));
         }
         dispatch(setLoadingHalls(false));
     };
@@ -85,7 +80,7 @@ export default function ConfigHall() {
         else {
 
             if (value !== lastData) {
-                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true})
+                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
             }
             dispatch(updateCustomPlaces({
                 places: value,
@@ -99,12 +94,12 @@ export default function ConfigHall() {
         const value = +e.target.value.trim();
         const error = getValidationError(value, hallConfig.rowsCount.min, hallConfig.rowsCount.max);
         if (error) {
-            dispatch(setError(`Ошибка в количестве рядов. ${error}`))
+            dispatch(setError(`Ошибка в количестве рядов. ${error}`));
         }
         else {
 
             if (value !== lastData) {
-                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true})
+                setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: true});
             }
             dispatch(updateCustomRows({
                 rows: value,
@@ -114,31 +109,31 @@ export default function ConfigHall() {
     };
 
     const changeHall = (newHallToUpdate) => {
-        setInitialState(halls[newHallToUpdate],false);
+        setInitialState(halls[newHallToUpdate], false);
     };
 
     const notToSaveChanges = async (e, newHallToUpdate) => {
         e.preventDefault();
-        await getHallsFromServer()
+        await getHallsFromServer();
         changeHall(newHallToUpdate);
     };
 
-    const updatePlacesInHallOnServer = async ()=>{
+    const updatePlacesInHallOnServer = async () => {
         setLoadingHalls(true);
 
-        const response = await updatePlacesInHall(halls[hallToUpdate.hallId])
+        const response = await updatePlacesInHall(halls[hallToUpdate.hallId]);
 
-        if(response.status !== "success") {
-            dispatch(setError(response.message))
+        if (response.status !== "success") {
+            dispatch(setError(response.message));
         }
         setLoadingHalls(false);
-    }
+    };
 
     const toSaveChanges = async (e, newHallToUpdate) => {
         e.preventDefault();
 
-        await updatePlacesInHallOnServer()
-        await getHallsFromServer()
+        await updatePlacesInHallOnServer();
+        await getHallsFromServer();
         changeHall(newHallToUpdate);
     };
 
@@ -148,12 +143,12 @@ export default function ConfigHall() {
         if (errorRow || errorPlacesInRow) {
             const rowErrorMsg = errorRow ? `Ошибка в количестве рядов. ${errorRow}` : "";
             const placesCountErrorMsg = errorPlacesInRow ? `Ошибка в количестве мест. ${errorPlacesInRow}` : "";
-            const errorMsg = `${errorRow ? rowErrorMsg : ""} ${errorPlacesInRow ? placesCountErrorMsg : ""}`
-            dispatch(setError(errorMsg))
+            const errorMsg = `${errorRow ? rowErrorMsg : ""} ${errorPlacesInRow ? placesCountErrorMsg : ""}`;
+            dispatch(setError(errorMsg));
         }
         else {
-            await updatePlacesInHallOnServer()
-            setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: false})
+            await updatePlacesInHallOnServer();
+            setHallToUpdate({hallId: hallToUpdate.hallId, isUpdated: false});
         }
     };
 
@@ -163,30 +158,30 @@ export default function ConfigHall() {
                 <ConfStepHeader title="Конфигурация залов"/>
                 <div className="conf-step__wrapper">
                     {halls && hallToUpdate.hallId ? <>
-                            <MyPopup isVisible={showPopup} title={`Сохранить изменения в зале "${halls[hallToUpdate.hallId]?.name}"`}
+                            <MyPopup isVisible={showPopup}
+                                     title={`Сохранить изменения в зале "${halls[hallToUpdate.hallId]?.name}"`}
                                      onClose={() => setShowPopup(false)}
                                      onReset={async e => {
-                                        await notToSaveChanges(e, nextCheckedHallName)
-                                         setShowPopup(false)
+                                         await notToSaveChanges(e, nextCheckedHallName);
+                                         setShowPopup(false);
                                      }}
                                      onSubmit={async e => {
-                                        await toSaveChanges(e, nextCheckedHallName)
-                                         setShowPopup(false)
+                                         await toSaveChanges(e, nextCheckedHallName);
+                                         setShowPopup(false);
                                      }}
                                      textForSubmitBtn="Да"
                                      textForResetBtn="Нет"/>
                             <SelectionHall selectedHall={hallToUpdate}
                                            onChange={async (e, hallId) => {
-                                              if (hallToUpdate.isUpdated) {
-                                                  console.log("hallConfig hallToUpdate", hallToUpdate);
-                                                  setShowPopup(true);
-                                                  setNextCheckedHallName(hallId);
-                                              }
-                                              else {
-                                                await notToSaveChanges(e, hallId);
-                                              }
-                                          }
-                                          }/>
+                                               if (hallToUpdate.isUpdated) {
+                                                   setShowPopup(true);
+                                                   setNextCheckedHallName(hallId);
+                                               }
+                                               else {
+                                                   await notToSaveChanges(e, hallId);
+                                               }
+                                           }
+                                           }/>
                             <p className="conf-step__paragraph">Укажите количество рядов и максимальное количество кресел в
                                 ряду:</p>
                             <div className="conf-step__legend">
@@ -216,8 +211,8 @@ export default function ConfigHall() {
                                   }/>
                             <div className="conf-step__buttons text-center">
                                 <MyButton type="reset" text="Отмена" onclick={async () => {
-                                    setInitialState(halls[hallToUpdate.hallId],false);
-                                    await getHallsFromServer()
+                                    setInitialState(halls[hallToUpdate.hallId], false);
+                                    await getHallsFromServer();
                                 }}/>
                                 <MyButton type="submit" text="Сохранить" onclick={toSaveByButton}/>
                             </div>

@@ -47,7 +47,6 @@ export default function SeanceTable() {
 
     const {
         seances,
-        //isUpdatedSeances,
         loadingSeances
     } = useSelector(state => state.seances);
 
@@ -62,7 +61,7 @@ export default function SeanceTable() {
     const [isUpdated, setIsUpdated] = useState(false);
 
     const getFilteredSeances = (newSeances) => {
-        if(!seances) {
+        if (!seances) {
             return newSeances;
         }
         const moviesIdsArr = Object.keys(movies);
@@ -89,15 +88,10 @@ export default function SeanceTable() {
 
     const getSeances = async (date, toCheckSeances) => {
         dispatch(setLoadingSeances(true));
-        //console.log("toSaveUpdated", toSaveUpdated);
-        console.log("toCheckSeances", toCheckSeances);
-        //console.log("isUpdatedSeances",isUpdatedSeances);
         const response = await getSeancesByDate(date);
         if (response.status === "success") {
             let newSeances = getSeancesObj(halls, response.data);
             newSeances = toCheckSeances ? getFilteredSeances(newSeances) : newSeances;
-            // newSeances = isUpdated ? getFilteredSeances(newSeances) : newSeances;
-
             dispatch(setSeances(newSeances));
             dispatch(setLoadingSeances(false));
             return true;
@@ -122,9 +116,7 @@ export default function SeanceTable() {
         if (halls && Object.keys(halls).length > 0) {
 
             async function getNewSeancesByDate() {
-                console.log("useEffect by movies")
-               // const getSeancesRes = await getSeances(toISOStringNoMs(chosenDate),true);
-                if (!await getSeances(toISOStringNoMs(chosenDate),true)) {
+                if (!await getSeances(toISOStringNoMs(chosenDate), true)) {
                     setErrorView({isError: true, message: "Что-то пошло не так. Попробуйте позже."});
                 }
             }
@@ -373,7 +365,6 @@ export default function SeanceTable() {
     const onDateSelected = async (newDate) => {
         newDate.setHours(0, 0, 0, 0);
 
-        //if (chosenDate && chosenDate !== newDate && isUpdatedSeances) {
         if (chosenDate && chosenDate !== newDate && isUpdated) {
             setShowPopupUpdateDate({isShown: true, date: newDate});
         }
@@ -382,7 +373,6 @@ export default function SeanceTable() {
             if (await getSeances(date, false)) {
                 setChosenDate(newDate);
                 setIsUpdated(false);
-                //dispatch(setIsUpdateSeancesFalse());
             }
             else {
                 setErrorView({isError: true, message: "Что-то пошло не так. Попробуйте позже."});
@@ -408,7 +398,6 @@ export default function SeanceTable() {
         e.preventDefault();
         await updateSeancesByDate({seances, date: chosenDate});
         setIsUpdated(false);
-        //dispatch(setIsUpdateSeancesFalse());
         dispatch(setSeances(null));
 
         const date = toISOStringNoMs(showPopupUpdateDate.date);
@@ -454,7 +443,6 @@ export default function SeanceTable() {
         await updateSeancesByDate({seances, date: chosenDate});
         if (await getSeances(toISOStringNoMs(chosenDate), false)) {
             setIsUpdated(false);
-            //dispatch(setIsUpdateSeancesFalse());
         }
         else {
             setErrorView({isError: true, message: "Что-то пошло не так. Попробуйте позже."});
@@ -463,9 +451,7 @@ export default function SeanceTable() {
 
     const onResetAll = async () => {
         await setIsUpdated(false);
-        //await dispatch(setIsUpdateSeancesFalse());
         await dispatch(setSeances(null));
-        //console.log("Отмена isUpdateSeances", isUpdatedSeances);
         if (!await getSeances(toISOStringNoMs(chosenDate), false)) {
             setErrorView({isError: true, message: "Что-то пошло не так. Попробуйте позже."});
         }

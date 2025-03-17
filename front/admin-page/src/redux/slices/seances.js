@@ -5,7 +5,6 @@ import {createSeance} from "../utils.js";
 const initialState = {
     loadingSeances: false,
     seances: null,
-   // isUpdatedSeances: false,
 };
 
 export const seancesSlice = createSlice({
@@ -18,7 +17,6 @@ export const seancesSlice = createSlice({
     },
     reducers: {
         addMovieToSeancesHall: (state, action) => {
-           // state.isUpdatedSeances = true;
             const hallId = action.payload.to;
             const fromHallId = action.payload.from;
             const movieId = action.payload.movieId;
@@ -30,8 +28,6 @@ export const seancesSlice = createSlice({
             state.seances[hallId].seances.push(newSeance);
         },
         removeMovieFromSeanceHall: (state, action) => {
-            //state.isUpdatedSeances = true;
-          //  console.log("removeMovieFromSeanceHall", action.payload);
             const fromHallId = action.payload.hallId;
             const seanceId = action.payload.seanceId;
             state.seances[fromHallId].seances = state.seances[fromHallId].seances.filter(seance => seance.id !== seanceId);
@@ -50,11 +46,9 @@ export const {
     setLoadingSeances,
     setSeances,
     removeMovieFromSeanceHall,
-   // setIsUpdateSeancesFalse
 } = seancesSlice.actions;
 export const {
     seances,
-   // isUpdatedSeances,
 } = seancesSlice.selectors;
 const seancesReducer = seancesSlice.reducer;
 export default seancesReducer;

@@ -41,7 +41,6 @@ export default function ConfigPrice() {
         setHallToUpdate({hallId: hall.id, isUpdated});
     };
 
-
     useEffect(() => {
 
         if (!halls || Object.keys(halls).length === 0) {

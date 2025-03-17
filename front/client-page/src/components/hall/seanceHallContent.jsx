@@ -16,8 +16,6 @@ export default function SeanceHallContent({seanceId}) {
     const navigate = useNavigate();
     const {
         chosenSeance,
-        //loading,
-        //error
     } = useSelector(state => state.cinema);
 
     const [isToDoBig, setToDoBig] = useState(false);
@@ -30,8 +28,7 @@ export default function SeanceHallContent({seanceId}) {
     const getSeance = async (id) => {
         const response = await getSeanceById(id);
         if (response.status === "success") {
-            //time = getStartTimeStringFromMinutes(response.data.seance.startTime);
-            // console.log("getSeance time",time);
+
             return {
                 hallId: response.data.seance.hallId,
                 movieId: response.data.seance.movieId,
@@ -40,16 +37,12 @@ export default function SeanceHallContent({seanceId}) {
         }
         else {
             dispatch(setInitialChosenSeance());
-            //setErrorView({isError: true, message: response.message});
-            //dispatch(setError(response.message));
             return {hallId: null, movieId: null, seanceData: null,message:response.message};
         }
     };
     const getHall = async (id) => {
-        // console.log("getHall");
         const response = await getHallById(id);
         if (response.status === "success") {
-            //console.log("getHal response", response);
             return {hall: response.data, message: null};
         }
         else {
@@ -58,29 +51,23 @@ export default function SeanceHallContent({seanceId}) {
     };
 
     const getMovie = async (id) => {
-        //console.log("getMovie");
+
         const response = await getMovieById(id);
         if (response.status === "success") {
-            //console.log("getMovie response", response);
-            // movie = response.data;
             return {movie: response.data, message: null};
         }
         else {
-            //dispatch(setError(response.message));
             return {movie: null, message: response.message};
         }
     };
 
     useEffect(() => {
-        //console.log("useEffect []");
-        //dispatch(setLoading(true));
         setLoading(true);
 
         async function getData() {
             const data = await getSeance(seanceId);
 
             if (!data.hallId || !data.movieId || !data.seanceData) {
-                //dispatch(setError("Что-то пошло не так"));
                 setErrorView({isError: true, message: data.message});
             }
 
@@ -88,17 +75,15 @@ export default function SeanceHallContent({seanceId}) {
 
             if (!hallData.hall) {
                 setErrorView({isError: true, message: hallData.message});
-                //dispatch(setError(hallData.message));
             }
 
             const movieData = await getMovie(data.movieId);
             if (!movieData.movie) {
                 setErrorView({isError: true, message: movieData.message});
-                // dispatch(setError(movieData.message));
             }
 
             setMovie(movieData.movie);
-            //const hallWithSelected =
+
             const selected = chosenSeance.selectedPlaces;
 
             for (let place of selected) {
@@ -112,7 +97,6 @@ export default function SeanceHallContent({seanceId}) {
 
         getData();
         setLoading(false);
-        //dispatch(setLoading(false));
     }, []);
 
      useEffect(() => {
@@ -122,16 +106,6 @@ export default function SeanceHallContent({seanceId}) {
 
  }, [chosenSeance]);
 
-    /* useEffect(() => {
-         if (!error) {
-             setErrorView({isError: false, message: ""});
-         }
-         if (error) {
-             setErrorView({isError: true, message: error});
-         }
-     }, [error]);*/
-
-    //hall = chosenSeance.hallData;
 
     const toggleBig = (e) => {
         if (e.target.classList.contains("toBig")) {
@@ -145,19 +119,13 @@ export default function SeanceHallContent({seanceId}) {
     const onBooking = () => {
 
         if (chosenSeance.selectedPlaces.length > 0) {
-            //console.log("seanceHall selectedPlaces", chosenSeance.selectedPlaces);
             const places = chosenSeance.selectedPlaces.map(place => `${place.rowIndex}_${place.placeIndex}`);
-            //console.log("places", places);
             navigate(`/ticket?seanceId=${seanceId}&places=${places}`);
         }
         else {
             setErrorView({isError: true, message: "Выберите, пожалуйста, места"});
         }
     };
-
-    //console.log("movie", movie);
-    //console.log("hall", hall);
-    //console.log("time", time);
 
     if (!hall || !movie || !time) {
        return <Popup isVisible={errorView.isError} message={errorView.message}
@@ -167,7 +135,6 @@ export default function SeanceHallContent({seanceId}) {
                                }}/>;
     }
 
-    //console.log("chosenSeance", chosenSeance)
     return (
         <>
             <Popup isVisible={errorView.isError} message={errorView.message}
@@ -208,8 +175,6 @@ export default function SeanceHallContent({seanceId}) {
                         <MyButton text="Забронировать" onClick={onBooking}/>
                     </section> : ""}
                 </main>}
-
-
         </>
     );
 }

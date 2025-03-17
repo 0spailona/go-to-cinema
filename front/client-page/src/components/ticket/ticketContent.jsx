@@ -11,19 +11,15 @@ import MyButton from "../common/MyButton.jsx";
 import Hint from "./hint.jsx";
 import {placesType} from "../../js/info.js";
 
-//let hall, time, movie, places, cost, seance, prices;
 
 export default function TicketContent({seanceId, selectedPlaces}) {
 
-    //console.log("TicketContent selectedPlaces",selectedPlaces);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const {
         chosenSeance,
         chosenDate,
-        //loading,
-        //error
     } = useSelector(state => state.cinema);
 
     const [errorView, setErrorView] = useState({isError: false, message: ""});
@@ -32,67 +28,33 @@ export default function TicketContent({seanceId, selectedPlaces}) {
     const [movie, setMovie] = useState(null);
     const [places, setPlaces] = useState(selectedPlaces);
     const [cost, setCost] = useState(null);
-    //const [seance, setSeance] = useState(null);
     const [time, setTime] = useState(null);
 
-    //const placesForView = getPlacesForView(selectedPlaces);
-    //const [prices, setPrices] = useState(null);
-
-    /*const checkPlacesOnServer = async () => {
-        // console.log("getHall");
-        const response = await checkPlaces(selectedPlaces,seanceId);
-        if (response.status === "success") {
-            //console.log("getHal response", response);
-            //return response.data;
-            return {places: response.data, message: null};
-        }
-        else {
-            return {places: null, message: response.message};
-            // setErrorView({isError: true, message: response.message});
-            //dispatch(setError(response.message));
-            //return null;
-        }
-    };*/
-
     const getHall = async (id) => {
-        // console.log("getHall");
         const response = await getHallById(id);
         if (response.status === "success") {
-            //console.log("getHal response", response);
-            //return response.data;
             return {hall: response.data, message: null};
         }
         else {
             return {hall: null, message: response.message};
-            // setErrorView({isError: true, message: response.message});
-            //dispatch(setError(response.message));
-            //return null;
         }
     };
 
     const getMovie = async (id) => {
-        //console.log("getMovie");
         const response = await getMovieById(id);
         if (response.status === "success") {
-            //console.log("getMovie response",response);
-            //movie = response.data;
             return {movie: response.data, message: null};
         }
         else {
             return {movie: null, message: response.message};
-            //dispatch(setError(response.message));
         }
     };
 
     const getSeance = async (id) => {
 
-        //console.log("ClientPage getSeance",id);
         const response = await getSeanceById(id);
         if (response.status === "success") {
-            //console.log("ticket getSeance response.data",response.data)
-            /*time = getStartTimeStringFromMinutes(response.data.seance.startTime);
-            console.log("getSeance time",time);
-            return {hallId: response.data.seance.hallId, movieId: response.data.seance.movieId, seance: response.data};*/
+
             return {
                 hallId: response.data.seance.hallId,
                 movieId: response.data.seance.movieId,
@@ -101,19 +63,11 @@ export default function TicketContent({seanceId, selectedPlaces}) {
         }
         else {
             dispatch(setInitialChosenSeance());
-            //setErrorView({isError: true, message: response.message});
-            //dispatch(setError(response.message));
             return {hallId: null, movieId: null, seanceData: null, message: response.message};
-            /* dispatch(setInitialChosenSeance());
-             dispatch(setError(response.message));
-             return {hallId: null, movieId: null, seance: null};*/
         }
     };
 
-    console.log(11);
     useEffect(() => {
-        console.log("useEffect TicketContent []");
-        //dispatch(setLoading(true));
         setLoading(true);
 
         async function getData() {
@@ -154,11 +108,9 @@ export default function TicketContent({seanceId, selectedPlaces}) {
 
         getData();
 
-        //dispatch(setLoading(false));
         setLoading(false);
     }, []);
 
-    console.log(12);
 
     if (!hall || !movie || !time || !places || !cost) {
         return <Popup isVisible={errorView.isError} message={errorView.message}
@@ -168,14 +120,11 @@ export default function TicketContent({seanceId, selectedPlaces}) {
                       }}/>;
     }
 
-    console.log(13);
 
     const toBookPlaces = async () => {
-console.log("To Book Places chosenSeance.selectedPlaces",chosenSeance.selectedPlaces);
-console.log("To Book Places places",places)
-//TODO send places from state not from redux
+
         const data = {seanceId, places};
-       // const data = {seanceId, places: chosenSeance.selectedPlaces};
+
         const response = await toBook(data);
         if (response.status === "success") {
             await dispatch(setInitialChosenSeance());
@@ -183,13 +132,8 @@ console.log("To Book Places places",places)
         }
         else {
             setErrorView({isError: true, message: response.message});
-            //dispatch(setError(response.message));
         }
     };
-
-    /* console.log("ticket movie",movie)
-     console.log("ticket hall",hall)
-     console.log("ticket time",time)*/
 
     return (
         <>
